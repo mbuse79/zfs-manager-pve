@@ -5,9 +5,11 @@ package inspection cannot independently establish ownership of all source code.
 
 ## Findings
 
-- Existing final Debian package metadata declares the placeholder maintainer
-  `contact@example.invalid`. The current GitHub-source build script
-  now refuses to build without a real supplied contact.
+- The existing final Debian package still declares the **obsolete** placeholder maintainer
+  `contact@example.invalid` and must not be published unchanged. The maintainer
+  has confirmed **bumavory@buse.rocks** is configured. The GitHub-source build
+  script requires a real `ZFSM_MAINTAINER_EMAIL`; it will use the confirmed address
+  when supplied explicitly. Mail delivery remains to be tested independently.
 - No agreed and complete `LICENSE` existed in the provided final source archive.
 - Active Python and Perl files lacked SPDX/license headers in the inspected
   original archive; original ownership and upstream text provenance are
@@ -27,8 +29,9 @@ package inspection cannot independently establish ownership of all source code.
    unmodified text** as `LICENSE` and add appropriate SPDX/notice headers.
 3. Identify and credit third-party material in `debian/copyright` (start from
    `debian/copyright.template`; do not just rename without verifying it).
-4. Provide real `ZFSM_MAINTAINER_EMAIL` and optionally
-   `ZFSM_MAINTAINER_NAME`; rebuild/retest the deb.
+4. Rebuild/retest with the confirmed contact (after licensing approval):
+   `ZFSM_MAINTAINER_NAME="BuMaVory Project" ZFSM_MAINTAINER_EMAIL=bumavory@buse.rocks ./build_deb.sh`.
+   Verify Debian control metadata with `dpkg-deb -f pve-zfs-manager_1.0.0-32_all.deb Maintainer`.
 5. Conduct the final PVE 9.2.25 live-install verification on the newly built
    released artifact and set up a confidential vulnerability reporting route.
 

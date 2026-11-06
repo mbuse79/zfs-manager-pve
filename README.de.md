@@ -6,7 +6,7 @@
 
 > **Unabhängiges Community-Projekt.** BuMaVory ZFS Manager ist kein offizielles Produkt von Proxmox und wird nicht von Proxmox Server Solutions GmbH entwickelt oder unterstützt.
 >
-> **Veröffentlichungsstand:** v1.0.0-32 ist ein technisch fertig gebautes Paket, das für die erste öffentliche Veröffentlichung vorbereitet wird. Lizenzprüfung, echte Maintainer-Kontaktdaten und der abschließende Installationstest stehen noch aus. Das private Repository ist noch keine öffentlich freigegebene Open-Source-Veröffentlichung.
+> **Veröffentlichungsstand:** v1.0.0-32 ist ein technisch fertig gebautes Paket, das für die erste öffentliche Veröffentlichung vorbereitet wird. Lizenzprüfung und der abschließende Installationstest stehen noch aus. Die Maintainer-Adresse wurde eingerichtet; der tatsächliche E-Mail-Versand und -Empfang wurden hier nicht unabhängig geprüft. Das private Repository ist noch keine öffentlich freigegebene Open-Source-Veröffentlichung.
 
 ## Funktionen
 
@@ -62,6 +62,10 @@ BuMaVory ist als gemeinsame Dachmarke für voneinander unabhängige Softwareproj
 - BuMaVory ZFS Manager – dieses Projekt.
 - BuMaVory Samba Admin Center – separates Projekt.
 - BuMaVory ZFS Replication Manager – geplantes separates Projekt.
+
+## Kontakt
+
+Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.rocks). Sicherheitsmeldungen bitte vertraulich senden; siehe [SECURITY.md](SECURITY.md).
 
 ## Lizenz und Marken
 

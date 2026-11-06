@@ -6,7 +6,7 @@ v1.0.0-32 is a technical final build. The RC1 was tested on Proxmox VE 9.2.25. T
 
 ## Reporting a vulnerability
 
-**Do not post exploits, credentials or sensitive system details in public GitHub issues.** A private reporting channel and real maintainer contact have **not yet been configured**. Before making this repository public, enable GitHub private vulnerability reporting (if available) and publish a valid security contact.
+**Do not post exploits, credentials or sensitive system details in public GitHub issues.** Contact the maintainers privately at **[bumavory@buse.rocks](mailto:bumavory@buse.rocks)**. The mailbox is reported as configured; actual message delivery has not been independently verified here. GitHub private vulnerability reporting should also be enabled before public launch, if available.
 
 ## Operational risks
 
@@ -18,4 +18,4 @@ v1.0.0-32 is a technical final build. The RC1 was tested on Proxmox VE 9.2.25. T
 
 ## Deutsch
 
-Sicherheitslücken nicht mit Exploit-Details in öffentlichen Issues melden. Vor der öffentlichen Freigabe müssen ein vertraulicher Meldeweg und ein echter Ansprechpartner eingerichtet werden. Destruktive Snapshot-Aktionen nur mit unabhängigen Sicherungen und auf geprüften Systemen durchführen.
+Sicherheitslücken nicht mit Exploit-Details in öffentlichen Issues melden. Meldungen bitte vertraulich an **bumavory@buse.rocks** senden. Die Adresse ist nach Angabe des Betreibers eingerichtet; die Zustellung ist noch mit einer Testnachricht zu prüfen. Destruktive Snapshot-Aktionen nur mit unabhängigen Sicherungen und auf geprüften Systemen durchführen.

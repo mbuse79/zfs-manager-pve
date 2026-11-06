@@ -9,7 +9,9 @@
 - [ ] Confirm owners of the code, copied Proxmox fragments and contributors.
 - [ ] Approve `AGPL-3.0-only` or another compatible license **explicitly**.
 - [ ] Add unmodified `LICENSE` and verified `debian/copyright` (template provided).
-- [ ] Supply real maintainer contact and confidential security reporting.
+- [x] Record the maintainer contact **bumavory@buse.rocks** (mailbox confirmed configured by project owner).
+- [x] Document a confidential security reporting address in SECURITY.md.
+- [ ] Verify message delivery and optionally enable GitHub private vulnerability reporting.
 - [ ] Rebuild the Debian package and run regression + metadata checks.
 - [ ] Install the rebuilt final on a disposable PVE 9.2.25 host.
 - [ ] Create GitHub tag and release assets with checksums, after approval.
