@@ -8,7 +8,7 @@ The mailbox has been reported as configured by its operator. An independent deli
 
 **Private security reporting / Vertrauliche Sicherheitsmeldungen:** See [SECURITY.md](SECURITY.md).
 
-## Debian package build (only after licensing approval)
+## Debian package build (private QA, public rights check still pending)
 
 ```bash
 ZFSM_MAINTAINER_NAME="BuMaVory Project" \
@@ -18,4 +18,4 @@ ZFSM_MAINTAINER_EMAIL="bumavory@buse.rocks" \
 dpkg-deb -f pve-zfs-manager_1.0.0-32_all.deb Maintainer
 ```
 
-The existing technical final `.deb` has the old placeholder email and **is not approved for public release**. `build_deb.sh` deliberately refuses to package without an approved LICENSE and complete Debian copyright notices. Do not bypass these checks.
+The previous technical final `.deb` contains the old placeholder email and **must not be publicly released**. The new build uses the confirmed project address and includes `LICENSE` and `debian/copyright`. Manual source provenance and live install checks are still required before making the repo public.

@@ -7,8 +7,9 @@
 - [x] Run heuristic secret/private-address scan on original final source.
 - [x] Prepare a packaging guard for real maintainer and approved licensing.
 - [ ] Confirm owners of the code, copied Proxmox fragments and contributors.
-- [ ] Approve `AGPL-3.0-only` or another compatible license **explicitly**.
-- [ ] Add unmodified `LICENSE` and verified `debian/copyright` (template provided).
+- [x] Maintainer selected `AGPL-3.0-only` explicitly on 2026-11-06 for project-owned contributions.
+- [x] Add complete unmodified `LICENSE` and draft `debian/copyright` for project-original portions.
+- [ ] Independently verify rights holders and third-party notices in `debian/copyright` before publishing.
 - [x] Record the maintainer contact **bumavory@buse.rocks** (mailbox confirmed configured by project owner).
 - [x] Document a confidential security reporting address in SECURITY.md.
 - [ ] Verify message delivery and optionally enable GitHub private vulnerability reporting.

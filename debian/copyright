@@ -1,0 +1,18 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: BuMaVory ZFS Manager for Proxmox VE
+Source: https://github.com/mbuse79/zfs-manager-pve
+Comment: BuMaVory project maintainer has selected AGPL-3.0-only for
+ original portions of the project. This notice does not relicense the
+ Proxmox VE host packages or any third-party work. A manual provenance
+ and attribution review remains necessary before public distribution.
+
+Files: *
+Copyright: 2026 BuMaVory ZFS Manager contributors
+License: AGPL-3.0-only
+ The full, unchanged license text is included in the accompanying
+ LICENSE file.
+
+Files: debian/copyright
+Copyright: 2026 BuMaVory ZFS Manager contributors
+License: AGPL-3.0-only
+ The full license text is included in LICENSE.

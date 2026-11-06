@@ -6,7 +6,7 @@
 
 > **Independent community project.** BuMaVory ZFS Manager is not an official Proxmox product and is not affiliated with or endorsed by Proxmox Server Solutions GmbH.
 >
-> **Publication status:** v1.0.0-32 is a technical final build under preparation for a first public release. License clearance and final installation verification are still pending. Maintainer contact is configured; public delivery has not been independently verified. This private repository is not yet a public open-source release.
+> **Publication status:** v1.0.0-32 is a technical final build under preparation for a first public release. The `AGPL-3.0-only` license has been selected for original contributions; third-party rights review and live final installation verification are still pending. Maintainer contact is configured; public delivery has not been independently verified. This private repository is not yet a public open-source release.
 
 ## Features
 
@@ -69,6 +69,6 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 
 ## License and trademarks
 
-The license and third-party attribution are **under review**. No open-source license grant is being asserted by this draft README. See [LICENSING-REVIEW.md](LICENSING-REVIEW.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+**License for original project contributions: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** Third-party source ownership and attribution are still under review. This selection does not relicense Proxmox VE or other parties' code; see [LICENSING-REVIEW.md](LICENSING-REVIEW.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Proxmox and Proxmox Virtual Environment are trademarks of their respective owners. See [TRADEMARK.md](TRADEMARK.md).
