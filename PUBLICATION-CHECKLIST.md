@@ -1,15 +1,16 @@
-# Pre-publication checklist / Freigabeliste
+# BuMaVory ZFS Manager 1.0.0-32 — publication checklist
 
-- [x] Create private GitHub repository `mbuse79/zfs-manager-pve`.
-- [x] Prepare English/German READMEs and initial project documentation.
-- [x] Build technical final package version `1.0.0-32` from RC1.
-- [ ] Upload and review documentation in private repository.
-- [ ] Confirm author/copyright owner(s) and third-party rights.
-- [ ] Agree on compatible outbound license, add `LICENSE` and required notices.
-- [ ] Replace placeholder `contact@example.invalid` and rebuild/test the final Debian package.
-- [ ] Complete a fresh live `1.0.0-32` installation test on Proxmox VE 9.2.25.
-- [ ] Audit all source, scripts and screenshots for secrets, private addresses and identifiers.
-- [ ] Establish private vulnerability reporting with a reachable maintainer.
-- [ ] Review similar trademarks and project naming (BuMaVory is not registered by this project as far as established).
-- [ ] Publish source and release tag `v1.0.0-32` with `.deb`, SHA256SUMS and signed/verified provenance where practical.
-- [ ] Make the repository Public only after completing the release gates above.
+- [x] Create private repository and add EN/DE READMEs and documentation.
+- [x] Recover and inspect the actual technical final source and Debian package.
+- [x] Execute Python regression tests (134 passed in local checkout on 2026-11-06).
+- [x] Verify installed snapshot API and GUI source match the final build source.
+- [x] Run heuristic secret/private-address scan on original final source.
+- [x] Prepare a packaging guard for real maintainer and approved licensing.
+- [ ] Confirm owners of the code, copied Proxmox fragments and contributors.
+- [ ] Approve `AGPL-3.0-only` or another compatible license **explicitly**.
+- [ ] Add unmodified `LICENSE` and verified `debian/copyright` (template provided).
+- [ ] Supply real maintainer contact and confidential security reporting.
+- [ ] Rebuild the Debian package and run regression + metadata checks.
+- [ ] Install the rebuilt final on a disposable PVE 9.2.25 host.
+- [ ] Create GitHub tag and release assets with checksums, after approval.
+- [ ] Change repository visibility to Public only after clearance.

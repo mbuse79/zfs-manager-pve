@@ -1,0 +1,8 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+_deb_build/
+*.deb
+*.tar.gz
+*.zip
+*.log
