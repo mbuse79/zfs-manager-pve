@@ -1,0 +1,12 @@
+[Unit]
+Description=Proxmox ZFS Manager - sichere Selbstreparatur der GUI/API
+After=local-fs.target
+ConditionPathExists=/var/lib/pve-zfs-manager/state.json
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/usr/sbin/pve-zfs-manager reconcile
+TimeoutStartSec=90
+Nice=10

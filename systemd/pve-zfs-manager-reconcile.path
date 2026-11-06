@@ -1,0 +1,10 @@
+[Unit]
+Description=Proxmox ZFS Manager - GUI/API-Dateiaenderungen erkennen
+
+[Path]
+PathChanged=/usr/share/pve-manager/js/pvemanagerlib.js
+PathChanged=/usr/share/perl5/PVE/API2/Nodes.pm
+Unit=pve-zfs-manager-reconcile.service
+
+[Install]
+WantedBy=multi-user.target

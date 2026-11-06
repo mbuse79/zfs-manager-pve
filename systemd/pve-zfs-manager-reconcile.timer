@@ -1,0 +1,11 @@
+[Unit]
+Description=Proxmox ZFS Manager - Boot-/Fallback-Pruefung alle zwei Minuten
+
+[Timer]
+OnBootSec=90s
+OnUnitInactiveSec=2min
+AccuracySec=20s
+Unit=pve-zfs-manager-reconcile.service
+
+[Install]
+WantedBy=timers.target
