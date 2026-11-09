@@ -1,9 +1,13 @@
 # Release Notes – ZFS Manager for Proxmox VE 1.0.0-32
 
 **Version:** `1.0.0-32`  
-**Stand:** 03.11.2026  
+**Stand:** 09.11.2026
 **Status:** Technisches Final-Paket, Vorbereitung der öffentlichen Veröffentlichung  
-**Getestete Proxmox-Version:** 9.2.25 (RC1 live; Final automatisiert gegen 9.2.25-Testlayout geprüft)
+**Getestete Proxmox-Version:** 9.2.25 (Finalversion `1.0.0-32` am 07.11.2026 live geprüft; `+docs2` noch nicht live geprüft)
+
+## Paketrevision `1.0.0-32+docs2`
+
+Nur Dokumentations-/Copyrightbeilagen und Debian-Paketversion angepasst; installierte Runtime bleibt identisch zur am 07.11.2026 geprüften `1.0.0-32`. Diese private QA-Revision wurde noch **nicht** auf einem Proxmox-Host installiert und wird nicht öffentlich vertrieben. Die rechtliche Herkunftsfreigabe ist weiterhin offen.
 
 ## Funktionsumfang
 
@@ -31,4 +35,4 @@ Bisher nur die genannte Testumgebung praktisch abgenommen. Mehrplatten-Sammellö
 
 ## Öffentliche Lizenzierung
 
-Die technische Final-Version ist noch nicht automatisch zur Veröffentlichung freigegeben. Lizenzwahl, Copyright-Inhaber, fremde Codeanteile und reale Maintainer-Adresse sind vor Veröffentlichung zu bestätigen.
+Die technische Final-Version ist noch nicht automatisch zur Veröffentlichung freigegeben. Die Maintainer-Adresse ist `bumavory@buse.rocks` (im Referenzpaket bestätigt; E-Mail-Funktionstest vom Maintainer am 09.11.2026 bestätigt). Codeherkunft und Rechte an möglicherweise übernommenen Vorlagen bleiben vor Veröffentlichung zu klären.

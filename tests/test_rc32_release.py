@@ -14,8 +14,8 @@ def test_versions_and_cli_are_consistent():
     import zfsm_cli
     assert zfsm_cli.VERSION == VER
     assert VERSION == VER+'-dynamic-compat-installer'
-    assert 'pve-zfs-manager_'+VER+'_all.deb' in (ROOT/'install.sh').read_text()
-    assert 'Version: '+VER in (ROOT/'build_deb.sh').read_text()
+    assert 'pve-zfs-manager_'+VER+'+docs2_all.deb' in (ROOT/'install.sh').read_text()
+    assert "PACKAGE_VERSION='"+VER+"+docs2'" in (ROOT/'build_deb.sh').read_text()
 
 def test_single_guest_singular_both_languages():
     from manager_patch import BLOCK

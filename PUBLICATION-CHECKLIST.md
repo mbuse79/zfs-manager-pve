@@ -1,5 +1,8 @@
 # BuMaVory ZFS Manager 1.0.0-32 — publication checklist
 
+**Additional unpublished `1.0.0-32+docs2` candidate (2026-11-09):** keep repository PRIVATE; verify SHA256 and package content; install **this exact candidate** on `pve-test` after explicit authorization; document original-author / third-party provenance before public release. The tested `1.0.0-32` remains unchanged.
+
+
 - [x] Create private repository and add EN/DE READMEs and documentation.
 - [x] Recover and inspect technical final source and the **already tested** Debian package.
 - [x] Execute Python regression tests (138 passed on 2026-11-09 in Git bundle checkout).

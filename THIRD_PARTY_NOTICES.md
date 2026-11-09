@@ -25,6 +25,6 @@ Such interface patterns and short anchors are **not, by themselves, proof of cop
 
 ## Distribution gate
 
-`AGPL-3.0-only` has been selected **only for contributions that the project may license**. The repository's current `debian/copyright` still has a broad `Files: *` entry and needs file-/fragment-level review if third-party code is found. The tested release `.deb` contains its **earlier** `copyright` and `THIRD_PARTY_NOTICES.md`; a repository-only edit does not replace those installed package files.
+`AGPL-3.0-only` has been selected **only for contributions that the project may license**. The repository's current `debian/copyright` still has a broad `Files: *` entry and needs file-/fragment-level review if third-party code is found. The historical tested baseline DEB `1.0.0-32` retains older copyright and third-party notices. The private `+docs2` candidate bundles this newer notice and a distinct Debian package version; its exact package must still be validated. No third-party copyright ownership has been inferred from API calls or imports.
 
 **Do not publish the repository or release assets until the remaining provenance, attribution, history and security-contact checks are closed.** This notice is neither an assertion that all code is original nor a claim that all external components are bundled.

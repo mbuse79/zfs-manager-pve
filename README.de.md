@@ -1,5 +1,8 @@
 # BuMaVory ZFS Manager für Proxmox VE
 
+**Private Paket-Prüffassung (`1.0.0-32+docs2`):** Die aktualisierte DEB hat eine eigene Version und Prüfsumme. Sie wurde noch nicht live getestet und darf nicht mit der am 07.11.2026 getesteten `1.0.0-32` verwechselt oder veröffentlicht werden. Siehe `PACKAGE-STATUS.md`.
+
+
 **ZFS-Snapshots direkt in der vorhandenen Proxmox-Weboberfläche verwalten.**
 
 [English](README.md) | [Installation](INSTALL.de.md) | [Änderungen](CHANGELOG.md) | [Sicherheit](SECURITY.md)
@@ -72,3 +75,5 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 **Lizenz für eigene Projektbeiträge: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** Die Herkunft fremder Codeanteile und erforderliche Urheberrechtsvermerke werden weiterhin geprüft. Die Lizenzwahl betrifft nicht automatisch Proxmox VE oder fremde Werke. Siehe [LICENSING-REVIEW.md](LICENSING-REVIEW.md) und [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Proxmox und Proxmox Virtual Environment sind Marken der jeweiligen Rechteinhaber. Siehe [TRADEMARK.md](TRADEMARK.md).
+
+> **Hinweis / note (2026-11-09):** The command examples above refer to the already tested historical `1.0.0-32` binary. Do not substitute the private `+docs2` candidate until its exact SHA256 and live validation are confirmed.

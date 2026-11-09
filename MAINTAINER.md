@@ -1,5 +1,8 @@
 # Maintainer contact / Maintainer-Kontakt
 
+**Stand 2026-11-09:** `bumavory@buse.rocks` wurde nach Mitteilung des Maintainers erfolgreich getestet. Das Referenzpaket `1.0.0-32` hat die korrekten Control-Metadaten. Die private Paketrevision `+docs2` benötigt vor öffentlicher Verteilung einen eigenen Proxmox-Test.
+
+
 **Project / Projekt:** BuMaVory ZFS Manager for Proxmox VE  
 **Maintainer / Ansprechpartner:** BuMaVory Project  
 **E-mail / E-Mail:** [bumavory@buse.rocks](mailto:bumavory@buse.rocks)

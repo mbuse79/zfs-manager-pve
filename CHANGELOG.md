@@ -1,12 +1,21 @@
 # Changelog
 
+## 1.0.0-32+docs2 — Private documentation-only package candidate (2026-11-09)
+
+- No changes to the 1.0.0-32 runtime functionality, installed API/GUI scripts, systemd units or Debian maintainer scripts.
+- Synchronizes licensing/provenance documents with reviewed repository notes and acknowledges the 2026-11-07 final-version host test.
+- Removes a superseded 2026-11-03 PDF from the *binary* package; the old source-tree PDF is retained only as historical material.
+- Includes a separate packaging revision because the DEB payload differs from both `1.0.0-32` and the private `+docs1` QA draft.
+- Offline-tested only; **not publicly released** and **not yet installed/validated on Proxmox**. Rights clearance remains open.
+
+
 ## 1.0.0-32 — Technical final build (public release pending)
 
 - Final Debian version number derived from the tested `1.0.0-32~rc1`.
 - Distribution documentation and source layout prepared for publication.
 - Obsolete hardcoded private browser IP removed from a legacy helper.
 - No changes to snapshot API or core GUI business logic relative to RC1.
-- Final package built and regression tests run locally. A separate live installation of the final `.deb` is still pending.
+- Final package was installed and checked on `pve-test` / Proxmox VE 9.2.25 on 2026-11-07 (maintainer-reported CLI/GUI pass).
 
 ## 1.0.0-32~rc1 — Release candidate
 

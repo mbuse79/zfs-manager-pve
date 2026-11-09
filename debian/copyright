@@ -16,3 +16,10 @@ Files: debian/copyright
 Copyright: 2026 BuMaVory ZFS Manager contributors
 License: AGPL-3.0-only
  The full license text is included in LICENSE.
+
+Files: LICENSE
+Copyright: 2007 Free Software Foundation, Inc.
+License: AGPL-3.0-license-text
+ Everyone is permitted to copy and distribute verbatim copies of this
+ license document, but changing it is not allowed. This stanza addresses
+ the license text itself, not copyright in the ZFS Manager implementation.

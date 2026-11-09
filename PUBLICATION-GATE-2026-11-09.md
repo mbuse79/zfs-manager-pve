@@ -1,5 +1,8 @@
 # BuMaVory ZFS Manager 1.0.0-32 — Publikationssperren und Abschlussstand
 
+**Nachtrag (lokaler Kandidat `1.0.0-32+docs2`):** Die in diesem Dokument beschriebenen veralteten *eingebetteten* Unterlagen betreffen die getestete **Referenz-DEB 1.0.0-32**. Ein separater privater Dokumentationskandidat (`+docs2`) wurde für Offline-Prüfungen vorbereitet; für diesen stehen Paketprüfung, Proxmox-Test und verantwortliche Rechteklärung weiterhin als eigenständige Freigabegatter an.
+
+
 **Erstellt:** 09.11.2026 · **Repository bleibt privat** · **Keine Änderung an Programmcode oder geprüfter DEB.**
 
 ## Verifizierte technische Grundlagen

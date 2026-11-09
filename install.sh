@@ -4,7 +4,7 @@
 set -o pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)" || exit 1
 MODE="${1:---install}"
-DEB="$HERE/pve-zfs-manager_1.0.0-32_all.deb"
+DEB="$HERE/pve-zfs-manager_1.0.0-32+docs2_all.deb"
 if [[ "${EUID}" -ne 0 ]]; then
   echo 'STOPP: Bitte als root auf dem Proxmox-Host ausführen.' >&2
   exit 1

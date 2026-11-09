@@ -7,8 +7,8 @@ ROOT=Path(__file__).resolve().parents[1]
 def test_final_version_consistency():
     assert zfsm_cli.VERSION=='1.0.0-32'
     assert VERSION=='1.0.0-32-dynamic-compat-installer'
-    assert 'Version: 1.0.0-32' in (ROOT/'build_deb.sh').read_text()
-    assert 'pve-zfs-manager_1.0.0-32_all.deb' in (ROOT/'install.sh').read_text()
+    assert "PACKAGE_VERSION='1.0.0-32+docs2'" in (ROOT/'build_deb.sh').read_text()
+    assert 'pve-zfs-manager_1.0.0-32+docs2_all.deb' in (ROOT/'install.sh').read_text()
 
 def test_publication_safety_docs_and_no_hardcoded_private_url():
     for name in ('README.md','INSTALL.md','TRADEMARK.md','SECURITY.md','PUBLICATION-CHECKLIST.md','LICENSING-REVIEW.md'):

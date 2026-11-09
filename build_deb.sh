@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
+# Private packaging-only documentation revision; source/runtime version remains 1.0.0-32.
+PACKAGE_VERSION='1.0.0-32+docs2'
+PACKAGE_FILE="pve-zfs-manager_${PACKAGE_VERSION}_all.deb"
+# Passing packaging checks is not a legal provenance/redistribution clearance.
 
 # PUBLIC RELEASE GATES. A legal open-source release must have an approved
 # LICENSE, copyright/third-party attribution, and reachable maintainer.
@@ -32,12 +36,13 @@ cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_rc8r2.pm" "$BUILD/usr/lib/pve-zfs-manag
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_rc7.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_6.pm" "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_5.pm" "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_4.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
-cp "$HERE/README.md" "$HERE/CHANGELOG.md" "$HERE/RELEASE_NOTES.md" "$HERE/INSTALL.md" "$HERE/SECURITY.md" "$HERE/TRADEMARK.md" "$HERE/THIRD_PARTY_NOTICES.md" "$HERE/RELEASE-QA.md" "$HERE/LICENSING-REVIEW.md" "$HERE/INSTALL-DE.md" "$HERE/RELEASE_NOTES-DE.md" "$HERE/ZFS-Manager-1.0.0-32-Final-und-Veroeffentlichung.pdf" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$HERE/README.md" "$HERE/CHANGELOG.md" "$HERE/RELEASE_NOTES.md" "$HERE/INSTALL.md" "$HERE/SECURITY.md" "$HERE/TRADEMARK.md" "$HERE/THIRD_PARTY_NOTICES.md" "$HERE/RELEASE-QA.md" "$HERE/LICENSING-REVIEW.md" "$HERE/INSTALL-DE.md" "$HERE/RELEASE_NOTES-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$HERE/CODE-PROVENANCE-REVIEW.md" "$HERE/MAINTAINER.md" "$HERE/INSTALL.de.md" "$HERE/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$HERE/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
 cp "$HERE/debian/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
 cat > "$BUILD/DEBIAN/control" <<EOF
 Package: pve-zfs-manager
-Version: 1.0.0-32
+Version: ${PACKAGE_VERSION}
 Section: admin
 Priority: optional
 Architecture: all
@@ -123,6 +128,6 @@ find "$BUILD/usr/lib/pve-zfs-manager" -type f -exec chmod 644 '{}' +
 chmod 755 "$BUILD/usr/lib/pve-zfs-manager/universal.py" "$BUILD/usr/lib/pve-zfs-manager/adminctl.py"
 find "$BUILD" -type d -exec chmod g-s {} +
 find "$BUILD" -type d -exec chmod 0755 {} +
-dpkg-deb --root-owner-group --build "$BUILD" "$HERE/pve-zfs-manager_1.0.0-32_all.deb"
+dpkg-deb --root-owner-group --build "$BUILD" "$HERE/$PACKAGE_FILE"
 echo '===== Kontrollinformationen ====='
-dpkg-deb -I "$HERE/pve-zfs-manager_1.0.0-32_all.deb" | head -50
+dpkg-deb -I "$HERE/$PACKAGE_FILE" | head -50

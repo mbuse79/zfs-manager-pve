@@ -578,7 +578,7 @@ console.log('PASS: RC8-R2 critical UI opens and executes only after checkbox');
 
     def test_install_script_points_to_release_package(self):
         wrapper=(ROOT/'install.sh').read_text()
-        self.assertIn('pve-zfs-manager_1.0.0-32_all.deb',wrapper)
+        self.assertIn('pve-zfs-manager_1.0.0-32+docs2_all.deb',wrapper)
         self.assertNotIn('pve-zfs-manager_1.0.0~rc7-1_all.deb',wrapper)
 
 class RC9RequirementsTest(unittest.TestCase):

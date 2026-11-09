@@ -1,5 +1,8 @@
 # Installation und Upgrade – v1.0.0-32
 
+**Private Paket-Prüffassung (`1.0.0-32+docs2`):** Die aktualisierte DEB hat eine eigene Version und Prüfsumme. Sie wurde noch nicht live getestet und darf nicht mit der am 07.11.2026 getesteten `1.0.0-32` verwechselt oder veröffentlicht werden. Siehe `PACKAGE-STATUS.md`.
+
+
 **Geprüfte Final-Umgebung:** Proxmox VE 9.2.25. Root-Rechte erforderlich. Das exakte Final-Paket 1.0.0-32 wurde am 07.11.2026 per APT-Upgrade von RC1 installiert; CLI und GUI wurden vom Betreiber erfolgreich bestätigt.
 
 1. Nach Freigabe der öffentlichen Version die `.deb` aus einer vertrauenswürdigen GitHub-Veröffentlichung herunterladen.
@@ -42,3 +45,5 @@ apt remove pve-zfs-manager
 ```
 
 Vorhandene Sicherungen und Konfigurationsdateien prüfen. Nicht manuell in Proxmox-GUI-Dateien löschen. Zur Diagnose dienen `zfsm check`, `zfsm backups` und `zfsm logs`.
+
+> **Hinweis / note (2026-11-09):** The command examples above refer to the already tested historical `1.0.0-32` binary. Do not substitute the private `+docs2` candidate until its exact SHA256 and live validation are confirmed.
