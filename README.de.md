@@ -6,7 +6,7 @@
 
 > **Unabhängiges Community-Projekt.** BuMaVory ZFS Manager ist kein offizielles Produkt von Proxmox und wird nicht von Proxmox Server Solutions GmbH entwickelt oder unterstützt.
 >
-> **Veröffentlichungsstand:** v1.0.0-32 ist ein technisch fertig gebautes Paket, das für die erste öffentliche Veröffentlichung vorbereitet wird. Die Lizenz `AGPL-3.0-only` ist für eigene Projektbeiträge gewählt; die Prüfung fremder Rechte und der abschließende Installationstest stehen noch aus. Die Maintainer-Adresse wurde eingerichtet; der tatsächliche E-Mail-Versand und -Empfang wurden hier nicht unabhängig geprüft. Das private Repository ist noch keine öffentlich freigegebene Open-Source-Veröffentlichung.
+> **Veröffentlichungsstand:** v1.0.0-32 ist ein technisch fertig gebautes Paket, das für die erste öffentliche Veröffentlichung vorbereitet wird. Die Lizenz `AGPL-3.0-only` ist für eigene Projektbeiträge gewählt; die Prüfung fremder Rechte steht noch aus. Die exakt freigegebene Final-DEB wurde am 07.11.2026 auf Proxmox VE 9.2.25 erfolgreich von RC1 aus aktualisiert und geprüft. Die Maintainer-Adresse wurde eingerichtet; der tatsächliche E-Mail-Versand und -Empfang wurden hier nicht unabhängig geprüft. Das private Repository ist noch keine öffentlich freigegebene Open-Source-Veröffentlichung.
 
 ## Funktionen
 
@@ -21,9 +21,9 @@
 
 ## Kompatibilität und Teststand
 
-- Die Vorabversion RC1 wurde auf **Proxmox VE 9.2.25** installiert und geprüft.
+- Die Finalversion **1.0.0-32** wurde am 07.11.2026 auf **Proxmox VE 9.2.25** mittels APT-Upgrade von RC1 installiert und geprüft.
 - Die Finalversion v1.0.0-32 basiert auf RC1; Snapshot-API und GUI-Geschäftslogik sind unverändert.
-- Die finale `.deb` wurde **noch nicht gesondert auf dem echten Testhost installiert**.
+- Die getestete Final-DEB hat SHA256 `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`; CLI und Oberfläche wurden vom Betreiber als funktionierend bestätigt.
 - Andere Proxmox-Versionen müssen jeweils geprüft werden. Es gibt keine pauschale Freigabe aller PVE-9.x-Versionen.
 
 ## Installation

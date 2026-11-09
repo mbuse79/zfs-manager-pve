@@ -1,6 +1,6 @@
 # Installation and upgrade – v1.0.0-32
 
-**Validated RC environment:** Proxmox VE 9.2.25. Root access is required. The final version itself has not yet been live-installed on the test host.
+**Validated final environment:** Proxmox VE 9.2.25. Root access is required. The exact final 1.0.0-32 Debian package was installed as an APT upgrade from RC1 on 2026-11-07; CLI and GUI were reported working by the test host owner.
 
 1. Obtain the .deb from a trusted GitHub Release after public approval.
 2. Verify the published SHA256 checksum. A checksum validates file integrity, **not** software trust or authenticity by itself.

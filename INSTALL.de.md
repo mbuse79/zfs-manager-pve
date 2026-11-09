@@ -1,6 +1,6 @@
 # Installation und Upgrade – v1.0.0-32
 
-**Geprüfte RC-Umgebung:** Proxmox VE 9.2.25. Root-Rechte erforderlich. Die Finalversion selbst wurde auf dem echten Testhost noch nicht gesondert installiert.
+**Geprüfte Final-Umgebung:** Proxmox VE 9.2.25. Root-Rechte erforderlich. Das exakte Final-Paket 1.0.0-32 wurde am 07.11.2026 per APT-Upgrade von RC1 installiert; CLI und GUI wurden vom Betreiber erfolgreich bestätigt.
 
 1. Nach Freigabe der öffentlichen Version die `.deb` aus einer vertrauenswürdigen GitHub-Veröffentlichung herunterladen.
 2. Die veröffentlichte SHA256-Prüfsumme kontrollieren. Eine Prüfsumme bestätigt die Dateiintegrität, **nicht allein die Vertrauenswürdigkeit** der Software.
