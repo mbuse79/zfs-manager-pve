@@ -29,9 +29,18 @@ Besonders vor einer öffentlichen Weitergabe zu prüfen:
 
 **Abgrenzung:** Der Import einer Proxmox-Bibliothek, ein Aufruf der öffentlichen API oder das Patchen einer auf dem Host installierten Datei ist für sich genommen **noch kein Nachweis, dass fremder Quelltext mit dem Paket ausgeliefert wird**. Umgekehrt belegt ein automatischer Scan nicht, dass kein fremder Quelltext enthalten ist. Für übernommene Abschnitte müssen die jeweiligen Urheberrechtsvermerke und Lizenzbedingungen erhalten bleiben.
 
+## Zusätzlicher Upstream-Abgleich vom 09.11.2026
+
+- Das vom Maintainer bereitgestellte Originalpaket `pve-manager_9.2.25_all.deb` wurde extrahiert und in den 83 einschlägigen JavaScript-/Perl-Dateien mit dem ZFS-Manager-Code verglichen. Original-Copyright laut Paket: **2010–2026 Proxmox Server Solutions GmbH**, **AGPL-3+**.
+- **Belegte kurze Berührungspunkte:** ein wörtlicher Menü-Suchanker in `src/patch_nav.py` zu `pvemanagerlib.js`; typische API-Registrierungsfelder in `src/PVE/API2/ZFSSnapshotViewer*.pm` zu `PVE/API2/Nodes.pm`; `src/universal.py` bindet eigene Ergänzungen in diese vorhandenen Hostdateien ein.
+- **Kein längerer wortgleicher GUI-Funktionsblock** ab 45 Tokens aus dem untersuchten `pve-manager`-Korpus wurde in der Projekt-GUI nachgewiesen. Das ist nur ein abgegrenzter **technischer Teilvergleich**, nicht der Nachweis vollständiger unabhängiger Autorschaft oder die Prüfung aller Frameworks.
+- Die oben genannten Funde und verbleibenden Grenzen sind in [`CODE-PROVENANCE-REVIEW.md`](CODE-PROVENANCE-REVIEW.md) dokumentiert und in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) als vorläufige Quellenhinweise aufgenommen. Nicht nachgewiesene Dritturheber werden **nicht** pauschal zu Rechteinhabern eigener Implementierungen erklärt.
+- **Paket-Metadaten beachten:** Das bereits getestete Debian-Paket enthält ältere Fassungen der `copyright`- und `THIRD_PARTY_NOTICES.md`-Dateien. Eine Änderung im Git-Repository ändert das unveränderte, getestete DEB-Binärartefakt nicht. Ob aktualisierte Lizenzbeilagen für die öffentliche Verteilung einen separaten, neu zu prüfenden Paketbau nötig machen, ist vor Veröffentlichung zu entscheiden.
+- Der Maintainer hat den Dokumentations-Commit **`30cbb13`** auf `main` erfolgreich gepusht (PowerShell-Ausgabe vom 09.11.2026). Dies ist **keine** vollständige erneute Live-Abfrage des privaten GitHub-Repositorys.
+
 ## Noch offene Freigabepunkte
 
-1. **Codeherkunft dokumentieren:** Für die oben genannten Datei-/Variantenfamilien anhand der Entwicklungs- oder Git-Historie, Originalquellen und möglicher Vorlagen festhalten: selbst verfasst, generiert und geprüft, aus Open-Source-Code angepasst oder unverändert übernommen. Bei übernommenen Teilen konkrete Quelle, Lizenz, Urheber und Datum erfassen.
+1. **Restliche Codeherkunft klären:** Für die oben genannten Datei-/Variantenfamilien anhand der Entwicklungs- oder Git-Historie, Originalquellen und möglicher Vorlagen festhalten: selbst verfasst, generiert und geprüft, aus Open-Source-Code angepasst oder unverändert übernommen. Bei übernommenen Teilen konkrete Quelle, Lizenz, Urheber und Datum erfassen.
 2. **Copyright und Hinweise berichtigen:** Passende Copyright-/SPDX-Hinweise für belegbar eigene Dateien ergänzen; fremde Hinweise ausdrücklich erhalten. `debian/copyright` und `THIRD_PARTY_NOTICES.md` entsprechend abgleichen. Nicht pauschal andere Rechteinhaber als BuMaVory ausweisen.
 3. **Sicherheitskontakt verifizieren:** Eine Nachricht von einem unabhängigen Absender an `bumavory@buse.rocks` senden und Empfang/Antwort prüfen; wenn möglich GitHub Private Vulnerability Reporting aktivieren.
 4. **Git-Historie auf Geheimnisse prüfen:** Gelöschte Zwischenberichte verbleiben in alten Commits. Prüfen, ob die Historie sensible Daten enthält, bevor die Sichtbarkeit auf `Public` umgestellt wird.

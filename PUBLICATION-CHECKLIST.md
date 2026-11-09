@@ -10,8 +10,11 @@
 - [x] Final DEB has version 1.0.0-32 and maintainer BuMaVory Project <bumavory@buse.rocks>.
 - [x] **Final DEB was installed and CLI/GUI tested** on Proxmox VE 9.2.25 on 2026-11-07; SHA256 `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`.
 - [x] Add draft `debian/copyright` and informational `THIRD_PARTY_NOTICES.md`.
+- [x] Compare the project integration code with the provided `pve-manager` 9.2.25 GUI/API files; document short literal anchors and routine API-pattern matches in `CODE-PROVENANCE-REVIEW.md`. This is a **partial technical comparison**, not legal clearance.
+- [x] Expand provisional `THIRD_PARTY_NOTICES.md` to distinguish host-only dependencies from potential bundled fragments.
 - [ ] Verify actual origin and rights of original and adapted project sources, including historical code variants and Proxmox anchors.
-- [ ] Revise `debian/copyright`, code comments/SPDX notices and `THIRD_PARTY_NOTICES.md` as justified by provenance findings.
+- [ ] Complete attribution and rights review for potentially incorporated fragments; revise `debian/copyright`, file headers/SPDX and notices **where justified by actual evidence**.
+- [ ] Reconcile the copyright/notices **embedded in the tested .deb** with final approved licensing documentation; if package content must change, rebuild separately and revalidate it instead of reusing the old SHA256.
 - [ ] Perform independent delivery/reply test of bumavory@buse.rocks; consider private GitHub vulnerability reporting.
 - [ ] Review all historical documents for publication suitability; normal deletion leaves them in the Git history.
 - [ ] Prepare an approved public source archive, excluding obsolete private reports; verify its checksums.
