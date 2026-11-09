@@ -4,7 +4,7 @@
 **Maintainer / Ansprechpartner:** BuMaVory Project  
 **E-mail / E-Mail:** [bumavory@buse.rocks](mailto:bumavory@buse.rocks)
 
-The mailbox has been reported as configured by its operator. An independent delivery test has not been performed here. / Das Postfach ist laut Betreiber eingerichtet. Ein unabhängiger Zustelltest wurde hier noch nicht durchgeführt.
+On 2026-11-09 the maintainer reported a successful email configuration/function test. A separately documented delivery-and-reply test from an unrelated sender has not been independently examined. / Am 09.11.2026 meldete der Maintainer einen erfolgreichen E-Mail-Funktionstest. Ein gesondert dokumentierter Zustell- und Antworttest von einem unabhängigen Absender liegt für diese Prüfung nicht vor.
 
 **Private security reporting / Vertrauliche Sicherheitsmeldungen:** See [SECURITY.md](SECURITY.md).
 
@@ -18,4 +18,4 @@ ZFSM_MAINTAINER_EMAIL="bumavory@buse.rocks" \
 dpkg-deb -f pve-zfs-manager_1.0.0-32_all.deb Maintainer
 ```
 
-The previous technical final `.deb` contains the old placeholder email and **must not be publicly released**. The new build uses the confirmed project address and includes `LICENSE` and `debian/copyright`. Manual source provenance and live install checks are still required before making the repo public.
+The final tested `.deb` **already contains** `Maintainer: BuMaVory Project <bumavory@buse.rocks>` (SHA256 `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`) and was installed successfully on PVE 9.2.25 on 2026-11-07. **Do not rebuild simply to correct the maintainer address.** However, this exact package contains outdated embedded release/licensing documentation; any publication candidate with corrected packaged documents needs a distinct hash and renewed artifact validation. The remaining provenance/attribution review must be completed before public distribution; see `PUBLICATION-GATE-2026-11-09.md`.

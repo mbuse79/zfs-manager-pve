@@ -14,11 +14,13 @@
 - [x] Expand provisional `THIRD_PARTY_NOTICES.md` to distinguish host-only dependencies from potential bundled fragments.
 - [ ] Verify actual origin and rights of original and adapted project sources, including historical code variants and Proxmox anchors.
 - [ ] Complete attribution and rights review for potentially incorporated fragments; revise `debian/copyright`, file headers/SPDX and notices **where justified by actual evidence**.
-- [ ] Reconcile the copyright/notices **embedded in the tested .deb** with final approved licensing documentation; if package content must change, rebuild separately and revalidate it instead of reusing the old SHA256.
-- [ ] Perform independent delivery/reply test of bumavory@buse.rocks; consider private GitHub vulnerability reporting.
+- [ ] Correct demonstrably outdated **embedded DEB documents**, including `LICENSING-REVIEW.md` that wrongly claims an old maintainer address. Preserve the original verified DEB; prepare a documentation-corrected candidate with a **new SHA256** and test the exact new artifact before publication.
+- [ ] Reconcile all approved copyright/notices with those embedded in that publication candidate.
+- [x] Maintainer reported a successful email function test for `bumavory@buse.rocks` on 2026-11-09 (separate external delivery/response evidence not independently inspected).
+- [ ] Enable GitHub private vulnerability reporting for the public launch if available.
 - [ ] Review all historical documents for publication suitability; normal deletion leaves them in the Git history.
 - [ ] Prepare an approved public source archive, excluding obsolete private reports; verify its checksums.
 - [ ] Create and verify a Git tag v1.0.0-32 and release assets, **only after legal clearance**.
 - [ ] Change repository visibility to Public only after release approval.
 
-No new Debian build or PVE install is required solely to correct repository documentation, provided the released DEB is exactly the tested SHA256 above. Any changed code/binary requires fresh validation.
+The original tested DEB remains a valid technical reference and needs no retest. However, its embedded licensing-review document is demonstrably obsolete. A **different, corrected public DEB** requires its own SHA256 and validation (including packaging checks and a host smoke test), even when runtime files remain byte-for-byte identical. Do not mislabel the new artifact with the old hash.

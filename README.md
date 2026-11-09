@@ -6,7 +6,7 @@
 
 > **Independent community project.** BuMaVory ZFS Manager is not an official Proxmox product and is not affiliated with or endorsed by Proxmox Server Solutions GmbH.
 >
-> **Publication status:** v1.0.0-32 is a technical final build under preparation for a first public release. The `AGPL-3.0-only` license has been selected for original contributions; third-party rights review is still pending. The exact final .deb was successfully upgraded from RC1 on Proxmox VE 9.2.25 on 2026-11-07. Maintainer contact is configured; public delivery has not been independently verified. This private repository is not yet a public open-source release.
+> **Publication status:** v1.0.0-32 is a technical final build under preparation for a first public release. The `AGPL-3.0-only` license has been selected for original contributions; third-party rights review is still pending. The exact final .deb was successfully upgraded from RC1 on Proxmox VE 9.2.25 on 2026-11-07. Maintainer reports a successful email function test (2026-11-09); independent external delivery evidence has not been inspected. This private repository is not yet a public open-source release.
 
 ## Features
 
