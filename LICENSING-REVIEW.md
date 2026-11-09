@@ -1,45 +1,50 @@
-# BuMaVory release 1.0.0-32 — licensing and provenance review
+# BuMaVory ZFS Manager v1.0.0-32 — Lizenz- und Codeherkunftsprüfung
 
-**State: AGPL-3.0-only selected for original portions; NOT approved for public distribution until remaining provenance checks.** An automated scan and
-package inspection cannot independently establish ownership of all source code.
+Stand: 2026-11-09  
+Lizenzwahl: **AGPL-3.0-only für eigenständig entwickelte Projektbestandteile**  
+Veröffentlichungsstatus: **Öffentliche Freigabe noch nicht bestätigt (Codeherkunft und Zuordnung der Rechte offen).**
 
-## Findings
+## Bestätigte Punkte
 
-- The existing final Debian package still declares the **obsolete** placeholder maintainer
-  `contact@example.invalid` and must not be published unchanged. The maintainer
-  has confirmed **bumavory@buse.rocks** is configured. The GitHub-source build
-  script requires a real `ZFSM_MAINTAINER_EMAIL`; it will use the confirmed address
-  when supplied explicitly. Mail delivery remains to be tested independently.
-- A complete unmodified AGPLv3 `LICENSE` has now been added to the preparation source tree; it was absent from the old final source archive.
-- Active Python and Perl files lacked SPDX/license headers in the inspected
-  original archive; original ownership and upstream text provenance are
-  therefore not automatically verified.
-- The code uses host-provided Proxmox libraries and patches existing
-  Proxmox JS/Perl files during installation. The supplied API Perl module and
-  injected JS are separate source files, but any copied/adapted upstream
-  fragments still require individual upstream license/copyright verification.
-- Proxmox reports AGPLv3 for its VE code. The maintainer selected
-  `AGPL-3.0-only` on 2026-11-06 for the project-authored portions.
-  Rights over any copied/adapted upstream code are NOT thereby established.
+- **Lizenzwahl:** Der Maintainer hat `AGPL-3.0-only` gewählt; der vollständige AGPLv3-Lizenztext liegt als `LICENSE` im vorbereiteten Quellarchiv und im Debian-Paket vor.
+- **Paketmetadaten:** Die geprüfte DEB `pve-zfs-manager_1.0.0-32_all.deb` enthält `Maintainer: BuMaVory Project <bumavory@buse.rocks>` und Version `1.0.0-32`. SHA256: `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`.
+- **Praxistest am 2026-11-07:** Der Maintainer hat die DEB über Nextcloud mit passender SHA256-Prüfung heruntergeladen und auf `pve-test` per APT von `1.0.0-32~rc1` auf `1.0.0-32` aktualisiert. `zfsm version`, `status`, `check` und `services` waren erfolgreich auf Proxmox VE 9.2.25; die grafische Oberfläche wurde ebenfalls vom Maintainer als funktionierend bestätigt.
+- **Sicherheitskontakt:** `SECURITY.md` nennt `bumavory@buse.rocks` für vertrauliche Meldungen. Die Einrichtung des Postfachs wurde bestätigt; unabhängiger Nachweis für Empfang/Versand liegt noch nicht vor.
 
-## Release gates (all required)
+## Konkret geprüfte Quelldateien
 
-1. Confirm actual author(s), the copyright holder(s) and distribution rights
-   for all code, including generated/copied/adapted upstream fragments.
-2. **Done for project-authored parts:** `AGPL-3.0-only` selected and
-   complete unmodified text added as `LICENSE`. File-by-file authorship/SPDX
-   attribution remains part of the outstanding manual rights review.
-3. **Partially done:** a `debian/copyright` statement was drafted for
-   original contributions and full license. Identify and credit any adapted
-   upstream material before public distribution; no third-party authors are
-   silently claimed as BuMaVory contributors.
-4. Rebuild/retest with the confirmed contact (private verification build; not a public release until provenance review):
-   `ZFSM_MAINTAINER_NAME="BuMaVory Project" ZFSM_MAINTAINER_EMAIL=bumavory@buse.rocks ./build_deb.sh`.
-   Verify Debian control metadata with `dpkg-deb -f pve-zfs-manager_1.0.0-32_all.deb Maintainer`.
-5. Conduct the final PVE 9.2.25 live-install verification on the newly built
-   released artifact and set up a confidential vulnerability reporting route.
+Grundlage: lokal verfügbares, für das GitHub-Repository vorbereitetes Release-Quellarchiv `BuMaVory-ZFS-Manager-1.0.0-32-AGPL-Source.tar.gz`. Es ist **kein unabhängiger Abruf der aktuellen privaten GitHub-Commit-Version**.
 
-References:
-https://proxmox.com/en/about/open-source/developers
-https://www.gnu.org/licenses/license-compatibility.html
-https://www.debian.org/doc/debian-policy/ch-binary.html#the-maintainer-of-a-package
+Im Verzeichnis `src/` befinden sich **25 Python- und 8 Perl-Dateien**. In ihren ersten 25 Zeilen waren keine expliziten Copyright-/SPDX-Kopfzeilen erkennbar. Dies beweist keine Fremdurheberschaft, zeigt aber fehlende dateibezogene Rechte- und Lizenzzuordnung.
+
+Besonders vor einer öffentlichen Weitergabe zu prüfen:
+
+| Datei/Familie | Warum prüfen? | Stand |
+| --- | --- | --- |
+| `src/manager_patch.py`, `src/previous_patch.py`, `src/patch_nav.py` und Versionsvarianten `manager_patch_*.py` | Enthalten die in die Proxmox-Weboberfläche einzufügenden JavaScript-Blöcke; Herkunft eventuell übernommener ExtJS-/Proxmox-Fragmente klären. | Offen |
+| `src/PVE/API2/ZFSSnapshotViewer.pm` und dessen ältere Varianten | Eigener API-Endpunkt verwendet `PVE::`-Schnittstellen und `register_method`; prüfen, ob Implementierungsabschnitte aus Upstreamdateien übernommen wurden. | Offen |
+| `src/universal.py` | Patcht beim Installieren Dateien des auf dem Host vorhandenen Proxmox-Pakets; Installationspatches und mitgelieferte Fragmente auf Herkunft prüfen. | Offen |
+| `src/libexec/guest_policy*.py`, `src/zfsm_cli.py`, `src/zfsm_capacity.py`, `src/adminctl.py`, `src/offline_recovery.py` | Autorschaft bestätigen und Lizenzkopf für belegte eigene Bestandteile ergänzen. | Offen |
+| `debian/copyright` | Der Eintrag `Files: *` ordnet pauschal BuMaVory Copyright zu. Nach Herkunftsprüfung durch korrekte Rechteinhaber-/Dateiabschnitt-Zuordnung ersetzen bzw. ergänzen. | Offen |
+
+**Abgrenzung:** Der Import einer Proxmox-Bibliothek, ein Aufruf der öffentlichen API oder das Patchen einer auf dem Host installierten Datei ist für sich genommen **noch kein Nachweis, dass fremder Quelltext mit dem Paket ausgeliefert wird**. Umgekehrt belegt ein automatischer Scan nicht, dass kein fremder Quelltext enthalten ist. Für übernommene Abschnitte müssen die jeweiligen Urheberrechtsvermerke und Lizenzbedingungen erhalten bleiben.
+
+## Noch offene Freigabepunkte
+
+1. **Codeherkunft dokumentieren:** Für die oben genannten Datei-/Variantenfamilien anhand der Entwicklungs- oder Git-Historie, Originalquellen und möglicher Vorlagen festhalten: selbst verfasst, generiert und geprüft, aus Open-Source-Code angepasst oder unverändert übernommen. Bei übernommenen Teilen konkrete Quelle, Lizenz, Urheber und Datum erfassen.
+2. **Copyright und Hinweise berichtigen:** Passende Copyright-/SPDX-Hinweise für belegbar eigene Dateien ergänzen; fremde Hinweise ausdrücklich erhalten. `debian/copyright` und `THIRD_PARTY_NOTICES.md` entsprechend abgleichen. Nicht pauschal andere Rechteinhaber als BuMaVory ausweisen.
+3. **Sicherheitskontakt verifizieren:** Eine Nachricht von einem unabhängigen Absender an `bumavory@buse.rocks` senden und Empfang/Antwort prüfen; wenn möglich GitHub Private Vulnerability Reporting aktivieren.
+4. **Git-Historie auf Geheimnisse prüfen:** Gelöschte Zwischenberichte verbleiben in alten Commits. Prüfen, ob die Historie sensible Daten enthält, bevor die Sichtbarkeit auf `Public` umgestellt wird.
+5. **Erst nach Freigabe:** Release-Entwurf `v1.0.0-32` mit exakt der getesteten DEB, Prüfsumme und Quellcode veröffentlichen. Keine ungeprüften Programmänderungen für die Dokumentationsarbeit vornehmen.
+
+## Keine erneute Pflichtprüfung
+
+Die Punkte „Maintainer-Adresse im DEB ersetzen“, „neue Final-DEB bauen“ und „auf PVE 9.2.25 installieren“ sind **bereits erledigt**. Sie dürfen nicht weiterhin als offen dargestellt werden, solange das veröffentlichte Artefakt der oben genannten SHA256 entspricht.
+
+## Quellen
+
+- Proxmox: https://proxmox.com/en/about/open-source/developers
+- GNU AGPL-3.0: https://www.gnu.org/licenses/agpl-3.0.html
+- Debian Copyright Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+*Technische Dokumentationsprüfung, keine anwaltliche Marken- oder Urheberrechtsfreigabe.*
