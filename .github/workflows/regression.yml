@@ -34,6 +34,9 @@ jobs:
       - name: Install test runner
         run: python -m pip install --disable-pip-version-check pytest==8.4.2
 
+      - name: Check quick installer shell syntax
+        run: bash -n quick-install.sh
+
       - name: Check Python syntax
         run: python -m compileall -q src tests
 

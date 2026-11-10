@@ -1,5 +1,17 @@
 # Installation und Upgrade – v1.0.0-32
 
+### Schnellinstallation (ein Befehl)
+
+Auf dem **Proxmox-VE-Host** als **root**, vorzugsweise über SSH statt über die Web-Shell:
+
+```bash
+wget -qO /root/bmv-zfs-manager-quick-install.sh 'https://raw.githubusercontent.com/mbuse79/zfs-manager-pve/main/quick-install.sh' && bash /root/bmv-zfs-manager-quick-install.sh
+```
+
+Das [Schnellinstallationsskript](quick-install.sh) lädt die veröffentlichte DEB nach `/tmp`, prüft deren **fest hinterlegte SHA256-Prüfsumme**, führt vor Änderungen einen schreibgeschützten PVE-GUI/API-Kompatibilitätstest durch und installiert per `dpkg -i`. Nur falls `zfs-auto-snapshot` fehlt, wird diese Abhängigkeit ohne allgemeine System-Upgrades oder Paketentfernungen installiert. Auf PVE **9.2.25** läuft die Installation automatisch; bei anderen PVE-9-Versionen wird vor der Installation eine ausdrückliche Bestätigung verlangt. Andere Hauptversionen werden abgelehnt. Bestehende unabhängige Backups sind erforderlich. Vor dem Ausführen eines aus dem Internet geladenen Root-Skripts den Inhalt prüfen; der Download von `main` ist veränderbar.
+
+### Manuelle Installation
+
 **Geprüfte Paketrevision (`1.0.0-32+docs2`):** Die exakte DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am **09.11.2026** per APT auf `pve-test` mit Proxmox VE 9.2.25 installiert. Der Maintainer bestätigte `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` und die Weboberfläche. Der Laufzeitcode ist gegenüber der zuvor getesteten `1.0.0-32` unverändert. Dies ist weder eine Kompatibilitätsfreigabe für andere PVE-Versionen noch eine abgeschlossene Rechteprüfung. Siehe `PACKAGE-STATUS.md`.
 
 

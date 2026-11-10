@@ -31,6 +31,18 @@
 
 ## Installing a release asset
 
+### One-command quick installation
+
+Run on a **Proxmox VE host as root**, preferably from SSH instead of the web shell:
+
+```bash
+wget -qO /root/bmv-zfs-manager-quick-install.sh 'https://raw.githubusercontent.com/mbuse79/zfs-manager-pve/main/quick-install.sh' && bash /root/bmv-zfs-manager-quick-install.sh
+```
+
+The [quick installer](quick-install.sh) downloads the published DEB to `/tmp`, verifies an **embedded SHA256 checksum**, performs a read-only GUI/API compatibility precheck and installs via `dpkg -i`. It installs the missing `zfs-auto-snapshot` dependency only if necessary, without general system upgrades or package removals. Installation is automatic on tested **PVE 9.2.25**; other PVE 9.x releases require an explicit confirmation, and other major versions are blocked. Keep independent backups. Review any remote root script before running it; the script downloaded from `main` can change.
+
+### Manual installation
+
 Download `pve-zfs-manager_1.0.0-32+docs2_all.deb` from the repository's **Releases** page and verify its SHA256 checksum. On a compatible Proxmox host, as root:
 
 ```bash
