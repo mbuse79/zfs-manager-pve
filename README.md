@@ -39,7 +39,7 @@ Run on a **Proxmox VE host as root**, preferably from SSH instead of the web she
 wget -qO /root/bmv-zfs-manager-quick-install.sh 'https://raw.githubusercontent.com/mbuse79/zfs-manager-pve/main/quick-install.sh' && bash /root/bmv-zfs-manager-quick-install.sh
 ```
 
-The [quick installer](quick-install.sh) downloads the published DEB to `/tmp`, verifies an **embedded SHA256 checksum**, performs a read-only GUI/API compatibility precheck and installs via `dpkg -i`. It installs the missing `zfs-auto-snapshot` dependency only if necessary, without general system upgrades or package removals. Installation is automatic on tested **PVE 9.2.25**; other PVE 9.x releases require an explicit confirmation, and other major versions are blocked. Keep independent backups. Review any remote root script before running it; the script downloaded from `main` can change.
+The [quick installer](quick-install.sh) downloads the published DEB to `/tmp`, verifies an **embedded SHA256 checksum**, performs a read-only GUI/API compatibility precheck and installs via `dpkg -i`. It installs the missing `zfs-auto-snapshot` dependency only if necessary, without general system upgrades or package removals. Installation is automatic on tested **PVE 9.2.25**. Newer PVE 9.x releases are not blocked merely by version: after a successful structural check the installer requires one explicit warning confirmation. Other major versions need a separately compatible package; the current DEB supports PVE 9.x only. If a newer ZFS Manager package is already installed, it is kept without downgrading. Keep independent backups. Review remote root scripts before running them; the script downloaded from `main` can change.
 
 ### Manual installation
 

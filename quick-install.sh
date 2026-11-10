@@ -30,22 +30,17 @@ for command_name in pveversion wget sha256sum dpkg dpkg-deb dpkg-query python3; 
 done
 
 PVE_VERSION="$(pveversion)" || fail 'Proxmox VE ist nicht erreichbar.'
+# No fixed PVE-minor-version cutoff: a newer PVE 9.x is evaluated by the
+# actual read-only integration precheck below instead of rejected by version.
+# The immutable published DEB itself only supports PVE 9.x (preinst and
+# universal.py); a future PVE 10 needs a separately tested compatible release.
 case "$PVE_VERSION" in
   pve-manager/9.*) ;;
-  *) fail "Nicht unterstützte Proxmox-Hauptversion: $PVE_VERSION (benötigt PVE 9.x)" ;;
+  pve-manager/*)
+    fail "Das veroeffentlichte Paket enthaelt derzeit nur PVE-9-Kompatibilitaet. $PVE_VERSION benoetigt eine passend getestete neue DEB; die Sperre im Paket wird NICHT umgangen." ;;
+  *) fail "Proxmox VE nicht erkannt: $PVE_VERSION" ;;
 esac
 say "Erkannter Host: $PVE_VERSION"
-
-if [[ "$MODE" == 'install' && "$PVE_VERSION" != pve-manager/9.2.25/* ]]; then
-  printf '\nWARNUNG: Dieses konkrete Paket wurde nur auf PVE 9.2.25 live getestet.\n'
-  printf 'Deine Version ist nicht als geprüft dokumentiert.\n'
-  if [[ ! -r /dev/tty ]]; then
-    fail 'Bestätigung für ungetestete PVE-Version nur interaktiv möglich.'
-  fi
-  printf 'Trotzdem installieren? Schreibe JA: '
-  IFS= read -r confirmation </dev/tty || fail 'Keine Bestätigung erhalten.'
-  [[ "$confirmation" == 'JA' ]] || fail 'Installation abgebrochen (keine ausdrückliche Bestätigung).'
-fi
 
 WORKDIR="$(mktemp -d /tmp/bm-zfsmanager-install.XXXXXXXX)" || fail 'Kann /tmp-Arbeitsverzeichnis nicht anlegen.'
 chmod 700 "$WORKDIR"
@@ -75,7 +70,14 @@ CURRENT_VERSION="$(dpkg-query -W -f='${Version}' pve-zfs-manager 2>/dev/null || 
 if [[ -n "$CURRENT_VERSION" ]]; then
   printf 'Vorhandener ZFS Manager: %s\n' "$CURRENT_VERSION"
   if dpkg --compare-versions "$CURRENT_VERSION" gt "$PACKAGE_VERSION"; then
-    fail "Installierte Version $CURRENT_VERSION ist neuer; kein automatisches Downgrade."
+    say "Bereits installierte ZFS-Manager-Version $CURRENT_VERSION ist neuer als $PACKAGE_VERSION."
+    printf '%s\n' 'Kein Downgrade und kein Installationsfehler: Die neuere Version bleibt erhalten.'
+    if command -v zfsm >/dev/null 2>&1; then
+      zfsm version
+      zfsm status
+      zfsm check
+    fi
+    exit 0
   fi
   if [[ "$CURRENT_VERSION" == "$PACKAGE_VERSION" ]] && \
        [[ "$(dpkg-query -W -f='${Status}' pve-zfs-manager 2>/dev/null || true)" == 'install ok installed' ]]; then
@@ -91,7 +93,19 @@ say 'Proxmox-GUI/API-Struktur vor der Installation schreibgeschützt prüfen'
 mkdir -p "$WORKDIR/unpacked"
 dpkg-deb -x "$PACKAGE_PATH" "$WORKDIR/unpacked" || fail 'Paket kann nicht entpackt werden.'
 python3 "$WORKDIR/unpacked/usr/lib/pve-zfs-manager/universal.py" precheck || \
-  fail 'PVE-Integrationsprüfung nicht bestanden. Keine Installation vorgenommen.'
+  fail 'PVE-GUI/API-Integrationspruefung fehlgeschlagen. Keine Installation vorgenommen (nicht nur wegen einer neueren Versionsnummer).'
+
+# A newer/unlisted PVE 9.x is NOT blocked by its version. After successful
+# structural checks, warn and ask once before modifying the host.
+if [[ "$PVE_VERSION" != pve-manager/9.2.25/* ]]; then
+  say "Integrationsvorpruefung auch auf $PVE_VERSION erfolgreich"
+  printf 'WARNUNG: Die Release-DEB wurde bislang nur auf PVE 9.2.25 live getestet.\n'
+  printf 'Deine PVE-Version ist nicht einzeln im Freigabetest bestaetigt.\n'
+  [[ -r /dev/tty ]] || fail 'Keine interaktive Zustimmung verfuegbar; der Strukturtest selbst war erfolgreich.'
+  printf 'Installation trotz nicht live getesteter PVE-Version fortsetzen? Bitte JA eingeben: '
+  IFS= read -r confirmation </dev/tty || fail 'Keine Bestaetigung erhalten.'
+  [[ "$confirmation" == 'JA' ]] || fail 'Keine Zustimmung zur Installation; keine Aenderungen ausgefuehrt.'
+fi
 
 if [[ "$(dpkg-query -W -f='${Status}' zfs-auto-snapshot 2>/dev/null || true)" != 'install ok installed' ]]; then
   say 'Benötigte Abhängigkeit zfs-auto-snapshot fehlt; nur diese Abhängigkeit installieren'
