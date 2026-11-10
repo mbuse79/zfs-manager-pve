@@ -9,7 +9,7 @@
 
 > **Unabhängiges Community-Projekt.** BuMaVory ZFS Manager ist kein offizielles Produkt von Proxmox und wird nicht von Proxmox Server Solutions GmbH entwickelt oder unterstützt.
 >
-> **Veröffentlichungsstand:** v1.0.0-32 ist ein technisch fertig gebautes Paket, das für die erste öffentliche Veröffentlichung vorbereitet wird. Die Lizenz `AGPL-3.0-only` ist für eigene Projektbeiträge gewählt; die Prüfung fremder Rechte steht noch aus. Die exakt freigegebene Final-DEB wurde am 07.11.2026 auf Proxmox VE 9.2.25 erfolgreich von RC1 aus aktualisiert und geprüft. Der Maintainer meldete am 09.11.2026 einen erfolgreichen E-Mail-Funktionstest; ein separater externer Zustellnachweis wurde hier nicht eingesehen. Das private Repository ist noch keine öffentlich freigegebene Open-Source-Veröffentlichung.
+> **Veröffentlichungsstand (10.11.2026):** Das Repository ist öffentlich. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) wurde mit dem geprüften Debian-Paket `1.0.0-32+docs2` veröffentlicht. `AGPL-3.0-only` gilt für Projektbeiträge, soweit die entsprechenden Rechte bestehen. Die Zuordnung möglicher Drittanteile wird weiter geprüft; die Veröffentlichung bedeutet **keine** abschließende rechtliche Freigabe.
 
 ## Funktionen
 
@@ -31,7 +31,7 @@
 
 ## Installation
 
-Sobald die öffentliche Version freigegeben ist, das Paket `pve-zfs-manager_1.0.0-32+docs2_all.deb` aus den **GitHub-Releases** laden und die SHA256-Prüfsumme prüfen. Auf dem Proxmox-Host als root:
+Das veröffentlichte Paket `pve-zfs-manager_1.0.0-32+docs2_all.deb` aus den **GitHub-Releases** laden und die SHA256-Prüfsumme prüfen. Auf dem Proxmox-Host als root:
 
 ```bash
 apt install ./pve-zfs-manager_1.0.0-32+docs2_all.deb
@@ -77,3 +77,5 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 Proxmox und Proxmox Virtual Environment sind Marken der jeweiligen Rechteinhaber. Siehe [TRADEMARK.md](TRADEMARK.md).
 
 > **Hinweis / note (2026-11-10):** The intended release asset is `1.0.0-32+docs2` (SHA256 above), tested on `pve-test` on 2026-11-09. The original `1.0.0-32` remains a separate historical reference with a different checksum. / Das vorgesehene Release-Paket ist `1.0.0-32+docs2`; nicht mit dem älteren Paket verwechseln.
+
+> **Dokumentationsupdate (10.11.2026):** Korrekturen auf `main` nach der Veröffentlichung verändern weder den bestehenden Release-Tag noch die getestete DEB oder das Quellarchiv. Die Release-Dateien entsprechen dem Stand des Tags.

@@ -1,6 +1,6 @@
 # Third-party components and attribution review (provisional)
 
-**Status 2026-11-09:** Informational attribution and technical provenance findings; **NOT a completed copyright/third-party clearance**. See [`CODE-PROVENANCE-REVIEW.md`](CODE-PROVENANCE-REVIEW.md) and [`LICENSING-REVIEW.md`](LICENSING-REVIEW.md).
+**Status 2026-11-10:** Published with public release `v1.0.0-32`. These are provisional attribution and technical-provenance findings, **not a completed copyright or third-party clearance**. See [`CODE-PROVENANCE-REVIEW.md`](CODE-PROVENANCE-REVIEW.md) and [`LICENSING-REVIEW.md`](LICENSING-REVIEW.md).
 
 ## Host components — normally installed separately, not bundled as full sources
 
@@ -25,6 +25,6 @@ Such interface patterns and short anchors are **not, by themselves, proof of cop
 
 ## Distribution gate
 
-`AGPL-3.0-only` has been selected **only for contributions that the project may license**. The repository's current `debian/copyright` still has a broad `Files: *` entry and needs file-/fragment-level review if third-party code is found. The historical tested baseline DEB `1.0.0-32` retains older copyright and third-party notices. The private `+docs2` candidate bundles this newer notice and a distinct Debian package version; its exact package must still be validated. No third-party copyright ownership has been inferred from API calls or imports.
+`AGPL-3.0-only` has been selected **only for contributions that the project may license**. The repository's current `debian/copyright` still has a broad `Files: *` entry and needs file-/fragment-level review if third-party code is found. The historical tested baseline DEB `1.0.0-32` retains older copyright and third-party notices. The published `+docs2` package bundles this updated notice and was installed and CLI/GUI-checked on `pve-test` (PVE 9.2.25) on 2026-11-09. This technical validation is not a legal clearance. No third-party copyright ownership has been inferred from API calls or imports.
 
-**Do not publish the repository or release assets until the remaining provenance, attribution, history and security-contact checks are closed.** This notice is neither an assertion that all code is original nor a claim that all external components are bundled.
+**Publication update:** The repository and `v1.0.0-32` release were published on 2026-11-10. Publication does **not** establish that the remaining provenance and attribution checks are complete. This notice does not assert that all code is original or that host components are bundled.

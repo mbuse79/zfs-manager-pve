@@ -5,7 +5,7 @@
 
 Stand: 2026-11-09  
 Lizenzwahl: **AGPL-3.0-only für eigenständig entwickelte Projektbestandteile**  
-Veröffentlichungsstatus: **Öffentliche Freigabe noch nicht bestätigt (Codeherkunft und Zuordnung der Rechte offen).**
+Veröffentlichungsstatus: **Repository und Release `v1.0.0-32` am 10.11.2026 öffentlich veröffentlicht; die Prüfung möglicher Drittanbieterrechte bleibt offen.**
 
 ## Bestätigte Punkte
 
@@ -16,11 +16,11 @@ Veröffentlichungsstatus: **Öffentliche Freigabe noch nicht bestätigt (Codeher
 
 ## Konkret geprüfte Quelldateien
 
-Grundlage: lokal verfügbares, für das GitHub-Repository vorbereitetes Release-Quellarchiv `BuMaVory-ZFS-Manager-1.0.0-32-AGPL-Source.tar.gz`. Es ist **kein unabhängiger Abruf der aktuellen privaten GitHub-Commit-Version**.
+Grundlage des historischen Ausgangsaudits: ein lokal überlassenes Quellarchiv `BuMaVory-ZFS-Manager-1.0.0-32-AGPL-Source.tar.gz`. Inzwischen wurden das öffentliche `main` und der Release-Tag `v1.0.0-32` über GitHub geprüft. Die vollständige Codeherkunft vor dem ersten Git-Import ist dadurch nicht nachgewiesen.
 
 Im Verzeichnis `src/` befinden sich **25 Python- und 8 Perl-Dateien**. In ihren ersten 25 Zeilen waren keine expliziten Copyright-/SPDX-Kopfzeilen erkennbar. Dies beweist keine Fremdurheberschaft, zeigt aber fehlende dateibezogene Rechte- und Lizenzzuordnung.
 
-Besonders vor einer öffentlichen Weitergabe zu prüfen:
+Für die weiterhin offene Prüfung möglicher Drittanbieterrechte:
 
 | Datei/Familie | Warum prüfen? | Stand |
 | --- | --- | --- |
@@ -38,16 +38,16 @@ Besonders vor einer öffentlichen Weitergabe zu prüfen:
 - **Belegte kurze Berührungspunkte:** ein wörtlicher Menü-Suchanker in `src/patch_nav.py` zu `pvemanagerlib.js`; typische API-Registrierungsfelder in `src/PVE/API2/ZFSSnapshotViewer*.pm` zu `PVE/API2/Nodes.pm`; `src/universal.py` bindet eigene Ergänzungen in diese vorhandenen Hostdateien ein.
 - **Kein längerer wortgleicher GUI-Funktionsblock** ab 45 Tokens aus dem untersuchten `pve-manager`-Korpus wurde in der Projekt-GUI nachgewiesen. Das ist nur ein abgegrenzter **technischer Teilvergleich**, nicht der Nachweis vollständiger unabhängiger Autorschaft oder die Prüfung aller Frameworks.
 - Die oben genannten Funde und verbleibenden Grenzen sind in [`CODE-PROVENANCE-REVIEW.md`](CODE-PROVENANCE-REVIEW.md) dokumentiert und in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) als vorläufige Quellenhinweise aufgenommen. Nicht nachgewiesene Dritturheber werden **nicht** pauschal zu Rechteinhabern eigener Implementierungen erklärt.
-- **Paket-Metadaten beachten:** Die getestete DEB enthält ältere Fassungen von `LICENSING-REVIEW.md`, `THIRD_PARTY_NOTICES.md` und weiteren Release-Dokumenten. Die eingebettete `LICENSING-REVIEW.md` behauptet **fälschlich**, der Paket-Maintainer sei noch `contact@example.invalid`, obwohl das tatsächliche Debian-Control-Feld korrekt ist. Für eine widerspruchsfreie öffentliche Paketdatei ist daher eine **separate Dokumentationsbereinigung und Artefaktvalidierung mit neuer SHA256** erforderlich; die getestete Original-DEB bleibt als Referenz unverändert.
+- **Paket-Metadaten (historischer Befund):** Die ursprüngliche `1.0.0-32`-DEB enthielt teilweise veraltete Dokumente, obwohl das Debian-Control-Maintainerfeld korrekt war. Die separate `1.0.0-32+docs2`-Revision korrigierte diese Beilagen und wurde am 09.11.2026 auf PVE 9.2.25 praktisch getestet. Das veröffentlichte Paket entspricht SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`; die offenen Codeherkunftsfragen bleiben bestehen.
 - Der Maintainer hat den Dokumentations-Commit **`30cbb13`** auf `main` erfolgreich gepusht (PowerShell-Ausgabe vom 09.11.2026). Dies ist **keine** vollständige erneute Live-Abfrage des privaten GitHub-Repositorys.
 
 ## Noch offene Freigabepunkte
 
 1. **Restliche Codeherkunft klären:** Für die oben genannten Datei-/Variantenfamilien anhand der Entwicklungs- oder Git-Historie, Originalquellen und möglicher Vorlagen festhalten: selbst verfasst, generiert und geprüft, aus Open-Source-Code angepasst oder unverändert übernommen. Bei übernommenen Teilen konkrete Quelle, Lizenz, Urheber und Datum erfassen.
 2. **Copyright und Hinweise berichtigen:** Passende Copyright-/SPDX-Hinweise für belegbar eigene Dateien ergänzen; fremde Hinweise ausdrücklich erhalten. `debian/copyright` und `THIRD_PARTY_NOTICES.md` entsprechend abgleichen. Nicht pauschal andere Rechteinhaber als BuMaVory ausweisen.
-3. **Sicherheitskontakt:** E-Mail-Funktionstest laut Maintainer am 09.11.2026 erfolgreich. Ein Nachweis von einem externen Absender ist optional ergänzend nachzuhalten; vor öffentlichem Start GitHub Private Vulnerability Reporting aktivieren, sofern verfügbar.
-4. **Git-Historie auf Geheimnisse prüfen:** Gelöschte Zwischenberichte verbleiben in alten Commits. Prüfen, ob die Historie sensible Daten enthält, bevor die Sichtbarkeit auf `Public` umgestellt wird.
-5. **Erst nach Freigabe:** Release-Entwurf `v1.0.0-32` mit exakt der getesteten DEB, Prüfsumme und Quellcode veröffentlichen. Keine ungeprüften Programmänderungen für die Dokumentationsarbeit vornehmen.
+3. **Sicherheitskontakt:** Laut Maintainer war der E-Mail-Funktionstest am 09.11.2026 erfolgreich. Ein unabhängiger Zustell-/Antwortnachweis wurde nicht geprüft. GitHub Private Vulnerability Reporting sollte aktiviert und sein Status separat bestätigt werden.
+4. **Git-Historie (10.11.2026 bereinigt):** Die drei bekannten internen Prüfberichte wurden aus der erreichbaren Git-Historie entfernt; der Dateibaum blieb identisch. Externe Kopien oder GitHub-Caches können trotzdem bestehen. Ein heuristischer Secret-Scan ist kein umfassender Sicherheitsnachweis.
+5. **Veröffentlichung erfolgt:** `v1.0.0-32` ist mit der getesteten `+docs2`-DEB und den Prüfsummen öffentlich. Der Release-Tag und die Dateien bleiben unverändert; offene Rechtsfragen werden durch die Veröffentlichung nicht entschieden.
 
 ## Keine erneute Pflichtprüfung
 

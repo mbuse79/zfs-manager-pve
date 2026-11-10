@@ -1,15 +1,15 @@
 # Changelog
 
-## 1.0.0-32+docs2 — Private documentation-only package candidate (2026-11-09)
+## 1.0.0-32+docs2 — Documentation-only package revision (tested 2026-11-09; published 2026-11-10)
 
 - No changes to the 1.0.0-32 runtime functionality, installed API/GUI scripts, systemd units or Debian maintainer scripts.
 - Synchronizes licensing/provenance documents with reviewed repository notes and acknowledges the 2026-11-07 final-version host test.
 - Removes a superseded 2026-11-03 PDF from the *binary* package; the old source-tree PDF is retained only as historical material.
 - Includes a separate packaging revision because the DEB payload differs from both `1.0.0-32` and the private `+docs1` QA draft.
-- Exact `1.0.0-32+docs2` DEB installed as an APT upgrade on `pve-test` / Proxmox VE 9.2.25 on 2026-11-09; CLI and web UI confirmed by the maintainer. The public-release decision and remaining rights assessment are separate.
+- Exact `1.0.0-32+docs2` DEB installed as an APT upgrade on `pve-test` / Proxmox VE 9.2.25 on 2026-11-09; CLI and web UI confirmed by the maintainer. Published as `v1.0.0-32` on 2026-11-10; third-party provenance and rights review remain open.
 
 
-## 1.0.0-32 — Technical final build (public release pending)
+## 1.0.0-32 — Technical final build (released 2026-11-10 with +docs2 packaging)
 
 - Final Debian version number derived from the tested `1.0.0-32~rc1`.
 - Distribution documentation and source layout prepared for publication.

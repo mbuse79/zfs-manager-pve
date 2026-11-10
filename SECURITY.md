@@ -6,7 +6,7 @@ v1.0.0-32 is a technical final build. The exact final Debian package was install
 
 ## Reporting a vulnerability
 
-**Do not post exploits, credentials or sensitive system details in public GitHub issues.** Contact the maintainers privately at **[bumavory@buse.rocks](mailto:bumavory@buse.rocks)**. The maintainer reported a successful email function test on 2026-11-09; separate external sender/response evidence has not been reviewed in this audit. GitHub private vulnerability reporting should also be enabled before public launch, if available.
+**Do not post exploits, credentials or sensitive system details in public GitHub issues.** Contact the maintainers privately at **[bumavory@buse.rocks](mailto:bumavory@buse.rocks)**. The maintainer reported a successful email function test on 2026-11-09; separate external sender/response evidence has not been reviewed in this audit. GitHub private vulnerability reporting is recommended for this public repository; its current activation status has not been independently confirmed.
 
 ## Operational risks
 

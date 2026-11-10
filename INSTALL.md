@@ -5,7 +5,7 @@
 
 **Validated final environment:** Proxmox VE 9.2.25. Root access is required. The exact `1.0.0-32+docs2` Debian package was installed as an APT upgrade from `1.0.0-32` on 2026-11-09; CLI and GUI were reported working by the test host owner.
 
-1. Obtain the .deb from a trusted GitHub Release after public approval.
+1. Download the released `.deb` from [GitHub Releases](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32).
 2. Verify the published SHA256 checksum. A checksum validates file integrity, **not** software trust or authenticity by itself.
 3. Copy the .deb to the target Proxmox host and run:
 

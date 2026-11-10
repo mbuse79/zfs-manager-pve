@@ -2,12 +2,12 @@
 
 **Version:** `1.0.0-32`  
 **Stand:** 09.11.2026
-**Status:** Technisches Final-Paket, Vorbereitung der öffentlichen Veröffentlichung  
+**Status:** Öffentlich veröffentlicht am 10.11.2026 als `v1.0.0-32` mit der geprüften DEB `1.0.0-32+docs2`.
 **Getestete Proxmox-Version:** 9.2.25 (`1.0.0-32` am 07.11.2026 sowie die exakte `+docs2`-DEB am 09.11.2026 live geprüft)
 
 ## Paketrevision `1.0.0-32+docs2`
 
-Nur Dokumentations-/Copyrightbeilagen und Debian-Paketversion angepasst; installierte Runtime bleibt identisch zur am 07.11.2026 geprüften `1.0.0-32`. Die exakte `+docs2`-DEB wurde am **09.11.2026** auf `pve-test` per APT installiert; CLI, Dienste und Weboberfläche wurden bestätigt. Die Entscheidung über eine öffentliche Verteilung und über verbleibende Rechtefragen ist davon getrennt.
+Nur Dokumentations-/Copyrightbeilagen und Debian-Paketversion angepasst; installierte Runtime bleibt identisch zur am 07.11.2026 geprüften `1.0.0-32`. Die exakte `+docs2`-DEB wurde am **09.11.2026** auf `pve-test` per APT installiert; CLI, Dienste und Weboberfläche wurden bestätigt. Die öffentliche Veröffentlichung erfolgte am 10.11.2026; die Prüfung verbleibender Drittanbieterrechte ist unabhängig davon noch offen.
 
 ## Funktionsumfang
 
@@ -35,4 +35,4 @@ Bisher nur die genannte Testumgebung praktisch abgenommen. Mehrplatten-Sammellö
 
 ## Öffentliche Lizenzierung
 
-Die technische Final-Version ist noch nicht automatisch zur Veröffentlichung freigegeben. Die Maintainer-Adresse ist `bumavory@buse.rocks` (im Referenzpaket bestätigt; E-Mail-Funktionstest vom Maintainer am 09.11.2026 bestätigt). Codeherkunft und Rechte an möglicherweise übernommenen Vorlagen bleiben vor Veröffentlichung zu klären.
+Der Release `v1.0.0-32` ist seit dem 10.11.2026 öffentlich. Die Maintainer-Adresse ist `bumavory@buse.rocks` (im Debian-Paket bestätigt; E-Mail-Funktionstest laut Maintainer am 09.11.2026 erfolgreich). Die mögliche Herkunft fremder Vorlagen und deren Rechtehinweise sind unabhängig von der Veröffentlichung weiterhin zu prüfen.

@@ -28,6 +28,6 @@ zfsm capacity --json
 
 **Sicherheit:** Snapshot-Löschungen können endgültig sein. Sammellöschungen auf mehreren Datenträgern sind nicht atomar. Unabhängige Backups erforderlich. Die Kapazitäts-CLI ist nur lesend.
 
-**Öffentliche Veröffentlichung:** Vor einem öffentlichen GitHub-Release müssen die in `PUBLICATION-CHECKLIST.md` genannten Lizenz- und Maintainerangaben bestätigt werden.
+**Öffentlicher Release (10.11.2026):** `v1.0.0-32` ist veröffentlicht. Installation und Sicherheitshinweise gelten weiterhin. Offene Fragen zu Herkunft und Drittanbieterrechten sind in `LICENSING-REVIEW.md` dokumentiert.
 
 > **Hinweis / note (2026-11-10):** The intended release asset is `1.0.0-32+docs2` (SHA256 above), tested on `pve-test` on 2026-11-09. The original `1.0.0-32` remains a separate historical reference with a different checksum. / Das vorgesehene Release-Paket ist `1.0.0-32+docs2`; nicht mit dem älteren Paket verwechseln.

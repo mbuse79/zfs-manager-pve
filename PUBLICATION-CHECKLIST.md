@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager 1.0.0-32 — publication checklist
 
-**Updated 2026-11-10:** Exact `1.0.0-32+docs2` package installed and CLI/GUI-checked on `pve-test` (Proxmox VE 9.2.25) on 2026-11-09. The historical `1.0.0-32` remains unchanged. Complete final repository/history and rights review before making GitHub Public.
+**Updated 2026-11-10 after publication:** The exact `1.0.0-32+docs2` package was installed and CLI/GUI-tested on `pve-test` (PVE 9.2.25) on 2026-11-09. The repository and release `v1.0.0-32` are now public. Completed publication steps and remaining rights/security follow-ups are listed separately.
 
 
 - [x] Create private repository and add EN/DE READMEs and documentation.
@@ -21,9 +21,9 @@
 - [ ] Reconcile all approved copyright/notices with those embedded in that publication candidate.
 - [x] Maintainer reported a successful email function test for `bumavory@buse.rocks` on 2026-11-09 (separate external delivery/response evidence not independently inspected).
 - [ ] Enable GitHub private vulnerability reporting for the public launch if available.
-- [ ] Review all historical documents for publication suitability; normal deletion leaves them in the Git history.
+- [ ] Finish reviewing historical documents for public suitability. The three identified internal audit files were removed from reachable history before publication; cached or external copies may persist.
 - [x] Prepare the release source archive (101 files) and verify its checksum. Before final publication, keep source archive consistent with the chosen Git tag and the release asset `SHA256SUMS`.
-- [ ] Create and verify a Git tag v1.0.0-32 and release assets, **only after legal clearance**.
-- [ ] Change repository visibility to Public only after release approval.
+- [x] Publish tag `v1.0.0-32` at cleaned commit `75aedfca` with three release assets and matching SHA256 digests. Third-party legal review is still open.
+- [x] Change the repository visibility to Public and publish `v1.0.0-32` on 2026-11-10.
 
 The original tested DEB remains a valid technical reference, distinct from `+docs2`. The exact documentation-corrected `+docs2` artifact has its own SHA256 and successfully completed an APT host smoke test on 2026-11-09. Do not mix the two package files or hashes.

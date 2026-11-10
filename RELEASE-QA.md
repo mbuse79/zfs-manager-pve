@@ -16,5 +16,5 @@
 ## Limits
 - Proxmox VE 9.2.25 is the only live environment validated for this final release; no blanket support claim for all PVE 9.x hosts.
 - Not all dark-mode, destructive and recovery error paths were exhaustively tested; maintain independent backups.
-- Legal rights/provenance review is incomplete; **do not publish or switch repository visibility to Public until resolved**. See `LICENSING-REVIEW.md`.
+- Legal rights and provenance review remains incomplete despite publication on 2026-11-10. See `LICENSING-REVIEW.md`; the public release does not certify third-party ownership or attribution.
 - Maintainer reported a successful email function test on 2026-11-09; separate external delivery-and-reply evidence was not inspected.

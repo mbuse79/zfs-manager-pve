@@ -9,7 +9,7 @@
 
 > **Independent community project.** BuMaVory ZFS Manager is not an official Proxmox product and is not affiliated with or endorsed by Proxmox Server Solutions GmbH.
 >
-> **Publication status:** v1.0.0-32 is a technical final build under preparation for a first public release. The `AGPL-3.0-only` license has been selected for original contributions; third-party rights review is still pending. The exact final .deb was successfully upgraded from RC1 on Proxmox VE 9.2.25 on 2026-11-07. Maintainer reports a successful email function test (2026-11-09); independent external delivery evidence has not been inspected. This private repository is not yet a public open-source release.
+> **Publication status (2026-11-10):** This repository is public. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) was released with the exact tested `1.0.0-32+docs2` Debian package. `AGPL-3.0-only` applies to project contributions that the maintainer is entitled to license. Third-party provenance and attribution review is ongoing; publication does **not** constitute legal clearance.
 
 ## Features
 
@@ -31,7 +31,7 @@
 
 ## Installing a release asset
 
-When an approved public release is available, download `pve-zfs-manager_1.0.0-32+docs2_all.deb` from the repository's **Releases** page and verify its SHA256 checksum. On a compatible Proxmox host, as root:
+Download `pve-zfs-manager_1.0.0-32+docs2_all.deb` from the repository's **Releases** page and verify its SHA256 checksum. On a compatible Proxmox host, as root:
 
 ```bash
 apt install ./pve-zfs-manager_1.0.0-32+docs2_all.deb
@@ -77,3 +77,5 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 Proxmox and Proxmox Virtual Environment are trademarks of their respective owners. See [TRADEMARK.md](TRADEMARK.md).
 
 > **Hinweis / note (2026-11-10):** The intended release asset is `1.0.0-32+docs2` (SHA256 above), tested on `pve-test` on 2026-11-09. The original `1.0.0-32` remains a separate historical reference with a different checksum. / Das vorgesehene Release-Paket ist `1.0.0-32+docs2`; nicht mit dem älteren Paket verwechseln.
+
+> **Documentation update (2026-11-10):** Corrections to `main` after publication do not change the existing release tag, tested DEB, or release source archive. The release assets reflect the tagged source.

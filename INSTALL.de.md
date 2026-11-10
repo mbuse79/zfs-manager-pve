@@ -5,7 +5,7 @@
 
 **Geprüfte Umgebung:** Proxmox VE 9.2.25. Root-Rechte erforderlich. Die exakte DEB `1.0.0-32+docs2` wurde am 09.11.2026 per APT-Upgrade von `1.0.0-32` installiert; CLI und GUI wurden vom Betreiber erfolgreich bestätigt.
 
-1. Nach Freigabe der öffentlichen Version die `.deb` aus einer vertrauenswürdigen GitHub-Veröffentlichung herunterladen.
+1. Die veröffentlichte `.deb` aus dem [GitHub-Release v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) herunterladen.
 2. Die veröffentlichte SHA256-Prüfsumme kontrollieren. Eine Prüfsumme bestätigt die Dateiintegrität, **nicht allein die Vertrauenswürdigkeit** der Software.
 3. Das Paket auf den Proxmox-Host übertragen und aus dem Verzeichnis der `.deb` installieren:
 

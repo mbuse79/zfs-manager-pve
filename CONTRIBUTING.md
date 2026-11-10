@@ -2,7 +2,7 @@
 
 Thanks for your interest in BuMaVory ZFS Manager.
 
-This repository is currently in pre-publication preparation. A contribution/license policy will be finalized before accepting outside contributions. Until then, please do not submit code that cannot be clearly licensed and attributed.
+This repository is public as of 2026-11-10. Contributions may be proposed through pull requests and are subject to maintainer review; acceptance is not guaranteed. Contribute only work you have the right to license and attribute. The project applies `AGPL-3.0-only` to contributions for which the necessary rights exist; third-party provenance review is ongoing.
 
 Before a future pull request:
 

@@ -1,4 +1,6 @@
-# BuMaVory ZFS Manager 1.0.0-32 — Publikationssperren und Abschlussstand
+# BuMaVory ZFS Manager 1.0.0-32 — Historisches Freigabeprotokoll (09.11.2026)
+
+> **Nachtrag 10.11.2026:** Dieses Dokument beschreibt den historischen Prüf- und Sperrstand vor Veröffentlichung. Das Repository und Release `v1.0.0-32` sind jetzt **öffentlich**; die getestete `+docs2`-DEB bleibt unverändert. Der Tag verweist auf den bereinigten Commit `75aedfca`. Die drei bekannten internen Berichte wurden aus der erreichbaren Git-Historie entfernt. **Noch offene Drittanbieterrechte und Herkunftsfragen sind durch die Veröffentlichung nicht geklärt.** Nachfolgende Angaben zu einem privaten Repository beziehen sich auf den historischen Stand.
 
 **Nachtrag 10.11.2026:** Die veralteten eingebetteten Unterlagen betreffen die historische Referenz-DEB `1.0.0-32`. Die separate Paketrevision `1.0.0-32+docs2` wurde am 09.11.2026 mit bestätigter SHA256 auf `pve-test` installiert und CLI/GUI-geprüft. Eine rechtliche Freigabe und die Live-Prüfung der GitHub-Historie sind davon getrennt. Die nachfolgenden Abschnitte dokumentieren teils den historischen Prüfstand.
 

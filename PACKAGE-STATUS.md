@@ -1,6 +1,6 @@
 # Packaging and provenance status — live-tested revision `1.0.0-32+docs2`
 
-**Created:** 2026-11-09. **Updated:** 2026-11-10 after successful live test. GitHub release draft saved privately; publishing and visibility change require a separate maintainer decision.
+**Created:** 2026-11-09. **Public release verified:** 2026-11-10, tag `v1.0.0-32`, branch `main`. The published `.deb` is the exact `1.0.0-32+docs2` package tested on 2026-11-09. Older private-draft statements below have been superseded.
 
 ## Versions and validation
 
@@ -19,12 +19,12 @@ The CLI/backend may continue to display functional version `1.0.0-32`; the packa
 - The old 2026-11-03 `ZFS-Manager-1.0.0-32-Final-und-Veroeffentlichung.pdf` remains in the *source repository* strictly as a **historical report**. Its references to missing maintainer contact and an untested 1.0.0-32 are superseded by successful 2026-11-07/09 testing. The PDF is **not bundled** into the new DEB.
 - `PUBLICATION-GATE-2026-11-09.md` is an internal gate document, not an installation instruction; it is part of the source-review snapshot but not shipped as a Debian manual.
 
-## Publication is NOT authorized yet
+## Public release and remaining review items (2026-11-10)
 
 1. Project maintainer confirms, to the best of their knowledge, the origin of the core implementation and any specific third-party copied templates. No unverified blanket authorship is claimed.
 2. Any confirmed external contributions must retain applicable license, copyright attribution and source notices, if required. Comparisons of limited `pve-manager` samples are only partial technical evidence.
 3. **Completed 2026-11-09:** Exact `+docs2` DEB SHA256 verified, installed and CLI/GUI-checked on `pve-test`; backup taken before upgrade.
-4. **GitHub live comparison completed 2026-11-10:** Private remote `main` confirmed at baseline commit `0db3b44478874b36be1d52497f04251080e74798`, 14 reachable commits, no listed tags. Align the final release source archive, checksums and planned tag with the new documentation commit after the update; separately review historical files before public visibility.
-5. Only then: deliberate public release decision and publication; no tag/release upload automatically performed.
+4. **GitHub live status (2026-11-10):** The three known internal reports were removed from reachable Git history without changing the file tree. The verified public release tag `v1.0.0-32` points to `75aedfca1e58622ac78395e02ac04366649c1987`. Three assets and their published SHA256 checksums were confirmed. Later `main` documentation commits do not alter that tag.
+5. **Published 2026-11-10:** The repository and release are public. Remaining provenance, attribution and private vulnerability reporting checks are still open; publication does not imply they were completed.
 
 *Technical packaging record; not legal advice.*
