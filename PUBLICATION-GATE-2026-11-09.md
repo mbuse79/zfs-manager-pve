@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager 1.0.0-32 — Publikationssperren und Abschlussstand
 
-**Nachtrag (lokaler Kandidat `1.0.0-32+docs2`):** Die in diesem Dokument beschriebenen veralteten *eingebetteten* Unterlagen betreffen die getestete **Referenz-DEB 1.0.0-32**. Ein separater privater Dokumentationskandidat (`+docs2`) wurde für Offline-Prüfungen vorbereitet; für diesen stehen Paketprüfung, Proxmox-Test und verantwortliche Rechteklärung weiterhin als eigenständige Freigabegatter an.
+**Nachtrag 10.11.2026:** Die veralteten eingebetteten Unterlagen betreffen die historische Referenz-DEB `1.0.0-32`. Die separate Paketrevision `1.0.0-32+docs2` wurde am 09.11.2026 mit bestätigter SHA256 auf `pve-test` installiert und CLI/GUI-geprüft. Eine rechtliche Freigabe und die Live-Prüfung der GitHub-Historie sind davon getrennt. Die nachfolgenden Abschnitte dokumentieren teils den historischen Prüfstand.
 
 
 **Erstellt:** 09.11.2026 · **Repository bleibt privat** · **Keine Änderung an Programmcode oder geprüfter DEB.**
@@ -32,7 +32,7 @@ Die **tatsächliche** installierte Datei `usr/share/doc/pve-zfs-manager/LICENSIN
 
 1. **Offen / Entscheidung des Maintainers:** Herkunftserklärung über eigene/mit ChatGPT entwickelte Teile und etwaige bewusst eingebrachte Vorlagen; falls externe Codevorlagen genutzt wurden, passende Rechte-/Copyright-Nachweise ergänzen. Ohne diese Erklärung kann die urheberrechtliche Freigabe nicht automatisch erfolgen.
 2. **Offen / technische Restprüfung:** Wenn erforderlich `proxmox-widget-toolkit`, relevante ExtJS-Bestandteile und andere tatsächliche Vorlagen des GUI-Codes gegen die enthaltenen Implementierungen vergleichen. Der bisherige Vergleich umfasste nur `pve-manager` 9.2.25.
-3. **Offen / Paketrevision:** Rechts- und Veröffentlichungstexte konsolidieren, neu verpackten Dokumentationskandidaten mit eindeutig neuer Prüfsumme und unveränderten Runtime-Dateien herstellen und testen. Ein bereits existierender Tag `v1.0.0-32` darf nicht überschrieben werden.
+3. **Erledigt / Paketrevision:** `+docs2` mit eigener Prüfsumme, unverändertem Laufzeitcode und erfolgreichem Proxmox-Livetest. Ein bereits existierender Tag `v1.0.0-32` darf nicht überschrieben werden.
 4. **Offen / History redaction:** Historische interne Dokumente vor `Public` redaktionell akzeptieren; keine vorschnelle Git-History-Umschreibung. Nur bei nachgewiesenen Geheimnissen zuerst die betroffenen Zugangsdaten erneuern und anschließend eine begründete History-Bereinigung planen.
 5. **Offen / GitHub:** Privates Security-Reporting beim öffentlichen Start soweit verfügbar aktivieren, Release-Assets, Source-Stand, Dokumentation und SHA256 synchronisieren, anschließend bewusst öffentliche Sichtbarkeit freigeben.
 

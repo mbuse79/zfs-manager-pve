@@ -1,7 +1,7 @@
 # ZFS Manager for Proxmox VE - v1.0.0-32 (2026-11-03)
 
-**Documentation-only Debian revision `1.0.0-32+docs2` (2026-11-09): PRIVATE candidate.**
-The original `1.0.0-32` was successfully installed and CLI/GUI-checked on `pve-test` (Proxmox VE 9.2.25) on 2026-11-07. The `+docs2` package retains byte-identical runtime components but has NOT been installed on a Proxmox test host. Licensing/provenance clearance is still pending. This build must not be described as publicly released.
+**Documentation-only Debian revision `1.0.0-32+docs2` (2026-11-09): Live-tested; release approval separate.**
+The original `1.0.0-32` was installed and CLI/GUI-checked on `pve-test` (Proxmox VE 9.2.25) on 2026-11-07. The exact `+docs2` package was installed as an APT upgrade on 2026-11-09; `zfsm version`, `status`, `check`, `services` and the GUI were confirmed by the maintainer. Runtime components are byte-identical to the baseline. The test does not certify other PVE versions, production use or third-party rights.
 
 
 Stable version number from successfully installed and browser-checked `1.0.0-32~rc1` on test host `pve-test` (Proxmox VE 9.2.25).

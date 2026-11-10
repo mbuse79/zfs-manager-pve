@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager v1.0.0-32 — Lizenz- und Codeherkunftsprüfung
 
-**Update 09.11.2026:** Die nachfolgende, tatsächlich getestete `1.0.0-32` bleibt unverändert. `1.0.0-32+docs2` bezeichnet ausschließlich einen neu gepackten privaten Dokumentationskandidaten mit separater Prüfsumme, **ohne** Proxmox-Livetest und **ohne** abgeschlossene Rechtefreigabe. `LICENSE` ist unveränderter FSF-Lizenztext; `debian/copyright` enthält dafür einen gesonderten Hinweis. Dokumentationsabgleich siehe `PACKAGE-STATUS.md`.
+**Update 10.11.2026:** Die historische, tatsächlich getestete `1.0.0-32` bleibt unverändert. Die exakte `1.0.0-32+docs2` wurde am 09.11.2026 auf `pve-test` (PVE 9.2.25) mit erfolgreicher CLI-/GUI-Prüfung installiert; das ist keine eigenständige Rechtefreigabe. `LICENSE` ist unveränderter FSF-Lizenztext; `debian/copyright` enthält dafür einen gesonderten Hinweis. Details siehe `PACKAGE-STATUS.md`.
 
 
 Stand: 2026-11-09  

@@ -1,6 +1,6 @@
 # Quality assurance – v1.0.0-32
 
-**Private packaging review:** `1.0.0-32+docs2` contains documentation updates and a distinct version; its runtime is byte-identical to the verified baseline in the offline comparison. This is **not** a live install result for `+docs2`. Further release rights checks remain open. See `PACKAGE-STATUS.md`.
+**Package verification (updated 2026-11-10):** `1.0.0-32+docs2` contains documentation updates and a distinct version; its runtime matched the verified baseline byte-for-byte in the offline comparison. The exact DEB was successfully installed via APT on `pve-test` / Proxmox VE 9.2.25 on 2026-11-09, with CLI/service checks and GUI confirmed by the maintainer. Further rights checks remain subject to the maintainer’s assessment. See `PACKAGE-STATUS.md`.
 
 
 ## Live checks reported by the test host owner

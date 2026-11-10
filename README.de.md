@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager für Proxmox VE
 
-**Private Paket-Prüffassung (`1.0.0-32+docs2`):** Die aktualisierte DEB hat eine eigene Version und Prüfsumme. Sie wurde noch nicht live getestet und darf nicht mit der am 07.11.2026 getesteten `1.0.0-32` verwechselt oder veröffentlicht werden. Siehe `PACKAGE-STATUS.md`.
+**Geprüfte Paketrevision (`1.0.0-32+docs2`):** Die exakte DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am **09.11.2026** per APT auf `pve-test` mit Proxmox VE 9.2.25 installiert. Der Maintainer bestätigte `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` und die Weboberfläche. Der Laufzeitcode ist gegenüber der zuvor getesteten `1.0.0-32` unverändert. Dies ist weder eine Kompatibilitätsfreigabe für andere PVE-Versionen noch eine abgeschlossene Rechteprüfung. Siehe `PACKAGE-STATUS.md`.
 
 
 **ZFS-Snapshots direkt in der vorhandenen Proxmox-Weboberfläche verwalten.**
@@ -26,15 +26,15 @@
 
 - Die Finalversion **1.0.0-32** wurde am 07.11.2026 auf **Proxmox VE 9.2.25** mittels APT-Upgrade von RC1 installiert und geprüft.
 - Die Finalversion v1.0.0-32 basiert auf RC1; Snapshot-API und GUI-Geschäftslogik sind unverändert.
-- Die getestete Final-DEB hat SHA256 `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`; CLI und Oberfläche wurden vom Betreiber als funktionierend bestätigt.
+- Die historische Final-DEB hat SHA256 `af34d257abccf23bbd7635edfa16cf77b468f6a2e0ba399d3c88e5a39e73c7c2`. Das aktuelle Releasepaket `1.0.0-32+docs2` (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am 09.11.2026 ebenfalls auf `pve-test` installiert; CLI und Oberfläche funktionieren laut Betreiber.
 - Andere Proxmox-Versionen müssen jeweils geprüft werden. Es gibt keine pauschale Freigabe aller PVE-9.x-Versionen.
 
 ## Installation
 
-Sobald die öffentliche Version freigegeben ist, das Paket `pve-zfs-manager_1.0.0-32_all.deb` aus den **GitHub-Releases** laden und die SHA256-Prüfsumme prüfen. Auf dem Proxmox-Host als root:
+Sobald die öffentliche Version freigegeben ist, das Paket `pve-zfs-manager_1.0.0-32+docs2_all.deb` aus den **GitHub-Releases** laden und die SHA256-Prüfsumme prüfen. Auf dem Proxmox-Host als root:
 
 ```bash
-apt install ./pve-zfs-manager_1.0.0-32_all.deb
+apt install ./pve-zfs-manager_1.0.0-32+docs2_all.deb
 zfsm version
 zfsm status
 zfsm check
@@ -76,4 +76,4 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 
 Proxmox und Proxmox Virtual Environment sind Marken der jeweiligen Rechteinhaber. Siehe [TRADEMARK.md](TRADEMARK.md).
 
-> **Hinweis / note (2026-11-09):** The command examples above refer to the already tested historical `1.0.0-32` binary. Do not substitute the private `+docs2` candidate until its exact SHA256 and live validation are confirmed.
+> **Hinweis / note (2026-11-10):** The intended release asset is `1.0.0-32+docs2` (SHA256 above), tested on `pve-test` on 2026-11-09. The original `1.0.0-32` remains a separate historical reference with a different checksum. / Das vorgesehene Release-Paket ist `1.0.0-32+docs2`; nicht mit dem älteren Paket verwechseln.

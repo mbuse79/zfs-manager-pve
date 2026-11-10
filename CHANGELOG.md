@@ -6,7 +6,7 @@
 - Synchronizes licensing/provenance documents with reviewed repository notes and acknowledges the 2026-11-07 final-version host test.
 - Removes a superseded 2026-11-03 PDF from the *binary* package; the old source-tree PDF is retained only as historical material.
 - Includes a separate packaging revision because the DEB payload differs from both `1.0.0-32` and the private `+docs1` QA draft.
-- Offline-tested only; **not publicly released** and **not yet installed/validated on Proxmox**. Rights clearance remains open.
+- Exact `1.0.0-32+docs2` DEB installed as an APT upgrade on `pve-test` / Proxmox VE 9.2.25 on 2026-11-09; CLI and web UI confirmed by the maintainer. The public-release decision and remaining rights assessment are separate.
 
 
 ## 1.0.0-32 — Technical final build (public release pending)

@@ -31,9 +31,11 @@ In der lokalen Integrationssimulation wurden Menü und API um eigene Blöcke erw
 - Die `AGPL-3.0-only`-Wahl gilt für solche Projektbeiträge, für die entsprechende Lizenzrechte bestehen. `AGPL-3+` des Proxmox-Pakets ist ein getrennt dokumentierter Upstream-Lizenzhinweis, keine pauschale Lizenzierung sämtlicher ZFS-Manager-Dateien durch Proxmox.
 - Die vollständige Entwicklungsherkunft **vor dem gesammelt importierten Quellcode-Commit vom 06.11.2026** ist aus dem Git-Bundle nicht nachweisbar. Von ChatGPT unterstützte Entwicklung lässt die Prüfung möglicher dritter Vorlagen nicht entfallen.
 
+**Angabe des Maintainers (09.11.2026):** Er hat selbst keine Codefragmente aus anderen GitHub-Repositories, Webseiten oder Proxmox-Quelldateien in dieses Projekt eingefügt; die projektbezogenen Codebeiträge wurden in der gemeinsamen ChatGPT-gestützten Entwicklung erstellt. Dies dokumentiert die Erklärung des Maintainers, nicht eine unabhängig bewiesene weltweite Codeherkunft oder die Rechtefreiheit aller generierten Abschnitte.
+
 ## 4. Offene Freigabepunkte
 
-1. Verantwortliche/Beitragende bestätigen Ursprung der projektbezogenen Implementierungen vor Git-Erstimport und offenbaren konkret übernommene Codevorlagen, soweit bekannt.
+1. Die Erklärung des Maintainers zur gemeinsamen ChatGPT-gestützten Entwicklung wurde dokumentiert. Konkrete externe Codevorlagen oder Drittbeiträge, falls später festgestellt, sind mit Herkunft/Lizenz zu ergänzen; eine vollständige unabhängige Provenienzprüfung vor Git-Erstimport ist nicht möglich.
 2. Relevante *andere* Upstreamquellen (`proxmox-widget-toolkit`, ExtJS, sonstige verwendete Vorlagen) bei Anhaltspunkten vergleichen; eventuelle konkrete Übernahmen einschließlich Ursprung, Revision, Lizenz und Rechteinhaber dokumentieren.
 3. Für **nachgewiesen übernommene** urheberrechtlich relevante Passagen `debian/copyright`, gegebenenfalls Dateiheader und Notices rechtlich korrekt zuordnen. Das derzeitige pauschale `Files: *` ist nur eine vorläufige Zuordnung und **nicht als abgeschlossene Klärung** zu verstehen.
 4. Die in der geprüften finalen DEB **eingebetteten** Dateien `usr/share/doc/pve-zfs-manager/copyright` und `THIRD_PARTY_NOTICES.md` unterscheiden sich nach einem reinen Repository-Dokumentationspatch weiterhin von der neuen Dokumentation. Vor einem öffentlichen DEB-Release prüfen, ob **ein aktualisiertes, neu zu testendes Paket** zur korrekten Lizenzbeilage nötig wird; das ursprüngliche getestete Paket nicht heimlich ersetzen oder unter derselben Prüfsumme ausgeben.

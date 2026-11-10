@@ -3,11 +3,11 @@
 **Version:** `1.0.0-32`  
 **Stand:** 09.11.2026
 **Status:** Technisches Final-Paket, Vorbereitung der öffentlichen Veröffentlichung  
-**Getestete Proxmox-Version:** 9.2.25 (Finalversion `1.0.0-32` am 07.11.2026 live geprüft; `+docs2` noch nicht live geprüft)
+**Getestete Proxmox-Version:** 9.2.25 (`1.0.0-32` am 07.11.2026 sowie die exakte `+docs2`-DEB am 09.11.2026 live geprüft)
 
 ## Paketrevision `1.0.0-32+docs2`
 
-Nur Dokumentations-/Copyrightbeilagen und Debian-Paketversion angepasst; installierte Runtime bleibt identisch zur am 07.11.2026 geprüften `1.0.0-32`. Diese private QA-Revision wurde noch **nicht** auf einem Proxmox-Host installiert und wird nicht öffentlich vertrieben. Die rechtliche Herkunftsfreigabe ist weiterhin offen.
+Nur Dokumentations-/Copyrightbeilagen und Debian-Paketversion angepasst; installierte Runtime bleibt identisch zur am 07.11.2026 geprüften `1.0.0-32`. Die exakte `+docs2`-DEB wurde am **09.11.2026** auf `pve-test` per APT installiert; CLI, Dienste und Weboberfläche wurden bestätigt. Die Entscheidung über eine öffentliche Verteilung und über verbleibende Rechtefragen ist davon getrennt.
 
 ## Funktionsumfang
 
