@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager for Proxmox VE
 
-**Verified packaging revision (`1.0.0-32+docs2`):** The exact DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) was installed via APT on `pve-test` (Proxmox VE 9.2.25) on **2026-11-09**. The maintainer confirmed `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` and the web interface. Its runtime code matches the previously tested `1.0.0-32`; this does not establish compatibility with other PVE versions or complete the rights review. See `PACKAGE-STATUS.md`.
+**Verified packaging revision (`1.0.0-32+docs2`):** The exact DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) was installed via APT on `pve-test` (Proxmox VE 9.2.25) on **2026-11-09**. The maintainer confirmed `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` and the web interface. Its runtime code matches the previously tested `1.0.0-32`; this does not establish compatibility with other PVE versions or constitute an independent legal opinion. See `PACKAGE-STATUS.md`.
 
 
 **ZFS snapshot management integrated into the existing Proxmox VE web interface.**
@@ -9,7 +9,7 @@
 
 > **Independent community project.** BuMaVory ZFS Manager is not an official Proxmox product and is not affiliated with or endorsed by Proxmox Server Solutions GmbH.
 >
-> **Publication status (2026-11-10):** This repository is public. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) was released with the exact tested `1.0.0-32+docs2` Debian package. `AGPL-3.0-only` applies to project contributions that the maintainer is entitled to license. Third-party provenance and attribution review is ongoing; publication does **not** constitute legal clearance.
+> **Publication status (2026-11-10):** This repository is public. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) was released with the exact tested `1.0.0-32+docs2` Debian package. `AGPL-3.0-only` applies to project contributions that the maintainer is entitled to license. The documented technical provenance review compared 33 project sources with 83 relevant Proxmox files and found no concrete unauthorized code copying within that scope. This is not an independent legal clearance.
 
 ## Features
 
@@ -72,7 +72,7 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 
 ## License and trademarks
 
-**License for original project contributions: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** Third-party source ownership and attribution are still under review. This selection does not relicense Proxmox VE or other parties' code; see [LICENSING-REVIEW.md](LICENSING-REVIEW.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+**License for original project contributions: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** The scoped technical provenance and license review was performed on 2026-11-09; it did not identify concrete unauthorized copying in the inspected comparison corpus. If specific incorporated third-party material is identified later, the applicable rights and notices will be added. The project license does not relicense Proxmox VE or third-party code. See [CODE-PROVENANCE-REVIEW.md](CODE-PROVENANCE-REVIEW.md), [LICENSING-REVIEW.md](LICENSING-REVIEW.md) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Proxmox and Proxmox Virtual Environment are trademarks of their respective owners. See [TRADEMARK.md](TRADEMARK.md).
 

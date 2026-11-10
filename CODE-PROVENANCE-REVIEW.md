@@ -1,7 +1,7 @@
 # BuMaVory ZFS Manager v1.0.0-32 — Codeherkunft und Abgleich
 
 **Stand:** 2026-11-09
-**Status:** Technische Teilprüfung dokumentiert, **keine abschließende Urheber- oder Veröffentlichungsfreigabe**.
+**Status-Update 10.11.2026:** **Technische Codeherkunfts- und Lizenzprüfung im dokumentierten Umfang durchgeführt.** Vergleich von 33 eigenen Python-/Perl-Dateien mit 83 relevanten JavaScript-/Perl-Dateien aus `pve-manager` 9.2.25; keine konkrete unzulässige Fremdcodeübernahme nachgewiesen. Die Grenzen der Untersuchung bleiben bestehen; dies ist kein unabhängiges Rechtsgutachten und kein Nachweis vollständiger Herkunft aller denkbaren Vorlagen.
 
 ## 1. Quellen und Prüfumfang
 
@@ -33,13 +33,15 @@ In der lokalen Integrationssimulation wurden Menü und API um eigene Blöcke erw
 
 **Angabe des Maintainers (09.11.2026):** Er hat selbst keine Codefragmente aus anderen GitHub-Repositories, Webseiten oder Proxmox-Quelldateien in dieses Projekt eingefügt; die projektbezogenen Codebeiträge wurden in der gemeinsamen ChatGPT-gestützten Entwicklung erstellt. Dies dokumentiert die Erklärung des Maintainers, nicht eine unabhängig bewiesene weltweite Codeherkunft oder die Rechtefreiheit aller generierten Abschnitte.
 
-## 4. Offene Freigabepunkte
+## 4. Abschlussstand und bedarfsabhängige Folgearbeiten (10.11.2026)
 
-1. Die Erklärung des Maintainers zur gemeinsamen ChatGPT-gestützten Entwicklung wurde dokumentiert. Konkrete externe Codevorlagen oder Drittbeiträge, falls später festgestellt, sind mit Herkunft/Lizenz zu ergänzen; eine vollständige unabhängige Provenienzprüfung vor Git-Erstimport ist nicht möglich.
-2. Relevante *andere* Upstreamquellen (`proxmox-widget-toolkit`, ExtJS, sonstige verwendete Vorlagen) bei Anhaltspunkten vergleichen; eventuelle konkrete Übernahmen einschließlich Ursprung, Revision, Lizenz und Rechteinhaber dokumentieren.
-3. Für **nachgewiesen übernommene** urheberrechtlich relevante Passagen `debian/copyright`, gegebenenfalls Dateiheader und Notices rechtlich korrekt zuordnen. Das derzeitige pauschale `Files: *` ist nur eine vorläufige Zuordnung und **nicht als abgeschlossene Klärung** zu verstehen.
-4. Die in der geprüften finalen DEB **eingebetteten** Dateien `usr/share/doc/pve-zfs-manager/copyright` und `THIRD_PARTY_NOTICES.md` unterscheiden sich nach einem reinen Repository-Dokumentationspatch weiterhin von der neuen Dokumentation. Vor einem öffentlichen DEB-Release prüfen, ob **ein aktualisiertes, neu zu testendes Paket** zur korrekten Lizenzbeilage nötig wird; das ursprüngliche getestete Paket nicht heimlich ersetzen oder unter derselben Prüfsumme ausgeben.
-5. Vertraulichen E-Mail-Empfang/-Antwort unabhängig testen, die historisch gelöschten Git-Dokumente redaktionell freigeben und die aktuellen Release-Assets/Quellen nach Abschluss der Rechteprüfung konsistent erstellen.
+**Durchgeführt:** Die Erklärung des Maintainers zur gemeinsamen ChatGPT-gestützten Entwicklung ist dokumentiert; die konkret verfügbaren Proxmox-9.2.25-Vergleichsdateien wurden technisch untersucht. Identifiziert wurden kurze Navigationsanker, API-Muster und die Integration in vorhandene Hostdateien. Im geprüften GUI-Korpus ergab die Wortgleichheitsprüfung keinen längeren identischen Implementierungsblock ab 45 Tokens. Damit liegt **kein bestätigter konkreter Fremdcodeverstoß** aus dem Vergleich vor.
+
+**Grenzen:** Die Untersuchung umfasst nicht das vollständige ExtJS-Framework, `proxmox-widget-toolkit`, alle denkbaren anderen Vorlagen oder die komplette Entwicklungsherkunft vor dem ersten Git-Import. Ein Ausbleiben von Treffern ist kein weltweiter Originalitätsnachweis und keine anwaltliche Rechtsfreigabe.
+
+**Bei konkreten Hinweisen weiter prüfen:** Wenn ein tatsächlicher Fremdcodeabschnitt oder eine externe Vorlage nachgewiesen wird, Herkunft, Urheber, Lizenz und Versionsstand konkret dokumentieren und die zutreffenden Dateiheader, `debian/copyright` und `THIRD_PARTY_NOTICES.md` aktualisieren. Ohne solchen Nachweis werden nicht pauschal fremde Rechteinhaber behauptet.
+
+**Technischer Release-Stand:** Die `1.0.0-32+docs2`-DEB wurde am 09.11.2026 auf `pve-test` / PVE 9.2.25 installiert und geprüft. Das Repository und der Release `v1.0.0-32` sind seit 10.11.2026 öffentlich; die drei früheren internen Prüfberichte wurden vor der Veröffentlichung aus der erreichbaren Git-Historie entfernt. Der veröffentlichte Tag und seine Artefakte bleiben unverändert.
 
 ## 5. Referenzen
 

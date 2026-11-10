@@ -5,7 +5,7 @@
 
 Stand: 2026-11-09  
 Lizenzwahl: **AGPL-3.0-only für eigenständig entwickelte Projektbestandteile**  
-Veröffentlichungsstatus: **Repository und Release `v1.0.0-32` am 10.11.2026 öffentlich veröffentlicht; die Prüfung möglicher Drittanbieterrechte bleibt offen.**
+Veröffentlichungsstatus: **Repository und `v1.0.0-32` am 10.11.2026 veröffentlicht. Die technische Codeherkunfts- und Lizenzprüfung ist im dokumentierten Umfang durchgeführt; keine konkrete unzulässige Fremdcodeübernahme nachgewiesen. Keine unabhängige rechtliche Vollprüfung.**
 
 ## Bestätigte Punkte
 
@@ -20,15 +20,15 @@ Grundlage des historischen Ausgangsaudits: ein lokal überlassenes Quellarchiv `
 
 Im Verzeichnis `src/` befinden sich **25 Python- und 8 Perl-Dateien**. In ihren ersten 25 Zeilen waren keine expliziten Copyright-/SPDX-Kopfzeilen erkennbar. Dies beweist keine Fremdurheberschaft, zeigt aber fehlende dateibezogene Rechte- und Lizenzzuordnung.
 
-Für die weiterhin offene Prüfung möglicher Drittanbieterrechte:
+Im technischen Codeherkunfts- und Lizenzabgleich betrachtete Bestandteile (zusätzliche Prüfung nur bei konkreten Anhaltspunkten):
 
 | Datei/Familie | Warum prüfen? | Stand |
 | --- | --- | --- |
-| `src/manager_patch.py`, `src/previous_patch.py`, `src/patch_nav.py` und Versionsvarianten `manager_patch_*.py` | Enthalten die in die Proxmox-Weboberfläche einzufügenden JavaScript-Blöcke; Herkunft eventuell übernommener ExtJS-/Proxmox-Fragmente klären. | Offen |
-| `src/PVE/API2/ZFSSnapshotViewer.pm` und dessen ältere Varianten | Eigener API-Endpunkt verwendet `PVE::`-Schnittstellen und `register_method`; prüfen, ob Implementierungsabschnitte aus Upstreamdateien übernommen wurden. | Offen |
-| `src/universal.py` | Patcht beim Installieren Dateien des auf dem Host vorhandenen Proxmox-Pakets; Installationspatches und mitgelieferte Fragmente auf Herkunft prüfen. | Offen |
-| `src/libexec/guest_policy*.py`, `src/zfsm_cli.py`, `src/zfsm_capacity.py`, `src/adminctl.py`, `src/offline_recovery.py` | Autorschaft bestätigen und Lizenzkopf für belegte eigene Bestandteile ergänzen. | Offen |
-| `debian/copyright` | Der Eintrag `Files: *` ordnet pauschal BuMaVory Copyright zu. Nach Herkunftsprüfung durch korrekte Rechteinhaber-/Dateiabschnitt-Zuordnung ersetzen bzw. ergänzen. | Offen |
+| `src/manager_patch.py`, `src/previous_patch.py`, `src/patch_nav.py` und Versionsvarianten `manager_patch_*.py` | GUI-Integrationscode mit Proxmox-Menüankern und ExtJS-Strukturen. | Im definierten `pve-manager`-Korpus verglichen; kein längerer identischer GUI-Implementierungsblock gefunden. Andere mögliche Vorlagen nicht systematisch untersucht. |
+| `src/PVE/API2/ZFSSnapshotViewer.pm` und ältere Varianten | API-Registrierungsfelder und Proxmox-Schnittstellen. | Technisch verglichen; nur kurze konventionelle API-Muster festgestellt. |
+| `src/universal.py` | Einbau der projektspezifischen Ergänzungen in bereits vorhandene Proxmox-Dateien auf dem Host. | Integrationspunkte untersucht; keine vollständigen fremden Hostdateien im Paket festgestellt. |
+| `src/libexec/guest_policy*.py`, `src/zfsm_cli.py`, `src/zfsm_capacity.py`, `src/adminctl.py`, `src/offline_recovery.py` | Eigenständige Projektbestandteile; Maintainer-Erklärung zur Entstehung ist dokumentiert. | In den technischen Quellenabgleich einbezogen; Lizenzköpfe können bei zukünftiger Pflege vereinheitlicht werden. |
+| `debian/copyright` | Lizenzwahl für eigene Beiträge und gesonderter Vermerk zum unveränderten FSF-Lizenztext. | Vorhanden; ergänzen, wenn tatsächliche Drittanteile mit nachweisbaren Rechten festgestellt werden. |
 
 **Abgrenzung:** Der Import einer Proxmox-Bibliothek, ein Aufruf der öffentlichen API oder das Patchen einer auf dem Host installierten Datei ist für sich genommen **noch kein Nachweis, dass fremder Quelltext mit dem Paket ausgeliefert wird**. Umgekehrt belegt ein automatischer Scan nicht, dass kein fremder Quelltext enthalten ist. Für übernommene Abschnitte müssen die jeweiligen Urheberrechtsvermerke und Lizenzbedingungen erhalten bleiben.
 
@@ -38,16 +38,16 @@ Für die weiterhin offene Prüfung möglicher Drittanbieterrechte:
 - **Belegte kurze Berührungspunkte:** ein wörtlicher Menü-Suchanker in `src/patch_nav.py` zu `pvemanagerlib.js`; typische API-Registrierungsfelder in `src/PVE/API2/ZFSSnapshotViewer*.pm` zu `PVE/API2/Nodes.pm`; `src/universal.py` bindet eigene Ergänzungen in diese vorhandenen Hostdateien ein.
 - **Kein längerer wortgleicher GUI-Funktionsblock** ab 45 Tokens aus dem untersuchten `pve-manager`-Korpus wurde in der Projekt-GUI nachgewiesen. Das ist nur ein abgegrenzter **technischer Teilvergleich**, nicht der Nachweis vollständiger unabhängiger Autorschaft oder die Prüfung aller Frameworks.
 - Die oben genannten Funde und verbleibenden Grenzen sind in [`CODE-PROVENANCE-REVIEW.md`](CODE-PROVENANCE-REVIEW.md) dokumentiert und in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) als vorläufige Quellenhinweise aufgenommen. Nicht nachgewiesene Dritturheber werden **nicht** pauschal zu Rechteinhabern eigener Implementierungen erklärt.
-- **Paket-Metadaten (historischer Befund):** Die ursprüngliche `1.0.0-32`-DEB enthielt teilweise veraltete Dokumente, obwohl das Debian-Control-Maintainerfeld korrekt war. Die separate `1.0.0-32+docs2`-Revision korrigierte diese Beilagen und wurde am 09.11.2026 auf PVE 9.2.25 praktisch getestet. Das veröffentlichte Paket entspricht SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`; die offenen Codeherkunftsfragen bleiben bestehen.
+- **Paket-Metadaten (historischer Befund):** Die ursprüngliche `1.0.0-32`-DEB enthielt teilweise veraltete Dokumente, obwohl das Debian-Control-Maintainerfeld korrekt war. Die separate `1.0.0-32+docs2`-Revision korrigierte diese Beilagen und wurde am 09.11.2026 auf PVE 9.2.25 praktisch getestet. Das veröffentlichte Paket entspricht SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`; dies ist kein unabhängiges vollständiges Herkunfts- oder Rechtsgutachten.
 - Der Maintainer hat den Dokumentations-Commit **`30cbb13`** auf `main` erfolgreich gepusht (PowerShell-Ausgabe vom 09.11.2026). Dies ist **keine** vollständige erneute Live-Abfrage des privaten GitHub-Repositorys.
 
-## Noch offene Freigabepunkte
+## Abschlussstand und mögliche Folgearbeiten (10.11.2026)
 
-1. **Restliche Codeherkunft klären:** Für die oben genannten Datei-/Variantenfamilien anhand der Entwicklungs- oder Git-Historie, Originalquellen und möglicher Vorlagen festhalten: selbst verfasst, generiert und geprüft, aus Open-Source-Code angepasst oder unverändert übernommen. Bei übernommenen Teilen konkrete Quelle, Lizenz, Urheber und Datum erfassen.
-2. **Copyright und Hinweise berichtigen:** Passende Copyright-/SPDX-Hinweise für belegbar eigene Dateien ergänzen; fremde Hinweise ausdrücklich erhalten. `debian/copyright` und `THIRD_PARTY_NOTICES.md` entsprechend abgleichen. Nicht pauschal andere Rechteinhaber als BuMaVory ausweisen.
-3. **Sicherheitskontakt:** Laut Maintainer war der E-Mail-Funktionstest am 09.11.2026 erfolgreich. Ein unabhängiger Zustell-/Antwortnachweis wurde nicht geprüft. GitHub Private Vulnerability Reporting sollte aktiviert und sein Status separat bestätigt werden.
-4. **Git-Historie (10.11.2026 bereinigt):** Die drei bekannten internen Prüfberichte wurden aus der erreichbaren Git-Historie entfernt; der Dateibaum blieb identisch. Externe Kopien oder GitHub-Caches können trotzdem bestehen. Ein heuristischer Secret-Scan ist kein umfassender Sicherheitsnachweis.
-5. **Veröffentlichung erfolgt:** `v1.0.0-32` ist mit der getesteten `+docs2`-DEB und den Prüfsummen öffentlich. Der Release-Tag und die Dateien bleiben unverändert; offene Rechtsfragen werden durch die Veröffentlichung nicht entschieden.
+1. **Technische Prüfung durchgeführt:** Die Herkunftserklärung des Maintainers, der Vergleich der 33 projektbezogenen Python-/Perl-Dateien mit 83 relevanten `pve-manager`-Dateien und die festgestellten kurzen Integrationsmuster sind dokumentiert. In diesem begrenzten Prüfumfang wurde keine konkrete unzulässige Fremdcodeübernahme festgestellt.
+2. **Keine pauschale Rechtsgarantie:** Nicht Bestandteil der Untersuchung waren ein vollständiger Vergleich mit ExtJS, `proxmox-widget-toolkit`, allen denkbaren weiteren Vorlagen und eine unabhängige Prüfung jeder Entwicklungsstufe vor dem Git-Erstimport. Daraus folgt nicht automatisch ein offener konkreter Rechtsverstoß.
+3. **Lizenznachweise bei Bedarf ergänzen:** Für später eindeutig nachgewiesene fremde Passagen konkrete Quellen, Rechteinhaber und Lizenzen in `debian/copyright`, Dateiheadern und `THIRD_PARTY_NOTICES.md` aufnehmen. Ein vollständiges externes Rechtsgutachten wurde nicht beauftragt oder erbracht.
+4. **Sicherheitskontakt und Veröffentlichung:** `bumavory@buse.rocks` wurde vom Maintainer am 09.11.2026 erfolgreich getestet; GitHub Private Vulnerability Reporting ist laut API-Prüfung vom 10.11.2026 aktiviert. Das Repository und `v1.0.0-32` sind öffentlich; die Git-Historie wurde vor Veröffentlichung um drei bekannte interne Berichte bereinigt. Externe Kopien oder Caches können davon unberührt bleiben.
+5. **Artefakte unverändert:** Das bereits geprüfte `1.0.0-32+docs2`-Paket samt SHA256, das Release-Quellarchiv und der Tag `v1.0.0-32` werden durch diese nachträgliche Dokumentationskorrektur nicht ersetzt.
 
 ## Keine erneute Pflichtprüfung
 

@@ -1,6 +1,6 @@
 # BuMaVory ZFS Manager für Proxmox VE
 
-**Geprüfte Paketrevision (`1.0.0-32+docs2`):** Die exakte DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am **09.11.2026** per APT auf `pve-test` mit Proxmox VE 9.2.25 installiert. Der Maintainer bestätigte `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` und die Weboberfläche. Der Laufzeitcode ist gegenüber der zuvor getesteten `1.0.0-32` unverändert. Dies ist weder eine Kompatibilitätsfreigabe für andere PVE-Versionen noch eine abgeschlossene Rechteprüfung. Siehe `PACKAGE-STATUS.md`.
+**Geprüfte Paketrevision (`1.0.0-32+docs2`):** Die exakte DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am **09.11.2026** per APT auf `pve-test` mit Proxmox VE 9.2.25 installiert. Der Maintainer bestätigte `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` und die Weboberfläche. Der Laufzeitcode ist gegenüber der zuvor getesteten `1.0.0-32` unverändert. Dies ist keine Kompatibilitätsfreigabe für andere PVE-Versionen und kein unabhängiges Rechtsgutachten. Siehe `PACKAGE-STATUS.md`.
 
 
 **ZFS-Snapshots direkt in der vorhandenen Proxmox-Weboberfläche verwalten.**
@@ -9,7 +9,7 @@
 
 > **Unabhängiges Community-Projekt.** BuMaVory ZFS Manager ist kein offizielles Produkt von Proxmox und wird nicht von Proxmox Server Solutions GmbH entwickelt oder unterstützt.
 >
-> **Veröffentlichungsstand (10.11.2026):** Das Repository ist öffentlich. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) wurde mit dem geprüften Debian-Paket `1.0.0-32+docs2` veröffentlicht. `AGPL-3.0-only` gilt für Projektbeiträge, soweit die entsprechenden Rechte bestehen. Die Zuordnung möglicher Drittanteile wird weiter geprüft; die Veröffentlichung bedeutet **keine** abschließende rechtliche Freigabe.
+> **Veröffentlichungsstand (10.11.2026):** Das Repository ist öffentlich. [v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32) wurde mit dem geprüften Debian-Paket `1.0.0-32+docs2` veröffentlicht. `AGPL-3.0-only` gilt für Projektbeiträge, soweit die entsprechenden Rechte bestehen. Die technische Codeherkunfts- und Lizenzprüfung wurde durchgeführt: 33 Projektdateien wurden mit 83 relevanten Proxmox-Dateien verglichen. Dabei wurde im geprüften Umfang keine konkrete unzulässige Fremdcodeübernahme nachgewiesen. Die Prüfung ist kein unabhängiges Rechtsgutachten.
 
 ## Funktionen
 
@@ -72,7 +72,7 @@ Maintainer: **BuMaVory Project** — [bumavory@buse.rocks](mailto:bumavory@buse.
 
 ## Lizenz und Marken
 
-**Lizenz für eigene Projektbeiträge: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** Die Herkunft fremder Codeanteile und erforderliche Urheberrechtsvermerke werden weiterhin geprüft. Die Lizenzwahl betrifft nicht automatisch Proxmox VE oder fremde Werke. Siehe [LICENSING-REVIEW.md](LICENSING-REVIEW.md) und [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+**Lizenz für eigene Projektbeiträge: [GNU AGPLv3 only](LICENSE) (`AGPL-3.0-only`).** Der technische Codeherkunfts- und Lizenzabgleich wurde am 09.11.2026 dokumentiert; im untersuchten Vergleichskorpus wurde keine konkrete unzulässige Fremdcodeübernahme nachgewiesen. Tatsächlich später belegte fremde Quelltextanteile erhalten die jeweils erforderlichen Urheberrechts- und Lizenzhinweise. Die eigene Lizenzwahl betrifft nicht automatisch Proxmox VE oder andere Drittwerke. Siehe [CODE-PROVENANCE-REVIEW.md](CODE-PROVENANCE-REVIEW.md), [LICENSING-REVIEW.md](LICENSING-REVIEW.md) und [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Proxmox und Proxmox Virtual Environment sind Marken der jeweiligen Rechteinhaber. Siehe [TRADEMARK.md](TRADEMARK.md).
 

@@ -3,8 +3,9 @@ Upstream-Name: BuMaVory ZFS Manager for Proxmox VE
 Source: https://github.com/mbuse79/zfs-manager-pve
 Comment: BuMaVory project maintainer has selected AGPL-3.0-only for
  original portions of the project. This notice does not relicense the
- Proxmox VE host packages or any third-party work. A manual provenance
- and attribution review remains necessary before public distribution.
+ Proxmox VE host packages or any third-party work. A scoped technical provenance review was performed and documented on
+ 2026-11-09; this is not an independent or exhaustive legal opinion.
+ If concrete third-party code is identified, preserve its required notices.
 
 Files: *
 Copyright: 2026 BuMaVory ZFS Manager contributors

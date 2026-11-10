@@ -19,12 +19,12 @@ The CLI/backend may continue to display functional version `1.0.0-32`; the packa
 - The old 2026-11-03 `ZFS-Manager-1.0.0-32-Final-und-Veroeffentlichung.pdf` remains in the *source repository* strictly as a **historical report**. Its references to missing maintainer contact and an untested 1.0.0-32 are superseded by successful 2026-11-07/09 testing. The PDF is **not bundled** into the new DEB.
 - `PUBLICATION-GATE-2026-11-09.md` is an internal gate document, not an installation instruction; it is part of the source-review snapshot but not shipped as a Debian manual.
 
-## Public release and remaining review items (2026-11-10)
+## Public release and completed technical provenance review (2026-11-10)
 
-1. Project maintainer confirms, to the best of their knowledge, the origin of the core implementation and any specific third-party copied templates. No unverified blanket authorship is claimed.
+1. **Documented:** Maintainer origin statement from 2026-11-09 and scoped technical comparison of 33 project Python/Perl files with 83 `pve-manager` files. No concrete unauthorized copying was found in that comparison; other possible upstream material was not comprehensively surveyed.
 2. Any confirmed external contributions must retain applicable license, copyright attribution and source notices, if required. Comparisons of limited `pve-manager` samples are only partial technical evidence.
 3. **Completed 2026-11-09:** Exact `+docs2` DEB SHA256 verified, installed and CLI/GUI-checked on `pve-test`; backup taken before upgrade.
 4. **GitHub live status (2026-11-10):** The three known internal reports were removed from reachable Git history without changing the file tree. The verified public release tag `v1.0.0-32` points to `75aedfca1e58622ac78395e02ac04366649c1987`. Three assets and their published SHA256 checksums were confirmed. Later `main` documentation commits do not alter that tag.
-5. **Published 2026-11-10:** The repository and release are public. Remaining provenance, attribution and private vulnerability reporting checks are still open; publication does not imply they were completed.
+5. **Published 2026-11-10:** The repository and release are public. The scoped technical provenance review was performed and documented; any future confirmed third-party inclusions must carry correct attribution. GitHub private vulnerability reporting was enabled and verified on 2026-11-10. No independent legal opinion is claimed.
 
 *Technical packaging record; not legal advice.*
