@@ -1,0 +1,32 @@
+[
+  {
+    "lang": "PVELangCookie=de",
+    "ext": "7.0.0.168",
+    "tabs": 2,
+    "guests": 4,
+    "technicalCollapsed": true,
+    "filterPreservesExpansion": true,
+    "refreshPreservesSections": true,
+    "refreshPreservesSelection": true,
+    "checkboxDoesNotExpand": true,
+    "retentionPreviewRequired": true,
+    "detailsButtonWorks": true,
+    "apiWrites": 0,
+    "fixtureError": null
+  },
+  {
+    "lang": "PVELangCookie=en",
+    "ext": "7.0.0.168",
+    "tabs": 2,
+    "guests": 4,
+    "technicalCollapsed": true,
+    "filterPreservesExpansion": true,
+    "refreshPreservesSections": true,
+    "refreshPreservesSelection": true,
+    "checkboxDoesNotExpand": true,
+    "retentionPreviewRequired": true,
+    "detailsButtonWorks": true,
+    "apiWrites": 0,
+    "fixtureError": null
+  }
+]

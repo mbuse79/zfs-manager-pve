@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-# Private packaging-only documentation revision; source/runtime version remains 1.0.0-32.
-PACKAGE_VERSION='1.0.0-32+docs2'
+# RC9 release: preserve the documentation bytes included in the tested DEB.
+PACKAGE_VERSION='1.0.0-34~rc9'
 PACKAGE_FILE="pve-zfs-manager_${PACKAGE_VERSION}_all.deb"
 # Passing packaging checks is not a legal provenance/redistribution clearance.
 
@@ -24,10 +24,13 @@ if [[ ! -s "$HERE/LICENSE" ]] || [[ ! -s "$HERE/debian/copyright" ]]; then
   echo 'STOP: Approved LICENSE and Debian copyright file are required before packaging.' >&2
   exit 2
 fi
+DOCS="$HERE/packaging/rc9-tested-docs"
 BUILD="$HERE/_deb_build"
 rm -rf "$BUILD"
 mkdir -p "$BUILD/lib/systemd/system" "$BUILD/DEBIAN" "$BUILD/usr/lib/pve-zfs-manager/libexec" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2" "$BUILD/usr/sbin" "$BUILD/usr/share/doc/pve-zfs-manager"
 cp "$HERE/systemd/"*.service "$HERE/systemd/"*.timer "$HERE/systemd/"*.path "$BUILD/lib/systemd/system/"
+# Activate a read-only alert monitor; automatic deletion stays disabled until explicit opt-in.
+
 cp "$HERE/src/"*.py "$BUILD/usr/lib/pve-zfs-manager/"
 cp "$HERE/src/libexec/guest_policy.py" "$HERE/src/libexec/guest_policy_rc9.py" "$HERE/src/libexec/guest_policy_v1_10.py" "$BUILD/usr/lib/pve-zfs-manager/libexec/"
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_rc9.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
@@ -36,10 +39,15 @@ cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_rc8r2.pm" "$BUILD/usr/lib/pve-zfs-manag
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_rc7.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_6.pm" "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_5.pm" "$HERE/src/PVE/API2/ZFSSnapshotViewer_v1_4.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
 cp "$HERE/src/PVE/API2/ZFSSnapshotViewer.pm" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2/"
-cp "$HERE/README.md" "$HERE/CHANGELOG.md" "$HERE/RELEASE_NOTES.md" "$HERE/INSTALL.md" "$HERE/SECURITY.md" "$HERE/TRADEMARK.md" "$HERE/THIRD_PARTY_NOTICES.md" "$HERE/RELEASE-QA.md" "$HERE/LICENSING-REVIEW.md" "$HERE/INSTALL-DE.md" "$HERE/RELEASE_NOTES-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
-cp "$HERE/CODE-PROVENANCE-REVIEW.md" "$HERE/MAINTAINER.md" "$HERE/INSTALL.de.md" "$HERE/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
-cp "$HERE/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
-cp "$HERE/debian/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
+cp "$DOCS/README.md" "$DOCS/CHANGELOG.md" "$DOCS/RELEASE_NOTES.md" "$DOCS/INSTALL.md" "$DOCS/SECURITY.md" "$DOCS/TRADEMARK.md" "$DOCS/THIRD_PARTY_NOTICES.md" "$DOCS/RELEASE-QA.md" "$DOCS/LICENSING-REVIEW.md" "$DOCS/INSTALL-DE.md" "$DOCS/RELEASE_NOTES-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/EMERGENCY-34-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/BENACHRICHTIGUNGEN-34-RC2-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/POOLALARME-34-RC4-DE.md" "$DOCS/AUTOSNAP-34-RC5-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/HOSTPRUEFUNG-34-RC6-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/CODE-PROVENANCE-REVIEW.md" "$DOCS/MAINTAINER.md" "$DOCS/INSTALL.de.md" "$DOCS/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/RC9-TESTANLEITUNG-DE.md" "$DOCS/RC9-AENDERUNGEN-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$DOCS/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
+cp "$DOCS/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
 cat > "$BUILD/DEBIAN/control" <<EOF
 Package: pve-zfs-manager
 Version: ${PACKAGE_VERSION}
@@ -47,7 +55,7 @@ Section: admin
 Priority: optional
 Architecture: all
 Maintainer: ${MAINTAINER_NAME} <${MAINTAINER_EMAIL}>
-Depends: python3, perl, pve-manager (>= 9.1.1), zfsutils-linux, zfs-auto-snapshot
+Depends: python3, perl, pve-manager (>= 9.0), pve-manager (<< 10), zfsutils-linux, zfs-auto-snapshot
 Description: ZFS Manager integration for Proxmox VE (community release)
  Integrated ZFS status and guarded snapshot management in the
  Proxmox node UI at port 8006. Uses structural compatibility checks for supported PVE 9.x layouts.
@@ -78,6 +86,7 @@ case "$1" in
     python3 /usr/lib/pve-zfs-manager/universal.py install
     systemctl daemon-reload
     systemctl enable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer
+    systemctl enable --now pve-zfs-manager-emergency.timer
     ;;
 esac
 exit 0
@@ -87,7 +96,7 @@ cat > "$BUILD/DEBIAN/prerm" <<'EOF'
 set -e
 case "$1" in
   remove)
-    systemctl disable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer || true
+    systemctl disable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer pve-zfs-manager-emergency.timer || true
     systemctl stop pve-zfs-manager-reconcile.service || true
     python3 /usr/lib/pve-zfs-manager/universal.py uninstall
     ;;

@@ -1,0 +1,17 @@
+{
+  "PVE/API2/ZFSSnapshotViewer_rc8r2.pm": "167cd165a19182fb7aeb913b08c12a61c2c4caf8b6367370942f76601082652a",
+  "PVE/API2/ZFSSnapshotViewer_rc7.pm": "7f122395c70dfa49e566880843774543f50df84ec61c4485d0d19a1c45ffc22c",
+  "PVE/API2/ZFSSnapshotViewer.pm": "99dc909280f98bd4aa0d479e9f86a8b58d4aea151b9e0deda8855185bbe6751b",
+  "PVE/API2/ZFSSnapshotViewer_rc6.pm": "4c4435d5998bbedfe408f2e21b2001f273882ba7c2ddfeb0fa59e86d2032c1f9",
+  "PVE/API2/ZFSSnapshotViewer_v1_4.pm": "8c8b7f55d180960c2daefde7151cabf852981591d5ef2fcc82232bd4db836d22",
+  "PVE/API2/ZFSSnapshotViewer_v1_6.pm": "0c9078674df02eccc8118432e37350f6f1dc68e4365fd44b0c4fc3a357dae9a7",
+  "PVE/API2/ZFSSnapshotViewer_v1_5.pm": "ac6226908f1f8a643462a0897be8e73b3cd9e6efe84ba8f84663c74b1b288067",
+  "PVE/API2/ZFSSnapshotViewer_rc9.pm": "cca971d81cf918eda0043677f96cc25c3cd10e4af284ec5b11a545bf57b03036",
+  "libexec/guest_policy.py": "395f00f34da3de7d2af8ec29b005e1afc0b57aafcc2be4d796d87f3513dcd335",
+  "libexec/guest_policy_rc9.py": "ab38d967dd1659c012c982b8112c4ce412368a61ab1753034a9aab95065f041a",
+  "libexec/guest_policy_v1_10.py": "23114b5931720374ea43b10ee6854f529a845979049f9745c64598cba78e5afb",
+  "offline_recovery.py": "2d695e7ebf14aea10c114808aa0697c1763ee43af801b2ae48a777f267f052f4",
+  "zfsm_emergency.py": "2d1d6b51c0a118996437992279f7cd77e2c30e85526c4b442d0b7bd07f218e25",
+  "zfsm_backends.py": "1fa00c4f18dd1bf2b6daf5b5dc817fdeb7d1259735cc19863aa82cec7f73de74",
+  "zfsm_host_audit.py": "c6e556ba4e59800d88034428cf61b85fcd4057e6b61bd301435466bfbb36bc76"
+}

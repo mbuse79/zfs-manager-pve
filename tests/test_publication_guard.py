@@ -23,7 +23,8 @@ def test_public_build_requires_approved_license():
         assert 'LICENSE and Debian copyright' in result.stderr
 
 def test_runtime_sources_remain_expected_rc1_compatible():
-    assert (ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()==(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
+    from test_historical_api_v133 import historical_api_without_v133_topology
+    assert historical_api_without_v133_topology()==(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
 
 
 def test_selected_license_and_project_contact():

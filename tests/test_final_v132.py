@@ -5,10 +5,10 @@ from universal import VERSION
 ROOT=Path(__file__).resolve().parents[1]
 
 def test_final_version_consistency():
-    assert zfsm_cli.VERSION=='1.0.0-32'
-    assert VERSION=='1.0.0-32-dynamic-compat-installer'
-    assert "PACKAGE_VERSION='1.0.0-32+docs2'" in (ROOT/'build_deb.sh').read_text()
-    assert 'pve-zfs-manager_1.0.0-32+docs2_all.deb' in (ROOT/'install.sh').read_text()
+    assert zfsm_cli.VERSION=='1.0.0-34~rc9'
+    assert VERSION=='1.0.0-34-rc9-dynamic-compat-installer'
+    assert "PACKAGE_VERSION='1.0.0-34~rc9'" in (ROOT/'build_deb.sh').read_text()
+    assert "VERSION = '1.0.0-34~rc9'" in (ROOT/'install_driver.py').read_text()
 
 def test_publication_safety_docs_and_no_hardcoded_private_url():
     for name in ('README.md','INSTALL.md','TRADEMARK.md','SECURITY.md','PUBLICATION-CHECKLIST.md','LICENSING-REVIEW.md'):
@@ -16,7 +16,8 @@ def test_publication_safety_docs_and_no_hardcoded_private_url():
     assert 'https://<proxmox-host>:8006' in (ROOT/'src/patch_nav.py').read_text()
 
 def test_upstream_snapshot_api_identical_to_rc_fixture():
-    assert (ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()==(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
+    from test_historical_api_v133 import historical_api_without_v133_topology
+    assert historical_api_without_v133_topology()==(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
 
 def test_rc1_to_final_upgrade_on_pve_925():
     import tempfile

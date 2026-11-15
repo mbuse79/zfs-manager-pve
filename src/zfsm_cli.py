@@ -10,9 +10,9 @@ import sys
 
 import universal
 
-VERSION='1.0.0-32'
+VERSION='1.0.0-34~rc9'
 DE={
- 'heading':'ZFS Manager for Proxmox VE', 'usage':'Verwendung', 'commands':'Befehle',
+ 'heading':'ZFS Manager für Proxmox VE', 'usage':'Verwendung', 'commands':'Befehle',
  'help':'Hilfe anzeigen', 'status':'Integration, Version und Dienste anzeigen',
  'version':'Plugin- und Proxmox-Version anzeigen', 'check':'Kompatibilität ohne Änderungen prüfen',
  'repair':'GUI/API-Integration reparieren', 'force':'Manueller Reparaturversuch mit Warnung',
@@ -21,6 +21,9 @@ DE={
  'logs':'Letzte Reparaturprotokolle anzeigen', 'services':'Überwachungsdienste anzeigen',
  'update-check':'Installiertes Plugin-Paket anzeigen (keine Updatequelle eingerichtet)',
  'capacity':'Pool-Kapazität, Snapshot-Verbrauch und Aufbewahrungsübersicht (nur lesend)',
+ 'emergency':'Warnstufen, Notfallvorschau und geschuetzte Snapshot-Bereinigung',
+ 'inventory':'Bestehende AutoSnap- und ZFS-Dienste sicher erkennen (nur lesend)',
+ 'autosnap':'Doppelte AutoSnap-Zeitpläne interaktiv bereinigen und sichern',
  'confirm':'Reparatur trotz Kompatibilitätswarnung versuchen? [j/N]: ',
  'cancel':'Abgebrochen.', 'warning':'WARNUNG: Unbekannte Proxmox-Struktur. Keine blinden Änderungen; Schutzprüfungen bleiben aktiv.',
  'no_backup':'Keine Sicherungen vorhanden', 'snapshot':'Sicherung erstellt:',
@@ -37,40 +40,74 @@ EN={
  'logs':'Show recent repair logs', 'services':'Show watcher service states',
  'update-check':'Show installed package (no update source configured)',
  'capacity':'Read-only pool capacity, snapshot usage and retention audit',
+ 'emergency':'Capacity alerts, emergency preview and guarded cleanup',
+ 'inventory':'Read-only audit of existing AutoSnap and ZFS services',
+ 'autosnap':'Interactively resolve duplicate AutoSnap cron jobs with backup',
  'confirm':'Attempt repair despite compatibility warning? [y/N]: ',
  'cancel':'Cancelled.', 'warning':'WARNING: Unknown Proxmox layout. No blind modification; safety guards stay enabled.',
  'no_backup':'No backups found', 'snapshot':'Backup created:',
  'restore_note':'Automatic restore of old Proxmox files is blocked. Verify the backup and PVE version.',
  'error':'ERROR',
 }
-HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','capacity')
+HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','capacity','emergency','inventory','autosnap')
 
 def language(requested=None):
     raw=(requested or os.environ.get('LC_ALL') or os.environ.get('LC_MESSAGES') or os.environ.get('LANG') or 'en').lower()
     return DE if raw.startswith('de') or (not requested and raw in ('c','c.utf-8','posix') and Path('/etc/default/locale').is_file() and 'de_' in Path('/etc/default/locale').read_text().lower()) else EN
 
 def run(cmd):
+    if os.environ.get('ZFSM_CLI_LANG')=='en':
+        from cli_locale import english
+        p=subprocess.run(cmd,check=False,capture_output=True,text=True)
+        print(english(p.stdout),end='');print(english(p.stderr),end='',file=sys.stderr)
+        return p.returncode
     return subprocess.run(cmd,check=False).returncode
 
 def main(argv=None):
+    argv=list(sys.argv[1:] if argv is None else argv)
+    requested=None
+    if '--lang' in argv:
+        at=argv.index('--lang')
+        if at+1<len(argv): requested=argv[at+1]
+        if requested not in ('de','en'): raise SystemExit('--lang de|en')
+        del argv[at:at+2]
+    selected='de' if language(requested) is DE else 'en'
+    from cli_locale import display_language
+    if argv and argv[0]=='autosnap':
+        from zfsm_autosnap_resolve import main as autosnap_main
+        with display_language(selected):
+            return autosnap_main(argv[1:] if len(argv)>1 else ['--help'])
+    if argv and argv[0]=='emergency':
+        from zfsm_emergency import main as emergency_main
+        with display_language(selected):
+            return emergency_main(argv[1:])
     parser=argparse.ArgumentParser(add_help=False)
     parser.add_argument('command',nargs='?',default='help')
     parser.add_argument('--force',action='store_true')
-    parser.add_argument('--json',action='store_true',help='JSON for zfsm capacity only')
+    parser.add_argument('--json',action='store_true',help='JSON for zfsm capacity/inventory')
     parser.add_argument('--lang',choices=('de','en'))
     parser.add_argument('-h','--help',action='store_true',dest='show_help')
     args=parser.parse_args(argv)
-    t=language(args.lang)
+    t=language(requested or args.lang)
     if args.show_help or args.command=='help':
         print(f'{t["heading"]} {VERSION}\n{t["usage"]}: zfsm <command> [--force] [--json] [--lang de|en]\n\n{t["commands"]}:')
         for cmd in HELP_COMMANDS:
             print(f'  zfsm {cmd:<14} {t[cmd]}')
+        print(f'  zfsm emergency preview --pool POOL --count 15')
+        print(f'  zfsm emergency cleanup --pool POOL --count 15')
+        print(f'  zfsm autosnap resolve')
+        print(f'  zfsm autosnap backups')
+        print(f'  zfsm autosnap restore BACKUP-ID')
         print(f'  zfsm repair --force  {t["force"]}')
         return 0
-    if args.command not in HELP_COMMANDS:
+    if args.command not in HELP_COMMANDS or args.command=='emergency':
         parser.print_usage(sys.stderr); return 2
-    if (args.force and args.command!='repair') or (args.json and args.command!='capacity'):
+    if (args.force and args.command!='repair') or (args.json and args.command not in ('capacity','inventory')):
         parser.print_usage(sys.stderr);return 2
+    if args.command=='inventory':
+        from zfsm_host_audit import discover, main as audit_main
+        with display_language(selected):
+            return audit_main(['--json'] if args.json else [])
     if args.command=='capacity':
         from zfsm_capacity import AuditError, collect_report
         try:
@@ -123,7 +160,7 @@ def main(argv=None):
         if args.command=='restore':print(t['restore_note'])
         return 0 if args.command=='backups' else 2
     if args.command=='backup':
-        if os.geteuid()!=0:print(t['error']+': root required',file=sys.stderr);return 1
+        if os.geteuid()!=0:print(t['error']+(': Root-Rechte erforderlich' if t is DE else ': root required'),file=sys.stderr);return 1
         inst=universal.Installer()
         try:
             inst.check(allow_missing_dependencies=True)
@@ -137,6 +174,20 @@ def main(argv=None):
         print(t['warning'])
         if not sys.stdin.isatty() or input(t['confirm']).strip().lower() not in ('j','ja','y','yes'):
             print(t['cancel']);return 1
-    return run(['/usr/sbin/pve-zfs-manager', 'status' if args.command=='status' else 'check' if args.command=='check' else 'repair-force' if args.force else 'repair'])
+    os.environ['ZFSM_CLI_LANG']=selected
+    rc=run(['/usr/sbin/pve-zfs-manager', 'status' if args.command=='status' else 'check' if args.command=='check' else 'repair-force' if args.force else 'repair'])
+    if args.command in ('status','check'):
+        try:
+            from zfsm_emergency import pools as emergency_pools
+            for pool in emergency_pools():
+                if pool['severity'] in ('critical','emergency'):
+                    print((f"!!! ZFS KRITISCH: {pool['name']} {pool['percent']}% – ADMINISTRATOR MUSS HANDELN !!!" if t is DE else f"!!! ZFS CRITICAL: {pool['name']} {pool['percent']}% – ADMINISTRATOR ACTION REQUIRED !!!"),file=sys.stderr)
+                    rc=rc or 2
+                elif pool['severity']=='warning':
+                    print((f"WARNUNG: ZFS-Pool {pool['name']} {pool['percent']}% belegt." if t is DE else f"WARNING: ZFS pool {pool['name']} {pool['percent']}% allocated."),file=sys.stderr)
+        except Exception as exc:
+            print(('ZFS-Warnüberwachung nicht verfügbar: ' if t is DE else 'ZFS alert monitoring unavailable: ')+str(exc),file=sys.stderr)
+            rc=rc or 1
+    return rc
 
 if __name__=='__main__':sys.exit(main())

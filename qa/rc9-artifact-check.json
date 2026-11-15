@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0-34~rc9",
+  "runtime_files_matched": 40,
+  "runtime_files_unchanged_vs_rc8": 37,
+  "changed_runtime_files": [
+    "zfsm_cli.py",
+    "universal.py",
+    "manager_patch.py"
+  ],
+  "protected_files_identical_to_rc8": 15,
+  "deb_sha256": "f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f"
+}

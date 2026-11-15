@@ -82,7 +82,7 @@ class Capacity30(unittest.TestCase):
         with patch.object(zfsm_cli,'collect_report',create=True):
             self.assertEqual(zfsm_cli.main(['capacity','--force']),2)
             self.assertEqual(zfsm_cli.main(['status','--json']),2)
-        self.assertEqual(zfsm_cli.VERSION,'1.0.0-32')
+        self.assertEqual(zfsm_cli.VERSION,'1.0.0-34~rc9')
         self.assertIn('capacity',zfsm_cli.HELP_COMMANDS)
 
     def test_js_capacity_report_parity(self):
@@ -107,7 +107,8 @@ class Capacity30(unittest.TestCase):
         gui=(SRC/'manager_patch.py').read_text()
         api=(SRC/'PVE/API2/ZFSSnapshotViewer.pm').read_bytes()
         prev=(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
-        self.assertEqual(api,prev)
+        from test_historical_api_v133 import historical_api_without_v133_topology
+        self.assertEqual(historical_api_without_v133_topology(),prev)
         self.assertIn("itemId: 'zfs-capacity-audit'",gui)
         self.assertIn("enc(r.dataset)",gui)
         self.assertIn('retention-update',gui)  # existing write path retained
@@ -141,7 +142,7 @@ class ActualUpgrade30(unittest.TestCase):
             state['installed_hashes']['gui']=i.sha(oldgui.encode()) if hasattr(i,'sha') else __import__('hashlib').sha256(oldgui.encode()).hexdigest()
             i.save_state(state)
             i.install()
-            self.assertEqual(i.state()['version'],'1.0.0-32-dynamic-compat-installer')
+            self.assertEqual(i.state()['version'],'1.0.0-34-rc9-dynamic-compat-installer')
             self.assertIn('zfs-capacity-audit',i.gui.read_text())
             i.status()
 

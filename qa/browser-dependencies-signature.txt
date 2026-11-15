@@ -1,0 +1,3 @@
+gpgv: Signature made Fri Nov 13 02:29:56 2026 CET
+gpgv:                using RSA key 24B30F06ECC1836A4E5EFECBA7BCD1420BFE778E
+gpgv: Good signature from "Proxmox Trixie Release Key <proxmox-release@proxmox.com>"

@@ -1,3 +1,5 @@
+**RC9 (15.11.2026):** Current public instructions / Aktuelle öffentliche Anleitung: [docs/INSTALL-RC9.md](docs/INSTALL-RC9.md). Older text below describes historical releases. / Der folgende Text beschreibt historische Releases.
+
 # Installation und Upgrade – v1.0.0-32
 
 ### Schnellinstallation (ein Befehl)

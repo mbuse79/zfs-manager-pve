@@ -1,0 +1,14 @@
+.............ssssss..................................................... [ 29%]
+........................................................................ [ 58%]
+........................................................................ [ 87%]
+..........sss..................                                          [100%]
+=============================== warnings summary ===============================
+tests/test_rc8_reconstruction.py::test_bootstrap_rejects_unsafe_zip_before_code[duplicate]
+  /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/zipfile/__init__.py:1625: UserWarning: Duplicate name: 'same'
+    return self._open_to_write(zinfo, force_zip64=force_zip64)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [6] tests/test_autosnap_mandatory_v134_rc5.py:57: Integration test executes only inside an isolated root mock
+SKIPPED [3] tests/test_unzip_bootstrap_rc7.py:23: Bootstrap root requirement must be mocked as root
+238 passed, 9 skipped, 5 deselected, 1 warning in 2.71s

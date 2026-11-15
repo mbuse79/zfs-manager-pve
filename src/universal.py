@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""PVE ZFS Manager integration installer (stable release, fail-closed).
+"""PVE ZFS Manager integration installer (v1.0.0-34 RC2 test, fail-closed).
 
 This file does not run any `zfs` writes. Supports 9.1.1 stock install,
 9.2.21, and adopting an unchanged v1.0.0-rc2 installation.
@@ -36,7 +36,7 @@ import manager_patch_rc6
 import previous_patch
 import patch_nav
 
-VERSION = '1.0.0-32-dynamic-compat-installer'
+VERSION = '1.0.0-34-rc9-dynamic-compat-installer'
 COMPATIBLE = re.compile(r'^pve-manager/(?:9\.[0-9]+\.[0-9]+)/')
 # SHA256 of stock 9.1.1 files reported by the fresh pvetest2 node on 2026-10-23.
 # Guard against unexpected customizations despite compatible-looking navigation anchors.
@@ -108,8 +108,19 @@ class Installer:
         if check_dependencies and self.root==Path('/'):
             for exe in ('zfs','zpool','zfs-auto-snapshot','python3','perl','systemctl'):
                 if shutil.which(exe) is None: raise InstallError('Voraussetzung fehlt: '+exe)
-            for f in ('/etc/cron.d/zfs-auto-snapshot','/etc/cron.hourly/zfs-auto-snapshot', '/etc/cron.daily/zfs-auto-snapshot','/etc/cron.weekly/zfs-auto-snapshot','/etc/cron.monthly/zfs-auto-snapshot'):
-                if not self.path(f).is_file(): raise InstallError('Cron-Regel fehlt: '+f)
+            # Detect existing schedules, including administrator-defined paths.
+            # Never create a second timer or overwrite a pre-existing policy.
+            from zfsm_host_audit import discover
+            from zfsm_backends import competing
+            conflicts=competing()
+            if conflicts:
+                raise InstallError('Unsupported snapshot scheduler; resolve conflict first: '+', '.join(conflicts))
+            audit=discover()
+            # All schedules may intentionally be disabled by the administrator;
+            # mandatory means installed, NOT mandatory automatic snapshot creation.
+            if audit['autosnap']['duplicate_labels']:
+                raise InstallError('Doppelte AutoSnap-Aufträge; vor Installation prüfen: '+
+                                   ', '.join(audit['autosnap']['duplicate_labels']))
         return version
     @staticmethod
     def read(path):
@@ -486,11 +497,14 @@ class Installer:
             for p in (self.secret,self.admin):
                 if p.stat().st_uid!=0 and self.root==Path('/'):raise InstallError('Admin-Datei nicht root-owned')
                 if stat.S_IMODE(p.stat().st_mode)!=0o600:raise InstallError('Unsichere Admin-Dateirechte')
-            if before['yearly'] is None:
+            from zfsm_host_audit import discover
+            existing_yearly=any(r['label']=='yearly' for r in discover(root=self.root)['autosnap']['schedules'])
+            if before['yearly'] is None and not existing_yearly:
                 self.atomic(self.yearly,b'PATH=/usr/sbin:/usr/bin:/sbin:/bin\n# PVE ZFS Manager yearly, January 1st at 03:17\n17 3 1 1 * root /usr/sbin/zfs-auto-snapshot --quiet --syslog --label=yearly --keep=3 //\n',0o644)
                 changed.append('yearly')
             self.restart()
-            current={k:sha(self.read(p)) for k,p in files.items()}
+            current={k:sha(self.read(p)) for k,p in files.items()
+                     if not (k=='yearly' and existing_yearly and before['yearly'] is None)}
             self.save_state({'version':VERSION,'proxmox_at_install':version,'adopted_rc2':gui_state!='clean','initial':previous,'backup_dir':str(backup),'installed_hashes':current,'installed_at':datetime.now(timezone.utc).isoformat()})
             try:self.prune_automatic_backups()
             except OSError as ex:print('WARNUNG: Alte Sicherungen nicht bereinigt: '+str(ex))

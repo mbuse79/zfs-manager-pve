@@ -1,4 +1,4 @@
-"""Read-only per-node panel with auto discovery, grouped ZFS snapshots and retention display (0.5.1-test)."""
+"""PVE node UI with dynamic ZFS pool discovery and guarded snapshots (1.0.0-33 RC1)."""
 from previous_patch import HELPERS
 
 START = '        // BEGIN PVE-ZFS-MANAGER-READONLY-v1.0.0-rc9\n'
@@ -22,6 +22,12 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
         var zfsLocale = zfsLanguage.indexOf('de') === 0 ? 'de-DE' : 'en-US';
         var zfsTDe = {
             'Not available': 'Keine Angabe',
+            'Existing services (read-only discovery)': 'Vorhandene Dienste (nur Erkennung)',
+            'AutoSnap schedules': 'AutoSnap-Zeitpläne',
+            'Ready': 'Bereit',
+            'Needs review': 'Prüfen',
+            'External replication recognized – managed separately': 'Externe Replikation erkannt – separat verwaltet',
+            'No additional cleanup timer created': 'Kein zusätzlicher Bereinigungstimer angelegt',
             'Storage and snapshot audit': 'Speicher- und Snapshot-Auswertung',
             'Pool capacity': 'Pool-Auslastung',
             'Snapshot used (sum)': 'Snapshot-Verbrauch (Summe)',
@@ -33,7 +39,6 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'Observed': 'Vorhanden',
             'Above keep': 'Über Aufbewahrungswert',
             'Not configured': 'Nicht konfiguriert',
-            'Disabled': 'Deaktiviert',
             'Warning': 'Warnung',
             'Critical': 'Kritisch',
             'Normal': 'Normal',
@@ -43,7 +48,6 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'Datasets with snapshots: ': 'Datasets mit Snapshots: ',
             'This changes the schedule, not existing snapshots immediately.': 'Dies ändert den Zeitplan, nicht unmittelbar bestehende Snapshots.',
             'No snapshots found': 'Keine Snapshots gefunden',
-            'Free': 'Frei',
             'High pool occupancy': 'Hohe Pool-Auslastung',
             'Days': 'Tage',
             'Host snapshots will be permanently deleted.': 'Host-Snapshots werden endgültig gelöscht.',
@@ -81,8 +85,34 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'guest found. ': 'Gast erkannt. ',
             'Expanded rows and scroll position are preserved on refresh.': 'Aufklappzustand und Scrollposition bleiben beim Aktualisieren erhalten.',
             'ZFS Datasets': 'ZFS-Datasets',
+            'Enable automatic cleanup': 'Automatische Bereinigung aktivieren',
+            'Disable automatic cleanup': 'Automatische Bereinigung deaktivieren',
+            'This will allow automatic permanent deletion when the pool reaches 80%. Are you sure?': 'Ab 80 % können dadurch automatisch alte Snapshots unwiderruflich gelöscht werden. Wirklich aktivieren?',
+            'Emergency – free space': 'NOTFALL – Speicher freigeben',
+            'Pool capacity normal': 'ZFS-Pools: Speicherbelegung normal',
+            'Proxmox notification not configured': 'ACHTUNG: Kein Proxmox-Benachrichtigungsziel eingerichtet – Datacenter → Notifications',
+            'Verify notification delivery': 'Benachrichtigungen mit zfsm emergency notify-test prüfen – Empfang bestätigen!',
+            'Notification delivery failed': 'Benachrichtigungsversand fehlgeschlagen',
+
+            'Pool monitoring unavailable': 'ZFS-Poolüberwachung nicht verfügbar – bitte prüfen!',
+            'Loading pool monitoring': 'ZFS-Poolüberwachung wird geladen …',
+            'Automatic cleanup is disabled': 'Automatische Bereinigung ist ausgeschaltet',
+            'Critical ZFS pool': 'KRITISCHER ZFS-POOL',
+            'Administrator action required': 'Administrator muss handeln',
+            'Emergency ZFS pool': 'ZFS-NOTFALL',
+            'Select a pool': 'Pool auswählen',
+            'No eligible snapshots': 'Keine sicher löschbaren Snapshots',
+            'Preview emergency cleanup': 'Notfallbereinigung prüfen',
+            'The oldest eligible automatic snapshots will be deleted. At least one per label per dataset is retained, regardless of age.': 'Die ältesten freigegebenen automatischen Snapshots werden gelöscht. Mindestens einer je Art und Dataset bleibt unabhängig vom Alter erhalten.',
+            'Irreversible deletion': 'Unwiderrufliche Löschung',
+            'Confirm irreversible cleanup': 'Unwiderrufliche Notfallbereinigung bestätigen',
+            'ZFS pool members': 'ZFS-Pool-Datenträger',
+            'System pool': 'Systempool',
+            'Proxmox storage': 'Proxmox-Speicher',
+            'Additional pool': 'Weiterer ZFS-Pool',
+            'ZFS member or vdev': 'ZFS-Mitglied / VDEV',
+            'No free-disk detection: only current ZFS members are shown.': 'Keine Erkennung freier Laufwerke: Nur tatsächliche ZFS-Poolmitglieder werden angezeigt.',
             'Browse datasets and snapshots. Manage individual datasets.': 'Datasets und Snapshots durchsuchen. Einzelne Datasets verwalten.',
-            'Actions': 'Aktionen',
             'VMs / LXC': 'VMs / LXC',
             " . ": " zurückgesetzt. ",
             " dataset rows displayed.": " Dataset-Zeilen angezeigt.",
@@ -143,7 +173,6 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             "I have reviewed the consequences and confirm rollback with data loss.": "Ich habe die Auswirkungen geprüft und bestätige den Rollback mit Datenverlust.",
             "Daily": "Täglich",
             "Datasets without snapshots are also shown.</p>": "Auch Datasets ohne Snapshots werden aufgeführt.</p>",
-            "Delete": "Löschen",
             "Delete only this snapshot": "Nur diesen Snapshot löschen",
             "Only this": "Nur diesen",
             "Select": "Auswählen",
@@ -154,7 +183,6 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             "Confirm incomplete snapshot group": "Unvollständige Snapshot-Gruppe bestätigen",
             "I understand missing snapshots will be skipped, and only listed existing snapshots deleted.": "Ich bestätige, dass fehlende Snapshots ausgelassen werden und nur die angezeigten vorhandenen Snapshots gelöscht werden.",
             "Incomplete snapshot group": "Unvollständige Snapshot-Gruppe",
-            "Selected disks for this VM/LXC. Actions affect selected disks only.": "Ausgewählte Datenträger für diese VM/LXC. Aktionen betreffen nur die ausgewählten Datenträger.",
             "The VM/LXC must be stopped for a consistent grouped snapshot.": "Für einen gemeinsamen konsistenten Snapshot muss die VM/LXC gestoppt sein.",
             "The VM/LXC must be stopped. Deletion removes the selected and all newer snapshots per disk. Rollback discards changes after the target snapshot.": "Die VM/LXC muss gestoppt sein. Die Bereichslöschung entfernt den ausgewählten und alle neueren Snapshots je Datenträger. Rollback verwirft Änderungen seit dem Zielstand.",
             "Enter an existing snapshot name": "Vorhandenen Snapshot-Namen eingeben",
@@ -299,17 +327,65 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'Select a guest.': 'Bitte einen Gast markieren.',
             'Not all disks are permitted for this action.': 'Nicht alle Datentraeger fuer diese Aktion freigegeben.',
             'Grouped snapshot created.': 'Gemeinsamer Snapshot erstellt.',
-            'Preview incomplete.': 'Vorschau unvollstaendig.',
             'Action completed.': 'Aktion abgeschlossen.',
             'No disks selected.': 'Keine Laufwerke gewählt.',
             'Enter a valid existing snapshot name.': 'Gültigen vorhandenen Snapshot-Namen eingeben.',
             'Preview incomplete.': 'Vorschau unvollständig.',
             'Host safety preview incomplete': 'Host-Sicherheitsvorschau unvollständig',
+            " newer snapshots:": " neuere Snapshots:",
+            "Dataset / Snapshot": "Dataset / Snapshot",
+            "Pool": "Pool",
+            "Role": "Rolle",
+            "Rollback": "Zurücksetzen",
+            "Select snapshots from one VM/LXC only.": "Nur Snapshots eines einzelnen VM-/LXC-Gastes auswählen.",
+            "Select snapshots from one dataset only.": "Nur Snapshots eines einzelnen Datasets auswählen.",
+            "Status": "Status",
+            "ZFS Pools": "ZFS-Pools",
+            "ZFS-Datasets": "ZFS-Datasets",
+            "No ZFS pools found": "Keine ZFS-Pools gefunden",
+            "Observed snapshots": "Beobachtete Snapshots",
+            "Guest disks (": "Gastdatenträger (",
+            " newer)": " neuere)",
+            "installed": "installiert",
+            "absent": "nicht installiert",
+            "removed-config-left": "entfernt (Konfiguration vorhanden)",
+            "Duplicate AutoSnap schedules: ": "Doppelte AutoSnap-Zeitpläne: ",
+            "AutoSnap job has an ambiguous type or retention value": "AutoSnap-Auftrag ohne eindeutige Art oder Aufbewahrung",
+            "No active AutoSnap schedule detected": "Keine aktive AutoSnap-Zeitplanregel erkannt",
+            "Manual zsync service detected despite removed package; do not replace": "Manueller zsync-Dienst trotz entferntem Paket erkannt; nicht ersetzen",
+            "Other cleanup services detected; do not create parallel cleanup": "Weitere Bereinigungsdienste erkannt; keine parallele Bereinigung anlegen",
+            "Pools and storage": "Pools und Speicher",
+            "Disks, topology and scrub": "Datenträger, Topologie und Scrub",
+            "Snapshot usage by dataset – read only": "Snapshot-Verbrauch nach Dataset · nur lesend",
+            "Services and replication": "Dienste und Replikation",
+            "Advanced cleanup settings": "Erweiterte Bereinigungseinstellungen",
+            "RC9 test build": "RC9-Testversion",
+            "Details": "Details",
+            "Keep per dataset; observed total across all datasets.": "Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.",
+            "<p>Keep per dataset; observed total across all datasets.</p>": "<p>Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.</p>",
+            "Review change": "Änderung prüfen",
+            "Observed total": "Beobachtet gesamt",
+            "Schedule / source": "Zeitplan / Quelle",
+            "Filter guest or snapshot …": "Gast oder Snapshot filtern …",
+            "disk": "Datenträger",
+            "Really disable automatic cleanup?": "Automatische Löschung wirklich ausschalten?",
+            "Configuration failed": "Konfiguration fehlgeschlagen",
+            'Automatic Snapshot Retention': 'Automatische Snapshot-Aufbewahrung',
+            'Deletion and rollback require preview and confirmation.': 'Löschen und Zurücksetzen erst nach Vorschau und Bestätigung.',
 };
         var zfsL = function (text) {
             if (zfsLanguage.indexOf('de') === 0) { return zfsTDe[text] || text; }
             // Our own English strings are canonical; only the German dictionary translates them.
             return text;
+        };
+        var zfsInventoryNote=function(note){
+            var value=String(note||'');
+            var translations=[["Doppelte AutoSnap-Zeitpläne: ", "Duplicate AutoSnap schedules: "], ["AutoSnap-Auftrag ohne eindeutige Art oder Aufbewahrung", "AutoSnap job has an ambiguous type or retention value"], ["Keine aktive AutoSnap-Zeitplanregel erkannt", "No active AutoSnap schedule detected"], ["Manuell gestarteter zsync-Dienst trotz entferntem DEB erkannt; nicht ersetzen", "Manual zsync service detected despite removed package; do not replace"], ["Weitere Bereinigungsdienste erkannt; keine parallele Bereinigung anlegen", "Other cleanup services detected; do not create parallel cleanup"]];
+            for(var i=0;i<translations.length;i++){
+                var pair=translations[i];
+                if(value.indexOf(pair[0])===0)return zfsL(pair[1])+value.slice(pair[0].length);
+            }
+            return value;
         };
         // Translate API values at the display boundary. Older installations may
         // still return legacy German fallback text; normalize both directions.
@@ -445,23 +521,64 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                 title: 'ZFS Manager',
                 iconCls: 'fa fa-database',
                 itemId: 'zfsmanager-readonly',
-                bodyPadding: 14,
+                bodyPadding: 10,
                 scrollable: true,
                 layout: { type: 'vbox', align: 'stretch' },
-                defaults: { margin: '0 0 9 0' },
+                defaults: { margin: '0 0 7 0' },
                 tbar: [{
                     text: zfsL("Refresh"), iconCls: 'fa fa-refresh',
                     handler: function (btn) {
-                        var panel = btn.up('panel');
+                        var panel = btn.up('#zfsmanager-readonly');
                         if (panel && panel.zfsRefreshReadOnly) { panel.zfsRefreshReadOnly(); }
                     },
-                }],
+                },'->',{text:zfsL('Details'),iconCls:'fa fa-info-circle',handler:function(btn){
+                    var owner=btn.up('#zfsmanager-readonly'),details=owner&&owner.down('#zfsm-technical-details');
+                    if(details){if(details.collapsed){details.expand();}else{details.collapse();}}
+                }}],
                 items: [
-                    { xtype: 'component', html: '<h2>ZFS Manager</h2>' },
+                    {xtype:'component',html:'<span style="opacity:.75">'+safeZFSValue(nodename)+' · '+zfsL('RC9 test build')+'</span>'},
+                    {xtype:'fieldset',itemId:'zfsm-pool-section',title:zfsL('Pools and storage'),collapsible:false,collapsed:false,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
+                    {
+                        xtype: 'grid', disableSelection: true, itemId: 'zfs-ro-pools', height: 90,
+                        store: Ext.create('Ext.data.Store', {
+                            fields: ['name', 'health', 'size', 'alloc', 'free', 'frag'], data: [],
+                        }),
+                        columns: [
+                            { text: 'Pool', dataIndex: 'name', flex: 1, renderer: safeZFSValue },
+                            { text: 'Status', dataIndex: 'health', width: 125, renderer: safeZFSValue },
+                            { text: zfsL("Total"), dataIndex: 'size', width: 110, renderer: zfsBytes },
+                            { text: zfsL("Used"), dataIndex: 'alloc', width: 110, renderer: zfsBytes },
+                            { text: zfsL("Free"), dataIndex: 'free', width: 110, renderer: zfsBytes },
+                            { text: 'CAP', dataIndex: 'alloc', width: 165,
+                              renderer: function (v, meta, record) {
+                                  var alloc = Number(v);
+                                  var size = Number(record.get('size'));
+                                  if (!isFinite(alloc) || !isFinite(size) || size <= 0 || alloc < 0) {
+                                      return '—';
+                                  }
+                                  // zpool list CAP is an integer; truncate rather than round.
+                                  var cap = Math.max(0, Math.floor(100 * alloc / size));
+                                  var color = cap >= 80 ? '#e24b4b' : (cap >= 70 ? '#d4ad30' : '#3db982');
+                                  return '<div style="display:flex;align-items:center;gap:8px"><div role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+cap+'" style="width:88px;height:8px;background:rgba(128,128,128,.25);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+Math.min(100,cap)+'%;background:'+color+'"></div></div><span style="color:'+color+';font-weight:700">'+cap+' %</span></div>';
+                              } },
+                            { text: zfsL("Fragmentation"), dataIndex: 'frag', width: 130,
+                              renderer: function (v) {
+                                  return v === null || v === undefined ? '—' : safeZFSValue(v) + '%';
+                              } },
+                        ],
+                    },
+                    { xtype: 'component', itemId: 'zfs-ro-pools-status', html: zfsL("Loading pools ...") },
+                    // v1.0.0-34: permanent status banner plus explicit emergency preview.
+                    {xtype:'component',itemId:'zfsm-emergency-alert',
+                     html:'<div style="padding:12px;border:1px solid #777">'+zfsL('Loading pool monitoring')+'</div>'},
+                    ]},
+                    {xtype:'fieldset',itemId:'zfsm-technical-details',title:zfsL('Disks, topology and scrub'),collapsible:true,collapsed:true,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
                     { xtype: 'component', html: zfsL("<h3>Disks</h3>") +
                         zfsL("<p>The PVE status is not a complete SMART diagnosis.</p>") },
                     {
-                        xtype: 'grid', itemId: 'zfs-ro-disks', height: 95,
+                        xtype: 'grid', itemId: 'zfs-ro-disks', height: 126,
                         store: Ext.create('Ext.data.Store', {
                             fields: ['devpath', 'model', 'size', 'health', 'wearout'], data: [],
                         }),
@@ -485,7 +602,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                     },
                     { xtype: 'button', text: zfsL("SMART details for selected disk"),
                       handler: function (btn) {
-                          var v = btn.up('panel'); var grid = v.down('#zfs-ro-disks');
+                          var v = btn.up('#zfsmanager-readonly'); var grid = v.down('#zfs-ro-disks');
                           var record = grid && grid.getSelection && grid.getSelection()[0];
                           var disk = record && record.get('devpath');
                           if (!disk) { zfsError('ZFS Manager',zfsL("Please select a disk first.")); return; }
@@ -507,37 +624,37 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                           });
                       } },
                     { xtype: 'component', itemId: 'zfs-ro-disks-status', html: zfsL("Loading disks ...") },
-                    { xtype: 'component', html: zfsL("<h3>ZFS Pools</h3>") },
-                    {
-                        xtype: 'grid', disableSelection: true, itemId: 'zfs-ro-pools', height: 90,
-                        store: Ext.create('Ext.data.Store', {
-                            fields: ['name', 'health', 'size', 'alloc', 'free', 'frag'], data: [],
-                        }),
-                        columns: [
-                            { text: 'Pool', dataIndex: 'name', flex: 1, renderer: safeZFSValue },
-                            { text: 'Status', dataIndex: 'health', width: 125, renderer: safeZFSValue },
-                            { text: zfsL("Total"), dataIndex: 'size', width: 110, renderer: zfsBytes },
-                            { text: zfsL("Used"), dataIndex: 'alloc', width: 110, renderer: zfsBytes },
-                            { text: zfsL("Free"), dataIndex: 'free', width: 110, renderer: zfsBytes },
-                            { text: zfsL("Fragmentation"), dataIndex: 'frag', width: 130,
-                              renderer: function (v) {
-                                  return v === null || v === undefined ? '—' : safeZFSValue(v) + '%';
-                              } },
-                            { text: 'CAP', dataIndex: 'alloc', width: 82,
-                              renderer: function (v, meta, record) {
-                                  var alloc = Number(v);
-                                  var size = Number(record.get('size'));
-                                  if (!isFinite(alloc) || !isFinite(size) || size <= 0 || alloc < 0) {
-                                      return '—';
-                                  }
-                                  // zpool list CAP is an integer; truncate rather than round.
-                                  var cap = Math.max(0, Math.floor(100 * alloc / size));
-                                  var color = cap >= 80 ? '#e24b4b' : (cap >= 70 ? '#d4ad30' : '#3db982');
-                                  return '<span style="color:' + color + ';font-weight:700">' + cap + ' %</span>';
-                              } },
-                        ],
+                    // ZFS 1.0.0-33: all members are discovered from zpool status,
+                    // not inferred from disk names or a hard-coded rpool.
+                    { xtype:'component', html:'<h4>'+zfsL('ZFS pool members')+'</h4><p>'+
+                        zfsL('No free-disk detection: only current ZFS members are shown.')+'</p>' },
+                    { xtype:'treepanel', itemId:'zfs-ro-pool-topology', height:110,
+                      rootVisible:false, useArrows:true, lines:false, reserveScrollbar:true,
+                      store:Ext.create('Ext.data.TreeStore',{
+                          fields:['label','status','kind','model','size_bytes','role'],
+                          root:{expanded:true,children:[]},
+                      }),
+                      listeners:{
+                          itemexpand:function(node){
+                              var panel=this.up('#zfsmanager-readonly');
+                              if(panel && panel.zfsmResizePoolTree){panel.zfsmResizePoolTree();}
+                          },
+                          itemcollapse:function(node){
+                              var panel=this.up('#zfsmanager-readonly');
+                              if(panel && panel.zfsmResizePoolTree){panel.zfsmResizePoolTree();}
+                          }
+                      },
+                      columns:[
+                          {xtype:'treecolumn',text:zfsL('ZFS member or vdev'),dataIndex:'label',flex:3,
+                              renderer:safeZFSValue},
+                          {text:zfsL('Role'),dataIndex:'role',flex:1,renderer:safeZFSValue},
+                          {text:'Status',dataIndex:'status',width:105,renderer:safeZFSValue},
+                          {text:zfsL('Model'),dataIndex:'model',width:185,renderer:safeZFSValue},
+                          {text:zfsL('Size'),dataIndex:'size_bytes',width:100,
+                              renderer:function(v){return v==null?'—':zfsBytes(v);}}
+                      ],
                     },
-                    { xtype: 'component', itemId: 'zfs-ro-pools-status', html: zfsL("Loading pools ...") },
+                    { xtype:'component',itemId:'zfs-ro-pool-topology-status',html:'—' },
                     { xtype: 'component', html: zfsL("<h4>Scrub and error status</h4>") },
                     { xtype: 'grid', disableSelection: true, itemId: 'zfs-ro-scan', height: 110,
                       store: Ext.create('Ext.data.Store', {
@@ -551,14 +668,17 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                       ],
                     },
 
+                    ]},
                     { xtype:'tabpanel', itemId:'zfs-snapshot-tabs', deferredRender:false, plain:true,
                       items:[
                         { xtype:'panel', title:zfsL('VMs / LXC'), border:false, bodyPadding:8, layout:'anchor', items:[
                     { xtype:'toolbar', items:[
+                        {xtype:'textfield',itemId:'zfsm-guest-filter',width:260,emptyText:zfsL('Filter guest or snapshot …'),
+                         listeners:{change:function(field){var owner=field.up('#zfsmanager-readonly');if(owner&&owner.zfsRenderGuests)owner.zfsRenderGuests();}}},
                         {xtype:'button',text:zfsL('Advanced: selected disks'),handler:function(b){b.up('#zfsmanager-readonly').zfsGroupAction('create');}},
                         {xtype:'button',text:zfsL('Batch delete'),iconCls:'fa fa-scissors',handler:function(b){b.up('#zfsmanager-readonly').zfsmRunBatch('guest');}}
                     ]},
-                    { xtype: 'component', cls:'zfsm-section-head', html: '<h3>' + zfsL('VM / LXC – Snapshot management') + '</h3><p>' + zfsL('Guests, their disks and snapshots. Manage individual disks or the whole VM/LXC.') + '</p>' },
+                    { xtype: 'component', cls:'zfsm-section-head', html: '<small>'+zfsL('Deletion and rollback require preview and confirmation.')+'</small>' },
                     {
                         xtype:'treepanel', itemId:'zfs-guest-snapshot-tree',
                         rootVisible:false, height:390, useArrows:true,
@@ -595,6 +715,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 else if(node.get('kind')==='group-snapshot'&&node.parentNode){
                                   key=String(node.parentNode.get('guestType'))+':'+String(node.parentNode.get('guestId'));
                                   st.expandedGuestSnapshots[key+'@'+node.get('snapshot')]=true;}
+                                if(panel.zfsmResizeSnapshotTree)panel.zfsmResizeSnapshotTree(this);
                             },
                             itemcollapse:function(node){var panel=this.up('#zfsmanager-readonly');if(!panel||!panel.zfsReadOnly)return;
                                 var st=panel.zfsReadOnly,key=String(node.get('guestType')||'')+':'+String(node.get('guestId')||'');
@@ -602,6 +723,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 else if(node.get('kind')==='group-snapshot'&&node.parentNode){
                                   key=String(node.parentNode.get('guestType'))+':'+String(node.parentNode.get('guestId'));
                                   st.expandedGuestSnapshots[key+'@'+node.get('snapshot')]=false;}
+                                if(panel.zfsmResizeSnapshotTree)panel.zfsmResizeSnapshotTree(this);
                             }
                         },
                         store:Ext.create('Ext.data.TreeStore', {
@@ -698,7 +820,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         emptyText: zfsL("e.g. rpool/data or hourly"),
                         listeners: {
                             change: function (field) {
-                                var panel = field.up('panel');
+                                var panel = field.up('#zfsmanager-readonly');
                                 if (panel && panel.zfsRenderTree) { panel.zfsRenderTree(); }
                             },
                         },
@@ -708,6 +830,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                     {
                         xtype: 'treepanel', itemId: 'zfs-ro-snapshots',
                         disableSelection: true, height: 390, rootVisible: false, useArrows: true,
+                        listeners:{itemexpand:function(){var owner=this.up('#zfsmanager-readonly');if(owner&&owner.zfsmResizeSnapshotTree)owner.zfsmResizeSnapshotTree(this);},
+                                   itemcollapse:function(){var owner=this.up('#zfsmanager-readonly');if(owner&&owner.zfsmResizeSnapshotTree)owner.zfsmResizeSnapshotTree(this);}},
                         // ExtJS TreeView normally expands on double-click. Use the
                         // single cellclick event instead, independent of selection.
                         viewConfig: {
@@ -836,7 +960,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             },
                                         },
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-rollback', text: 'Rollback',
+                                            xtype: 'button', itemId: 'zfs-row-rollback', text: zfsL('Rollback'),
                                             iconCls: 'fa fa-undo', ui: 'default-toolbar',
                                             handler: function (btn) {
                                                 var widget = btn.up('container');
@@ -913,13 +1037,14 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                       ]
                     },
 
-                    { xtype: 'component', html: '<h3>' + zfsL('Storage and snapshot audit') + '</h3>' +
-                        '<p>' + zfsL('Snapshot used is not the same as space freed by deletion. No snapshots are changed.') + '</p>' },
+                    {xtype:'fieldset',itemId:'zfsm-snapshot-audit',title:zfsL('Snapshot usage by dataset – read only'),collapsible:true,collapsed:true,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
                     { xtype: 'component', itemId: 'zfs-capacity-audit',
                       html: '<div class="zfs-audit-pending">—</div>' },
-                    { xtype: 'component', html: zfsL("<h3>Automatic Snapshot Retention</h3>") +
-                        zfsL("<p>Current zfs-auto-snapshot values, per dataset. ") +
-                        zfsL("Changes are confirmed by type and take effect at the next scheduled run.</p>") },
+                    ]},
+                    {xtype:'fieldset',itemId:'zfsm-retention-section',title:zfsL('Automatic Snapshot Retention'),collapsible:false,collapsed:false,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
+                    { xtype: 'component', html: zfsL('<p>Keep per dataset; observed total across all datasets.</p>') },
                     // Six fixed retention rows require no nested ExtJS grid scroller.
                     // A simple themed table grows with its content; scrolling belongs to the outer panel.
                     { xtype: 'component', itemId: 'zfs-ro-retention',
@@ -945,7 +1070,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 value: 'frequent',
                                 listeners: {
                                     change: function (field, value) {
-                                        var panel = field.up('panel');
+                                        var panel = field.up('#zfsmanager-readonly');
                                         if (panel && panel.zfsReadOnly) {
                                             var row = panel.zfsReadOnly.retention.find(function (r) {
                                                 return r.label === value;
@@ -961,9 +1086,9 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                               minValue: 0, maxValue: 999, allowDecimals: false,
                               allowBlank: false, hideTrigger: true, keyNavEnabled: false,
                               mouseWheelEnabled: false, value: 9, margin: '0 10 0 12' },
-                            { xtype: 'button', itemId: 'zfs-retention-save', text: zfsL("Save"), disabled:true, iconCls: 'fa fa-save',
+                            { xtype: 'button', itemId: 'zfs-retention-save', text: zfsL("Review change"), disabled:true, iconCls: 'fa fa-save',
                               handler: function (btn) {
-                                  var view = btn.up('panel');
+                                  var view = btn.up('#zfsmanager-readonly');
                                   if (!view || !view.zfsReadOnly || view.zfsReadOnly.saving) { return; }
                                   if (!view.zfsReadOnly.isAdmin) { zfsError('ZFS Manager',zfsL('Administrator required')); return; }
                                   var typeField = view.down('#zfs-retention-label');
@@ -1033,6 +1158,32 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         zfsL("A reduction can delete older snapshots during later cron runs.</p>") },
                     { xtype: 'component', itemId: 'zfs-ro-retention-status',
                       html: zfsL("Loading retention rules ...") },
+                    ]},
+                    {xtype:'fieldset',itemId:'zfsm-service-details',title:zfsL('Services and replication'),collapsible:true,collapsed:true,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
+                    { xtype: 'component', itemId: 'zfsm-host-inventory', html:'—' },
+                    {xtype:'fieldset',itemId:'zfsm-cleanup-details',title:zfsL('Advanced cleanup settings'),collapsible:true,collapsed:true,padding:'8 10',layout:'anchor',
+                     defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
+                    {xtype:'container',layout:{type:'hbox',align:'middle'},items:[
+                        {xtype:'combobox',itemId:'zfsm-emergency-pool',width:230,editable:false,
+                         queryMode:'local',displayField:'name',valueField:'name',
+                         emptyText:zfsL('Select a pool'),
+                         store:Ext.create('Ext.data.Store',{fields:['name'],data:[]})},
+                        {xtype:'button',itemId:'zfsm-auto-cleanup-button',margin:'0 0 0 10',
+                         text:zfsL('Enable automatic cleanup'),iconCls:'fa fa-cog',
+                         handler:function(btn){
+                             var panel=btn.up('#zfsmanager-readonly');
+                             if(panel && panel.zfsmAutoCleanupToggle)panel.zfsmAutoCleanupToggle();
+                         }},
+                        {xtype:'button',itemId:'zfsm-emergency-button',margin:'0 0 0 10',
+                         text:zfsL('Emergency – free space'),iconCls:'fa fa-exclamation-triangle',
+                         handler:function(btn){
+                             var panel=btn.up('#zfsmanager-readonly');
+                             if(panel && panel.zfsmEmergencyPreview)panel.zfsmEmergencyPreview();
+                         }}
+                    ]},
+                    ]},
+                    ]},
                 ],
                 listeners: {
                     afterrender: function (view) {
@@ -1131,7 +1282,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             },failure:function(e){zfsError('ZFS Manager',zfsL('Batch preview blocked: ')+safe(e&&e.htmlStatus||zfsL('Preview failed')));}});
                         };
                         view.zfsReadOnly = {
-                            pools: [], disks: [],
+                            pools: [], disks: [], poolTopology: [],
                             datasets: [], snapshots: [], retention: [], scan: [],
                             readyDatasets: false, readySnapshots: false, refreshing: false, saving: false,
                         };
@@ -1139,6 +1290,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         state.guestAccess = {};
                         state.isAdmin = false;
                         state.expandedDatasets = {};
+                        state.expandedPoolMembers = {};
                         state.expandedGuests = {};
                         state.expandedGuestSnapshots = {};
                         var safe = function (s) { return safeZFSValue(s); };
@@ -1154,13 +1306,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             var enc=function(v){return Ext.String.htmlEncode(String(v==null?'':v));};
                             var cell='style="padding:4px 8px;border-bottom:1px solid rgba(128,128,128,.16);text-align:left"';
                             var html='<div style="font-size:12px">';
-                            html+='<b>'+enc(zfsL('Pool capacity'))+'</b><div style="display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 12px">';
-                            audit.pools.forEach(function(p){
-                                var color=p.level==='critical'?'#dc4646':p.level==='warning'?'#dca62e':'#32a66c';
-                                html+='<span>'+enc(p.name)+': <strong style="color:'+color+'">'+p.capacity.toFixed(1)+'%</strong> ('+
-                                    enc(zfsL('Free'))+' '+enc(zfsBytes(p.free))+')</span>';
-                            });
-                            html+='</div><b>'+enc(zfsL('Top datasets by snapshot use'))+'</b>';
+                            html+='<b>'+enc(zfsL('Top datasets by snapshot use'))+'</b>';
                             html+='<table style="width:100%;border-collapse:collapse;margin:6px 0 14px"><thead><tr>'+
                                 '<th '+cell+'>Dataset</th><th '+cell+'>'+enc(zfsL('Snapshots'))+'</th>'+
                                 '<th '+cell+'>'+enc(zfsL('Snapshot used (sum)'))+'</th><th '+cell+'>'+enc(zfsL('Oldest'))+'</th></tr></thead><tbody>';
@@ -1170,16 +1316,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 html+='<tr><td '+cell+'>'+enc(r.dataset)+'</td><td '+cell+'>'+r.count+'</td><td '+cell+'>'+
                                     enc(zfsBytes(r.used))+'</td><td '+cell+'>'+enc(age)+'</td></tr>';
                             });
-                            html+='</tbody></table><b>'+enc(zfsL('Retention overview'))+'</b>';
-                            html+='<table style="width:100%;border-collapse:collapse;margin:6px 0 4px"><thead><tr>'+
-                                '<th '+cell+'>'+enc(zfsL('Type'))+'</th><th '+cell+'>'+enc(zfsL('Current keep'))+'</th>'+
-                                '<th '+cell+'>'+enc(zfsL('Observed'))+'</th><th '+cell+'>'+enc(zfsL('Above keep'))+'</th></tr></thead><tbody>';
-                            audit.policies.forEach(function(r){
-                                var count=r.keep===null?zfsL('Not configured'):r.keep===0?zfsL('Disabled'):r.keep;
-                                html+='<tr><td '+cell+'>'+enc(zfsmRetentionLabel(r.label))+'</td><td '+cell+'>'+enc(count)+'</td><td '+cell+'>'+r.count+
-                                    '</td><td '+cell+'>'+(r.aboveKeep===null?'—':r.aboveKeep)+'</td></tr>';
-                            });
-                            html+='</tbody></table><div style="opacity:.75">'+enc(zfsL('Numbers above keep are only a planning hint, not a deletion forecast.'))+'</div></div>';
+                            html+='</tbody></table></div>';
                             component.update(html);
                         };
                         var renderRetention = function (rows) {
@@ -1190,14 +1327,16 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             };
                             var cell = 'style="padding:5px 8px;border-bottom:1px solid rgba(128,128,128,.16);text-align:left;"';
                             var html = '<table style="width:100%;table-layout:fixed;border-collapse:collapse;">' +
-                                '<colgroup><col style="width:20%"><col style="width:20%"><col style="width:60%"></colgroup>' +
+                                '<colgroup><col style="width:16%"><col style="width:16%"><col style="width:16%"><col style="width:52%"></colgroup>' +
                                 '<thead><tr><th ' + cell + '>' + enc(zfsL("Type")) + '</th><th ' + cell + '>' +
-                                enc(zfsL("Keep per dataset")) + '</th><th ' + cell + '>' + enc(zfsL("Cron file")) + '</th></tr></thead><tbody>';
+                                enc(zfsL("Keep per dataset")) + '</th><th ' + cell + '>' + enc(zfsL("Observed total")) + '</th><th ' + cell + '>' + enc(zfsL("Schedule / source")) + '</th></tr></thead><tbody>';
+                            var observed=zfsmCapacityReport(state.pools,state.snapshots,rows,Math.floor(Date.now()/1000)).policies;
                             rows.forEach(function (record) {
+                                var found=observed.find(function(r){return r.label===record.label;});
                                 var count = Number(record.keep);
                                 var shown = count === 0 ? '0 (' + zfsL("Disabled") + ')' : String(count);
                                 html += '<tr><td ' + cell + '>' + enc(zfsmRetentionLabel(record.label)) + '</td><td ' + cell + '>' +
-                                    enc(shown) + '</td><td ' + cell + '>' + enc(record.file) + '</td></tr>';
+                                    enc(shown) + '</td><td ' + cell + '>' + (state.readySnapshots?(found?found.count:0):'—') + '</td><td ' + cell + '>' + enc(record.file) + '</td></tr>';
                             });
                             panel.update(html + '</tbody></table>');
                         };
@@ -1205,6 +1344,16 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         // Never operate on whichever row happens to be selected.
                         var zfsTree = view.down('#zfs-ro-snapshots');
                         if (zfsTree) { zfsTree.zfsOwnerView = view; }
+                        view.zfsmResizeSnapshotTree=function(tree){
+                            if(!tree || tree.destroyed || !tree.getRootNode)return;
+                            var count=0;
+                            var visit=function(node){count++;if(node.isExpanded())node.eachChild(visit);};
+                            tree.getRootNode().eachChild(visit);
+                            var row=tree.getView&&tree.getView().getNode?tree.getView().getNode(0):null;
+                            var rowHeight=row?Math.max(26,Math.ceil(row.getBoundingClientRect().height)):28;
+                            var height=Math.min(420,Math.max(180,42+count*rowHeight));
+                            if(tree.getHeight()!==height)tree.setHeight(height);
+                        };
                         view.zfsRenderTree = function () {
                             var tree = view.down('#zfs-ro-snapshots');
                             if (!tree || tree.destroyed) { return; }
@@ -1268,6 +1417,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 });
                             });
                             tree.getStore().setRoot({ expanded: true, children: children });
+                            if(view.zfsmResizeSnapshotTree)view.zfsmResizeSnapshotTree(tree);
                             var info = view.down('#zfs-ro-snapshots-status');
                             if (info) {
                                 info.update(state.snapshots.length + zfsL(" snapshots across ") +
@@ -1515,6 +1665,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                     }
                                 });
                             });}
+                            var filter=view.down('#zfsm-guest-filter');
+                            var query=filter?String(filter.getValue()||'').toLowerCase().trim():'';
                             var byGuest={};
                             Object.keys(state.guestAccess || {}).forEach(function(ds){
                                 var a=state.guestAccess[ds];
@@ -1561,13 +1713,16 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                         label:n+(all?'':' – '+zfsL('Incomplete')),complete:members.length+' / '+disks.length,
                                         allDisks:all,created:created,expanded:state.expandedGuestSnapshots[k+'@'+n]===true,children:members};
                                 }).sort(function(a,b){return b.created-a.created || a.snapshot.localeCompare(b.snapshot);});
+                                var searchable=[g.kind,g.id,g.name].concat(disks.map(function(d){return d.dataset;}),Object.keys(names)).join(' ').toLowerCase();
+                                if(query && searchable.indexOf(query)<0)return;
                                 roots.push({kind:'guest',dataset:null,snapshot:null,
                                     label:(g.kind==='vm'?'VM ':'LXC ')+g.id+(g.name?' – '+g.name:''),guestId:String(g.id),guestType:String(g.kind),
-                                    complete:disks.length+' '+zfsL('disks'),snapCount:groups.length,
+                                    complete:disks.length+' '+zfsL(disks.length===1?'disk':'disks'),snapCount:groups.length,
                                     expanded:state.expandedGuests[k]===true,
                                     children:groups});
                             });
                             tree.getStore().setRoot({expanded:true,children:roots});
+                            if(view.zfsmResizeSnapshotTree)view.zfsmResizeSnapshotTree(tree);
                             if(tree.getView() && tree.getView().setScrollY){tree.getView().setScrollY(treeScroll);}
                             var info=view.down('#zfs-guest-status');
                             if(info){info.update(roots.length+' '+zfsL(roots.length===1 ? 'guest found. ' : 'guests found. ')+
@@ -1787,7 +1942,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                         var allNames = Ext.Array.map(plan.newer, function(n) {
                                             return safe(n);
                                         }).join('<br>');
-                                        var diskText = Ext.isArray(plan.disks) ? Ext.Array.map(plan.disks, function(d){return safe(d.dataset) + ' (' + Number(d.newer_count) + ' newer)';}).join('<br>') : safe(ds);
+                                        var diskText = Ext.isArray(plan.disks) ? Ext.Array.map(plan.disks, function(d){return safe(d.dataset) + ' (' + Number(d.newer_count) + zfsL(' newer)');}).join('<br>') : safe(ds);
                                         var warning = zfsL("WARNING: Proxmox Guest will be rolled back to ") + safe(snap) +
                                             zfsL(" . ") + Number(plan.newer_count) +
                                             zfsL(" newer snapshots will be removed by a bounded delete before rollback. ") +
@@ -1800,7 +1955,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                                 {xtype:'component',flex:1,scrollable:true,padding:14,
                                                     html:'<div style="color:#ad281b;background:#fff1e6;border-left:5px solid #c62828;padding:9px;font-weight:bold">' + zfsL('DANGER: rollback overwrites current data') + '</div><br><b>Dataset:</b> '+safe(ds)+zfsL("<br><b>Target:</b> ")+safe(snap)+
                                                         zfsL("<br><b>Selected snapshot is preserved.</b><br><br>")+
-                                                        warning + '<br><br><b>Guest disks (' + Number(plan.disk_count || 1) + '):</b><br>' + diskText + zfsL("<br><br><b>Newer snapshots to delete:</b><br>") +
+                                                        warning + '<br><br><b>' + zfsL('Guest disks (') + Number(plan.disk_count || 1) + '):</b><br>' + diskText + zfsL("<br><br><b>Newer snapshots to delete:</b><br>") +
                                                         (allNames || zfsL("None")) +
                                                         '<br><br><b>' + zfsL("ZFS dry run (no changes):") +
                                                         '</b><pre>' + safe(plan.dry_run || '-') + '</pre>'},
@@ -1836,6 +1991,181 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 });
                             }
                         };
+                        // Fit visible pool rows, but cap the height for hosts with many pools/disks.
+                        // Hidden descendants of a collapsed pool do not consume vertical space.
+                        view.zfsmResizePoolTree = function () {
+                            var tree=view.down('#zfs-ro-pool-topology');
+                            if(!tree || tree.destroyed || !tree.getRootNode())return;
+                            var count=0;
+                            var countVisible=function(node){
+                                count++;
+                                if(node.isExpanded())node.eachChild(countVisible);
+                            };
+                            tree.getRootNode().eachChild(countVisible);
+                            var desired=Math.min(540,Math.max(110,46+count*24));
+                            if(tree.getHeight()!==desired)tree.setHeight(desired);
+                        };
+                        // Dynamic host pool topology, with stable expansion state across refresh.
+                        view.zfsRenderPoolTopology = function () {
+                            var tree=view.down('#zfs-ro-pool-topology');
+                            if (!tree || tree.destroyed) { return; }
+                            var previous=tree.getRootNode();
+                            var remember=function(node){
+                                if(!node)return;
+                                var key=node.get('topologyKey');
+                                if(key)state.expandedPoolMembers[key]=node.isExpanded();
+                                node.eachChild(remember);
+                            };
+                            if(previous)previous.eachChild(remember);
+                            var make=function(node, prefix){
+                                var name=String(node.name||'');
+                                var key=prefix+'/'+name;
+                                var children=(node.children||[]).map(function(child){return make(child,key);});
+                                var roles=[];
+                                if(node.kind==='pool'){
+                                    if(node.system_pool)roles.push(zfsL('System pool'));
+                                    if(Ext.isArray(node.pve_storages) && node.pve_storages.length){
+                                        roles.push(zfsL('Proxmox storage')+': '+
+                                            node.pve_storages.map(function(s){return String(s.id||'');}).join(', '));
+                                    }
+                                    if(!roles.length)roles.push(zfsL('Additional pool'));
+                                }
+                                return {topologyKey:key,label:name,status:String(node.status||''),
+                                    role:roles.join(' / '),kind:String(node.kind||''),
+                                    model:String(node.model||''),size_bytes:node.size_bytes,
+                                    // Pools start closed. Within an opened pool, mirrors/RAIDZ
+                                    // are expanded by default so the disks need only one click.
+                                    expanded:state.expandedPoolMembers[key]===undefined ?
+                                        node.kind==='vdev' : !!state.expandedPoolMembers[key],
+                                    leaf:children.length===0,children:children};
+                            };
+                            var roots=(state.poolTopology||[]).map(function(p){return make(p,'');});
+                            tree.getStore().setRoot({expanded:true,children:roots});
+                            if(view.zfsmResizeSnapshotTree)view.zfsmResizeSnapshotTree(tree);
+                            view.zfsmResizePoolTree();
+                            var info=view.down('#zfs-ro-pool-topology-status');
+                            if(info)info.update(roots.length+' '+zfsL('ZFS Pools')+' – '+zfsL('No free-disk detection: only current ZFS members are shown.'));
+                        };
+                        view.zfsmRenderEmergency=function(){
+                            var banner=view.down('#zfsm-emergency-alert');
+                            if(!banner || banner.destroyed)return;
+                            var report=state.emergencyStatus || {pools:[],policy:{auto_enabled:false}};
+                            if(!state.emergencyStatus){
+                                banner.update('<div style="padding:12px;border:2px solid #a92222">'+
+                                    zfsL('Pool monitoring unavailable')+'</div>');return;
+                            }
+                            var critical=report.pools.filter(function(p){return p.severity==='critical'||p.severity==='emergency';});
+                            var warnings=report.pools.filter(function(p){return p.severity==='warning';});
+                            var activePoolAlarm=critical.length>0 || warnings.length>0;
+                            var html='';
+                            if(critical.length){
+                                var isEmergency=critical.some(function(p){return p.severity==='emergency';});
+                                html='<div style="padding:14px;background:#8e1111;color:#fff;border:3px solid #e44646;font-weight:bold">'+
+                                    '<span style="font-size:18px">⚠ '+zfsL('Administrator action required')+' – '+zfsL(isEmergency?'Emergency ZFS pool':'Critical ZFS pool')+'</span><br><br>'+
+                                    critical.map(function(p){return safe(String(p.name))+': '+safe(String(p.percent))+' %';}).join('<br>')+
+                                    '<br><br>'+zfsL('Preview emergency cleanup')+'</div>';
+                            }else if(warnings.length){
+                                html='<div style="padding:12px;border:2px solid #dca62e;background:rgba(220,166,46,.14)">⚠ '+
+                                    warnings.map(function(p){return safe(p.name)+': '+safe(p.percent)+' %';}).join(', ')+'</div>';
+                            }else{html='<div style="padding:9px;border:1px solid #368451">'+zfsL(report.pools.length?'Pool capacity normal':'No ZFS pools found')+'</div>';}
+                            // Missing notification targets are operational configuration,
+                            // NOT a capacity problem. Only warn when a real pool alarm exists.
+                            var notification=report.notification || {configured:false,targets:0};
+                            if(activePoolAlarm && !notification.configured){
+                                html+='<p style="border:2px solid #c92222;padding:10px;font-weight:bold">⚠ '+
+                                    zfsL('Proxmox notification not configured')+'</p>';
+                            }else if(activePoolAlarm){
+                                html+='<p>'+zfsL('Verify notification delivery')+'</p>';
+                            }
+                            if(activePoolAlarm && notification.last_error){
+                                html+='<p style="border:2px solid #c92222;padding:8px">'+zfsL('Notification delivery failed')+
+                                    ': '+safe(String(notification.last_error))+'</p>';
+                            }
+                            if(!report.policy || !report.policy.auto_enabled)html+='<span style="display:inline-block;margin-top:4px;opacity:.8">'+zfsL('Automatic cleanup is disabled')+'</span>';
+                            banner.update(html);
+                            var toggle=view.down('#zfsm-auto-cleanup-button');
+                            if(toggle){toggle.setText(report.policy&&report.policy.auto_enabled?
+                                zfsL('Disable automatic cleanup'):zfsL('Enable automatic cleanup'));}
+
+                        };
+                        view.zfsmAutoCleanupToggle=function(){
+                            if(!state.isAdmin){zfsError('ZFS Manager',zfsL('Administrator required'));return;}
+                            var status=state.emergencyStatus;
+                            var auto=!!(status && status.policy && status.policy.auto_enabled);
+                            var pool=String(view.down('#zfsm-emergency-pool').getValue()||'');
+                            if(!auto && !pool){zfsError('ZFS Manager',zfsL('Select a pool'));return;}
+                            Ext.Msg.confirm(auto?zfsL('Disable automatic cleanup'):zfsL('Enable automatic cleanup'),
+                                auto?zfsL('Really disable automatic cleanup?'):
+                                    zfsL('This will allow automatic permanent deletion when the pool reaches 80%. Are you sure?'),
+                                function(answer){
+                                    if(answer!=='yes')return;
+                                    Proxmox.Utils.API2Request({url:'/nodes/'+encodeURIComponent(nodename)+'/zfsmanager-ro/emergency-config',
+                                        method:'POST',params:{pool:pool,enabled:auto?0:1,confirm:auto?'AUTO-DISABLE':'AUTO-ENABLE'},
+                                        success:function(){view.zfsRefreshReadOnly();},
+                                        failure:function(e){zfsError('ZFS Manager',safe(e&&e.htmlStatus||zfsL('Configuration failed')));}
+                                    });
+                                });
+                        };
+                        view.zfsmEmergencyPreview=function(){
+                            if(!state.isAdmin){zfsError('ZFS Manager',zfsL('Administrator required'));return;}
+                            var choice=view.down('#zfsm-emergency-pool');
+                            var pool=choice && choice.getValue();
+                            if(!pool){zfsError('ZFS Manager',zfsL('Select a pool'));return;}
+                            var base='/nodes/'+encodeURIComponent(nodename)+'/zfsmanager-ro/';
+                            Proxmox.Utils.API2Request({url:base+'emergency-preview',method:'GET',
+                                params:{pool:pool,count:15},timeout:60000,
+                                success:function(res){
+                                    var plan=res&&res.result&&res.result.data;
+                                    if(!plan||!plan.token||!Ext.isArray(plan.targets)){zfsError('ZFS Manager','Preview invalid');return;}
+                                    if(!plan.targets.length){zfsError('ZFS Manager',zfsL('No eligible snapshots'));return;}
+                                    var html='<b>'+safe(pool)+': '+plan.delete_count+' Snapshots</b><br><br>'+
+                                        zfsL('The oldest eligible automatic snapshots will be deleted. At least one per label per dataset is retained, regardless of age.')+
+                                        '<br><br>'+plan.targets.map(safe).join('<br>');
+                                    var dlg=Ext.create('Ext.window.Window',{title:zfsL('Confirm irreversible cleanup'),
+                                        width:720,height:440,modal:true,layout:{type:'vbox',align:'stretch'},
+                                        items:[{xtype:'component',flex:1,scrollable:true,padding:12,html:html},
+                                            {xtype:'checkbox',itemId:'zfsm-emergency-ack',margin:'8 14',
+                                             boxLabel:zfsL('Irreversible deletion')}],
+                                        buttons:[{text:zfsL('Cancel'),handler:function(){dlg.close();}},
+                                            {text:zfsL('Emergency – free space'),handler:function(btn){
+                                                if(!dlg.down('#zfsm-emergency-ack').getValue())return;
+                                                Ext.Msg.confirm(zfsL('Irreversible deletion'),
+                                                    safe(pool)+' – '+plan.delete_count+' Snapshots?',function(answer){
+                                                        if(answer!=='yes'||state.saving)return;
+                                                        dlg.close();state.saving=true;
+                                                        Proxmox.Utils.API2Request({url:base+'emergency-cleanup',method:'POST',
+                                                            timeout:240000,
+                                                            params:{pool:pool,count:15,token:plan.token,
+                                                                confirm:'EMERGENCY-DELETE',critical_ack:1},
+                                                            success:function(r){state.saving=false;zfsSuccess('ZFS Manager',
+                                                                zfsL('Action completed.'));view.zfsRefreshReadOnly();},
+                                                            failure:function(e){state.saving=false;zfsError('ZFS Manager',
+                                                                safe(e&&e.htmlStatus||zfsL('Unknown error')));}
+                                                        });
+                                                    });
+                                            }}]
+                                    });dlg.show();
+                                },failure:function(e){zfsError('ZFS Manager',safe(e&&e.htmlStatus||'Preview failed'));}
+                            });
+                        };
+                        view.zfsmRenderHostInventory=function(){
+                            var widget=view.down('#zfsm-host-inventory');
+                            if(!widget || widget.destroyed)return;
+                            var info=state.hostInventory;
+                            if(!info || !info.autosnap || !info.replication){widget.update('—');return;}
+                            var a=info.autosnap,r=info.replication,c=info.monitoring||{};
+                            var label=a.ready?zfsL('Ready'):zfsL('Needs review');
+                            var html='<div style="padding:8px;border:1px solid rgba(128,128,128,.4);border-radius:4px">'+
+                                '<b>AutoSnap:</b> '+safe(label)+' · '+Number(a.schedule_count||0)+' '+safe(zfsL('AutoSnap schedules'))+
+                                ' · <b>CheckZFS:</b> '+safe(zfsL(String(c.checkzfs_package||'absent')))+'<br>'+
+                                safe(zfsL('External replication recognized – managed separately'))+': '+
+                                Number((r.systemd_units||[]).length)+' systemd, '+Number(r.native_pve_jobs||0)+' PVE<br>'+
+                                safe(zfsL('No additional cleanup timer created'));
+                            var notes=info.warnings||[];
+                            if(notes.length){html+='<br><b>'+safe(zfsL('Needs review'))+':</b> '+
+                                Ext.Array.map(notes.slice(0,4),function(note){return safe(zfsInventoryNote(note));}).join('; ');}
+                            widget.update(html+'</div>');
+                        };
                         view.zfsRefreshReadOnly = function () {
                             if (view.destroyed || state.refreshing) { return; }
                             state.refreshing = true;
@@ -1843,9 +2173,12 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 ['disks/list', 'disks'],
                                 ['disks/zfs', 'pools'],
                                 ['zfsmanager-ro/pool-scan', 'scan'],
+                                ['zfsmanager-ro/pool-topology', 'poolTopology'],
+                                ['zfsmanager-ro/emergency-status', 'emergencyStatus'],
                                 ['zfsmanager-ro/datasets', 'datasets'],
                                 ['zfsmanager-ro/snapshots', 'snapshots'],
                                 ['zfsmanager-ro/retention', 'retention'],
+                                ['zfsmanager-ro/host-inventory', 'hostInventory'],
                                 ['zfsmanager-ro/guest-access', 'guestAccess'],
                                 ['zfsmanager-ro/admin-status', 'adminStatus'],
                             ];
@@ -1869,8 +2202,22 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             if (save) { save.setDisabled(!state.isAdmin); }
                                             view.zfsRenderTree(); finish(); return;
                                         }
+                                        if(key==='hostInventory') {
+                                            if(!data || !data.autosnap || !data.replication){error('Invalid host inventory');return;}
+                                            state.hostInventory=data;
+                                            view.zfsmRenderHostInventory();finish();return;
+                                        }
+                                        if(key==='emergencyStatus') {
+                                            if(!data || !Ext.isArray(data.pools)){error('Invalid emergency status');return;}
+                                            state.emergencyStatus=data;
+                                            view.zfsmRenderEmergency();finish();return;
+                                        }
                                         if (!Ext.isArray(data)) {
                                             error(zfsL("Unexpected response format")); return;
+                                        }
+                                        if (key === 'poolTopology') {
+                                            state.poolTopology=data;
+                                            view.zfsRenderPoolTopology();finish();return;
                                         }
                                         if (key === 'guestAccess') {
                                             var mapped = {};
@@ -1880,9 +2227,26 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                         }
                                         state[key] = data;
                                         if (key === 'snapshots') {state.readySnapshots=true;}
-                                        if (key === 'pools' || key === 'snapshots' || key === 'retention') {renderCapacity();}
+                                        if (key === 'pools' || key === 'snapshots' || key === 'retention') {renderCapacity();renderRetention(state.retention);}
+                                        if(key==='pools') {
+                                            var combo=view.down('#zfsm-emergency-pool');
+                                            if(combo){
+                                                var selected=combo.getValue();
+                                                combo.getStore().loadData(data.map(function(x){return {name:String(x.name)};}));
+                                                if(selected && data.some(function(x){return x.name===selected;}))combo.setValue(selected);
+                                                else if(data.length)combo.setValue(data[0].name);
+                                            }
+                                        }
                                         if (key === 'disks' || key === 'pools') {
                                             gridLoad('zfs-ro-' + key, data);
+                                            if(key === 'disks') {
+                                                var diskGrid=view.down('#zfs-ro-disks');
+                                                if(diskGrid && !diskGrid.destroyed) {
+                                                    // Show every disk on small hosts; use inner scrolling on large hosts.
+                                                    var diskHeight=Math.min(540,Math.max(126,48+data.length*24));
+                                                    if(diskGrid.getHeight()!==diskHeight)diskGrid.setHeight(diskHeight);
+                                                }
+                                            }
                                             var gridStatus = view.down('#zfs-ro-' + key + '-status');
                                             if (gridStatus) { gridStatus.update(data.length + zfsL(" entries loaded.")); }
                                         }
@@ -1910,9 +2274,19 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                     },
                                 });
                                 function error(message) {
+                                    if(key==='hostInventory'){
+                                        var audit=view.down('#zfsm-host-inventory');
+                                        if(audit && !audit.destroyed) audit.update(safe(zfsL('Needs review'))+': '+safe(message));
+                                    }
+                                    if(key==='emergencyStatus'){
+                                        var alert=view.down('#zfsm-emergency-alert');
+                                        if(alert)alert.update('<div style="padding:12px;border:2px solid #aa1717;color:#ba2222">'+
+                                            zfsL('Pool monitoring unavailable')+': '+safe(message)+'</div>');
+                                    }
+
                                     var status = view.down('#zfs-ro-' +
                                         (key === 'disks' ? 'disks' : key === 'pools' || key === 'scan' ? 'pools' :
-                                         key === 'retention' ? 'retention' : 'snapshots') + '-status');
+                                         key === 'retention' ? 'retention' : key === 'poolTopology' ? 'pool-topology' : 'snapshots') + '-status');
                                     if (status && !status.destroyed) { status.update(zfsL("API error: ") + safe(message)); }
                                     finish();
                                 }

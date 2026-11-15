@@ -1,0 +1,21 @@
+dpkg-deb: building package 'pve-zfs-manager' in '/workspace/work/release-rc9/pve-zfs-manager_1.0.0-34~rc9_all.deb'.
+===== Kontrollinformationen =====
+ new Debian package, version 2.0.
+ size 134752 bytes: control archive=1156 bytes.
+     627 bytes,    12 lines      control
+     297 bytes,    11 lines   *  postinst             #!/bin/sh
+     232 bytes,     6 lines   *  postrm               #!/bin/sh
+     338 bytes,    14 lines   *  preinst              #!/bin/sh
+     339 bytes,    11 lines   *  prerm                #!/bin/sh
+ Package: pve-zfs-manager
+ Version: 1.0.0-34~rc9
+ Section: admin
+ Priority: optional
+ Architecture: all
+ Maintainer: BuMaVory Project <bumavory@buse.rocks>
+ Depends: python3, perl, pve-manager (>= 9.0), pve-manager (<< 10), zfsutils-linux, zfs-auto-snapshot
+ Description: ZFS Manager integration for Proxmox VE (community release)
+  Integrated ZFS status and guarded snapshot management in the
+  Proxmox node UI at port 8006. Uses structural compatibility checks for supported PVE 9.x layouts.
+  This package patches known GUI/API hooks with guarded rollback.
+  Unofficial community software; validate independently before production use.

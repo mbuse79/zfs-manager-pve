@@ -1,0 +1,50 @@
+Package: unzip
+Binary: unzip
+Version: 6.0-29+deb13u1
+Maintainer: Santiago Vila <sanvila@debian.org>
+Build-Depends: debhelper-compat (= 13), libbz2-dev
+Architecture: any
+Standards-Version: 4.7.2
+Format: 3.0 (quilt)
+Files:
+ fb7b25488ed4028444633dc24fcb0e97 1495 unzip_6.0-29+deb13u1.dsc
+ 62b490407489521db863b523a7f86375 1376845 unzip_6.0.orig.tar.gz
+ dba8d050188fd87fb9101e26d6eaed2f 27112 unzip_6.0-29+deb13u1.debian.tar.xz
+Vcs-Browser: https://salsa.debian.org/sanvila/unzip
+Vcs-Git: https://salsa.debian.org/sanvila/unzip.git
+Checksums-Sha256:
+ b700df33b987c07f3d6435b175e0c2c924368d8c6e4efdcd2adf730ed69d4405 1495 unzip_6.0-29+deb13u1.dsc
+ 036d96991646d0449ed0aa952e4fbe21b476ce994abc276e49d30e686708bd37 1376845 unzip_6.0.orig.tar.gz
+ 32716adbdf903ee4e7e28f8c9884fc3459b22b2214e0ff4cefc0ab9839f43481 27112 unzip_6.0-29+deb13u1.debian.tar.xz
+Homepage: https://infozip.sourceforge.net/UnZip.html
+Package-List: 
+ unzip deb utils optional arch=any
+Directory: pool/main/u/unzip
+Priority: source
+Section: utils
+
+Package: zfs-auto-snapshot
+Binary: zfs-auto-snapshot
+Version: 1.2.4-2
+Maintainer: Jonathan Carter <jcc@debian.org>
+Build-Depends: debhelper (>= 11)
+Architecture: all
+Standards-Version: 4.2.1
+Format: 3.0 (quilt)
+Files:
+ 2ec91862acf1337e3ead74bd65cd02eb 1947 zfs-auto-snapshot_1.2.4-2.dsc
+ 6c71731b441e1e0f8da385df583460d5 13375 zfs-auto-snapshot_1.2.4.orig.tar.gz
+ 8594bb7a344242bd6e6878e480b53089 1936 zfs-auto-snapshot_1.2.4-2.debian.tar.xz
+Vcs-Browser: https://salsa.debian.org/jcc/zfs-auto-snapshot
+Vcs-Git: https://salsa.debian.org/jcc/zfs-auto-snapshot.git
+Checksums-Sha256:
+ a41252b749f7f318239896ea7589c4ad72bb9578a32ef157c99d197be7941ecd 1947 zfs-auto-snapshot_1.2.4-2.dsc
+ 307f71f748cacf5149532891dc3174365a4494337d9cfc8e619d9038080f3e9b 13375 zfs-auto-snapshot_1.2.4.orig.tar.gz
+ 0ea6035cc7170e0d3aaf7add9ad6ef8d509c80b8265d025456ca78913a76c8ab 1936 zfs-auto-snapshot_1.2.4-2.debian.tar.xz
+Homepage: https://github.com/zfsonlinux/zfs-auto-snapshot
+Package-List: 
+ zfs-auto-snapshot deb contrib/utils optional arch=all
+Directory: pool/contrib/z/zfs-auto-snapshot
+Priority: optional
+Section: contrib/misc
+
