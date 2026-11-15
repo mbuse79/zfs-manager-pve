@@ -1,3 +1,14 @@
+## Unveröffentlicht – optionale Clusterinstallation
+
+- Native Clusterübersicht mit ausdrücklicher Knotenauswahl, temporärer Vorprüfung,
+  einmaliger Bestätigung und Proxmox-Hintergrundauftrag; zusätzlich `zfsm cluster`.
+- Root-only, bestehende Proxmox-SSH-Vertrauensbeziehung, Quorum, Versions-/Identitäts-
+  und Prüfsummenprüfung; erster Verteilungspfad für das unveränderte öffentliche RC9.
+- Keine automatische Verteilung, Konfigurationssynchronisierung oder Downgrades;
+  Teilfehler stoppen die Verteilung und bleiben je Knoten sichtbar.
+- Quellstand/Fixturetests; noch kein neuer Paketbau, Release oder realer Clustertest.
+- Details und Testplan: `docs/CLUSTER-INSTALL.md`.
+
 ## Veröffentlichung RC9 (15.11.2026)
 
 - Betreiber bestätigt erfolgreiche angeforderte Praxistests und beauftragt die Veröffentlichung.

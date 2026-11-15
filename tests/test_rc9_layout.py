@@ -50,7 +50,13 @@ assert.equal(cap.renderer(0,null,{get:()=>0}),'—');
 def test_protected_runtime_files_identical_to_rc8():
     expected=json.loads((ROOT/'tests/fixtures/rc8-protected-sha256.json').read_text())
     for name,digest in expected.items():
-        assert hashlib.sha256((ROOT/'src'/name).read_bytes()).hexdigest()==digest,name
+        raw=(ROOT/'src'/name).read_bytes()
+        if name=='PVE/API2/ZFSSnapshotViewer.pm':
+            start=raw.index(b'# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT\n')
+            marker=b'# END ZFSM OPTIONAL CLUSTER DEPLOYMENT\n'
+            end=raw.index(marker,start)+len(marker)
+            raw=raw[:start]+raw[end:]
+        assert hashlib.sha256(raw).hexdigest()==digest,name
 
 
 def test_rc8_upgrade_keeps_configuration_and_proxmox_surroundings(tmp_path):

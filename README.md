@@ -5,6 +5,10 @@ node interface on port 8006. Independent community software; not a Proxmox produ
 
 [Deutsch](README.de.md) · [RC9 release](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-34-rc9) · [Install RC9](docs/INSTALL-RC9.md) · [Security](SECURITY.md)
 
+Development on this branch: [optional cluster installation](docs/CLUSTER-INSTALL.md)
+with explicit target selection and confirmation. Not included in the published
+RC9; real cluster testing and a new package approval remain outstanding.
+
 ## RC9: compact native interface
 
 `1.0.0-34~rc9` keeps the tested package version. Pools appear first, CAP and FRAG

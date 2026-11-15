@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-15",
+  "base_commit": "2e4cf1aa241187a3b15bb3d839e1d57e23b467ac",
+  "status": "unreleased development; no new package or host installation",
+  "normal_pytest": {"passed": 278, "skipped": 10, "deselected": 5},
+  "fakeroot_pytest": {"passed": 19, "overlap_with_normal": 4},
+  "distinct_tests_passed": 293,
+  "new_cluster_tests": 41,
+  "skipped_in_normal": "Nine existing root fixtures and one new root-owned cluster state/lock fixture. All are executed separately with fakeroot. Five additional ownership cases are excluded from normal execution and included in the fakeroot run.",
+  "browser": {
+    "toolkit": "Real ExtJS 7.0.0.168 with isolated API fixtures",
+    "languages": ["de", "en"],
+    "checks": ["explicit node selection", "offline target blocked", "origin coordinator routing", "preview does not install", "approval checkbox required", "confirmation required", "backend HTML escaped", "existing snapshot UI state preserved"],
+    "real_host_requests": 0
+  },
+  "published_bundle_read_only_check": {
+    "bytes": 3211493,
+    "sha256": "7b2ba31290b5e45913f7a715075b1b844e4d57f151f8effd39fcb5e747768e5e",
+    "all_inner_manifest_entries_verified": true,
+    "contained_scripts_executed": false
+  },
+  "unchanged": "All existing snapshot handlers outside the separately marked new API block and all other protected modules retain the RC8/RC9 fixture content hashes.",
+  "not_tested": ["real PVE cluster SSH", "real cross-node package installation via the new controller", "real SSH interruption during dpkg", "multiple real coordinators", "real offline rescue"],
+  "prior_operator_rc9_confirmation_does_not_cover_new_cluster_feature": true
+}

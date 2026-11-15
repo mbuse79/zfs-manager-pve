@@ -21,6 +21,32 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
         }());
         var zfsLocale = zfsLanguage.indexOf('de') === 0 ? 'de-DE' : 'en-US';
         var zfsTDe = {
+            'Close': 'Schließen',
+            'Not started': 'Nicht gestartet',
+            'Outcome unknown – inspect node': 'Ergebnis unbekannt – Knoten prüfen',
+            'Cluster installation': 'Clusterinstallation',
+            'Coordinator': 'Steuerknoten',
+            'Select nodes explicitly. Existing settings and schedules stay local.': 'Knoten ausdrücklich auswählen. Bestehende Einstellungen und Zeitpläne bleiben lokal.',
+            'The check stages verified files temporarily; it does not install packages.': 'Die Prüfung legt geprüfte Dateien vorübergehend ab; sie installiert keine Pakete.',
+            'Node': 'Knoten',
+            'Online': 'Online',
+            'Offline': 'Offline',
+            'Check selected nodes': 'Ausgewählte Knoten prüfen',
+            'Install on selected nodes': 'Auf ausgewählten Knoten installieren',
+            'I approve installation on the checked nodes.': 'Ich bestätige die Installation auf den geprüften Knoten.',
+            'Cluster installation uses existing root SSH trust and requires root@pam.': 'Die Clusterinstallation nutzt die bestehende Root-SSH-Verbindung und erfordert root@pam.',
+            'Install the displayed version on the selected nodes?': 'Die angezeigte Version auf den ausgewählten Knoten installieren?',
+            'The rollout stops on failure. Completed installations remain in place.': 'Bei einem Fehler stoppt die Verteilung. Bereits abgeschlossene Installationen bleiben bestehen.',
+            'Preview is valid for five minutes and can be used once.': 'Die Vorschau gilt fünf Minuten und kann einmal verwendet werden.',
+            'Task log': 'Aufgabenprotokoll',
+            'Running': 'Läuft',
+            'Complete': 'Abgeschlossen',
+            'Failed': 'Fehlgeschlagen',
+            'Blocked': 'Gesperrt',
+            'Unchanged (same or newer version)': 'Unverändert (gleiche oder neuere Version)',
+            'Ready to install': 'Zur Installation bereit',
+            'Installed': 'Installiert',
+            'View task log for details. Closing this window does not stop the task.': 'Details stehen im Aufgabenprotokoll. Das Schließen dieses Fensters stoppt die Aufgabe nicht.',
             'Not available': 'Keine Angabe',
             'Existing services (read-only discovery)': 'Vorhandene Dienste (nur Erkennung)',
             'AutoSnap schedules': 'AutoSnap-Zeitpläne',
@@ -515,6 +541,107 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             });
             dangerWindow.show();
         };
+        var zfsmClusterWindow = function () {
+            var coordinator = (typeof Proxmox !== 'undefined' && Proxmox.NodeName) || nodename;
+            var base = '/nodes/' + encodeURIComponent(coordinator) + '/zfsmanager-ro/';
+            var plan = null, busy = false, task = null, polls = 0;
+            var store = Ext.create('Ext.data.Store', {fields:['name','online'],data:[]});
+            var statuses = {ready:'Ready to install',blocked:'Blocked',unchanged:'Unchanged (same or newer version)',
+                installed:'Installed',installing:'Running',failed:'Failed',running:'Running',complete:'Complete',
+                not_started:'Not started',unknown:'Outcome unknown – inspect node'};
+            var win = Ext.create('Ext.window.Window', {
+                title:zfsL('Cluster installation'),modal:true,width:Math.min(900,window.innerWidth-40),
+                height:Math.min(760,window.innerHeight-50),layout:{type:'vbox',align:'stretch'},bodyPadding:12,
+                items:[
+                    {xtype:'component',margin:'0 0 8 0',html:'<b>'+safeZFSValue(zfsL('Coordinator'))+': '+safeZFSValue(coordinator)+'</b><br>'+
+                        safeZFSValue(zfsL('Select nodes explicitly. Existing settings and schedules stay local.'))+'<br>'+
+                        safeZFSValue(zfsL('The check stages verified files temporarily; it does not install packages.'))+'<br>'+
+                        safeZFSValue(zfsL('Cluster installation uses existing root SSH trust and requires root@pam.'))},
+                    {xtype:'grid',itemId:'cluster-nodes',height:170,store:store,
+                        selModel:{selType:'checkboxmodel',mode:'MULTI'},
+                        columns:[{text:zfsL('Node'),dataIndex:'name',flex:1,renderer:safeZFSValue},
+                            {text:'Status',dataIndex:'online',width:120,renderer:function(v){return safeZFSValue(zfsL(v?'Online':'Offline'));}}],
+                        listeners:{beforeselect:function(sm,rec){return rec.get('online')===true;},
+                            selectionchange:function(){plan=null;var ack=win.down('#cluster-ack');ack.setValue(false);ack.setDisabled(true);win.down('#cluster-install').setDisabled(true);}}
+                    },
+                    {xtype:'component',itemId:'cluster-report',flex:1,scrollable:true,margin:'10 0',html:''},
+                    {xtype:'checkbox',itemId:'cluster-ack',disabled:true,boxLabel:zfsL('I approve installation on the checked nodes.'),
+                        listeners:{change:function(field,value){win.down('#cluster-install').setDisabled(!value||!plan||busy);}}},
+                    {xtype:'component',html:safeZFSValue(zfsL('The rollout stops on failure. Completed installations remain in place.'))+'<br>'+
+                        safeZFSValue(zfsL('Preview is valid for five minutes and can be used once.'))}
+                ],
+                buttons:[
+                    {text:zfsL('Task log'),itemId:'cluster-task',disabled:true,handler:function(){
+                        if(task){Ext.create('PVE.window.TaskViewer',{upid:task,nodename:coordinator}).show();}}},
+                    {text:zfsL('Check selected nodes'),itemId:'cluster-check',disabled:true,handler:function(){
+                        var selected=win.down('#cluster-nodes').getSelectionModel().getSelection();
+                        if(!selected.length||busy){return;}
+                        start('cluster-preview',{nodes:Ext.Array.map(selected,function(r){return r.get('name');}).join(','),lang:zfsLocale==='de-DE'?'de':'en'});
+                    }},
+                    {text:zfsL('Install on selected nodes'),itemId:'cluster-install',disabled:true,handler:function(){
+                        if(!plan||busy||!win.down('#cluster-ack').getValue()){return;}
+                        Ext.Msg.confirm(zfsL('Cluster installation'),safeZFSValue(zfsL('Install the displayed version on the selected nodes?')),function(answer){
+                            if(answer!=='yes'||!plan||busy||win.destroyed){return;}
+                            start('cluster-install',{plan:plan,confirm:1,lang:zfsLocale==='de-DE'?'de':'en'});
+                        });
+                    }},
+                    {text:zfsL('Close'),handler:function(){win.close();}}
+                ]
+            });
+            var report = function(data) {
+                var html='<b>'+safeZFSValue(zfsL(statuses[data.status]||data.status||'Unknown'))+'</b>';
+                if(data.release){html+=' · '+safeZFSValue(data.release.version);}
+                if(data.error){html+='<p>'+safeZFSValue(data.error)+'</p>';}
+                Ext.Array.each(data.results||[],function(row){
+                    html+='<hr><b>'+safeZFSValue(row.node)+'</b>: '+safeZFSValue(zfsL(statuses[row.status]||row.status||'Unknown'));
+                    if(row.probe){html+='<br>'+safeZFSValue(row.probe.pve)+'<br>'+safeZFSValue(row.probe.package||'—');}
+                    if(row.error){html+='<p>'+safeZFSValue(row.error)+'</p>';}
+                    if(row.log){html+='<pre style="white-space:pre-wrap">'+safeZFSValue(row.log)+'</pre>';}
+                });
+                html+='<p>'+safeZFSValue(zfsL('View task log for details. Closing this window does not stop the task.'))+'</p>';
+                win.down('#cluster-report').update(html);
+            };
+            var finish = function(){busy=false;win.down('#cluster-nodes').setDisabled(false);win.down('#cluster-check').setDisabled(false);};
+            var poll = function(id) {
+                if(win.destroyed){return;}
+                Proxmox.Utils.API2Request({url:base+'cluster-job',method:'GET',params:{job:id},
+                    success:function(r){
+                        if(win.destroyed){return;}
+                        var data=r.result.data;report(data);
+                        if(data.status==='running'){
+                            Ext.defer(function(){poll(id);},2000);return;
+                        }
+                        finish();
+                        if(data.kind==='preview'&&data.status==='complete'&&data.ready){
+                            plan=id;win.down('#cluster-ack').setDisabled(false);
+                        }
+                    },failure:function(e){
+                        if(win.destroyed){return;}
+                        if(++polls<8){Ext.defer(function(){poll(id);},2000);return;}
+                        finish();report({status:'failed',error:e&&e.htmlStatus||zfsL('Unknown error')});
+                    }
+                });
+            };
+            var start = function(route,params) {
+                busy=true;plan=null;polls=0;
+                win.down('#cluster-nodes').setDisabled(true);win.down('#cluster-check').setDisabled(true);
+                win.down('#cluster-ack').setValue(false);win.down('#cluster-ack').setDisabled(true);
+                win.down('#cluster-install').setDisabled(true);
+                report({status:'running'});
+                Proxmox.Utils.API2Request({url:base+route,method:'POST',params:params,
+                    success:function(r){if(win.destroyed){return;}task=r.result.data.upid;
+                        win.down('#cluster-task').setDisabled(false);poll(r.result.data.job);},
+                    failure:function(e){if(win.destroyed){return;}finish();report({status:'failed',error:e&&e.htmlStatus||zfsL('Unknown error')});}
+                });
+            };
+            win.show();
+            Proxmox.Utils.API2Request({url:base+'cluster-status',method:'GET',
+                success:function(r){if(win.destroyed){return;}store.loadData(r.result.data.nodes);
+                    win.down('#cluster-check').setDisabled(false);
+                    win.down('#cluster-report').update(safeZFSValue(r.result.data.release.version));},
+                failure:function(e){if(!win.destroyed){report({status:'failed',error:e&&e.htmlStatus||zfsL('Unknown error')});}}
+            });
+        };
         if (caps.nodes['Sys.Audit']) {
             me.items.push({
                 xtype: 'panel',
@@ -531,7 +658,9 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         var panel = btn.up('#zfsmanager-readonly');
                         if (panel && panel.zfsRefreshReadOnly) { panel.zfsRefreshReadOnly(); }
                     },
-                },'->',{text:zfsL('Details'),iconCls:'fa fa-info-circle',handler:function(btn){
+                },{text:zfsL('Cluster installation'),itemId:'zfsm-cluster-open',iconCls:'fa fa-server',
+                    hidden:typeof Proxmox==='undefined'||Proxmox.UserName!=='root@pam',handler:zfsmClusterWindow},
+                '->',{text:zfsL('Details'),iconCls:'fa fa-info-circle',handler:function(btn){
                     var owner=btn.up('#zfsmanager-readonly'),details=owner&&owner.down('#zfsm-technical-details');
                     if(details){if(details.collapsed){details.expand();}else{details.collapse();}}
                 }}],

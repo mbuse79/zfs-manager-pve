@@ -24,6 +24,7 @@ DE={
  'emergency':'Warnstufen, Notfallvorschau und geschuetzte Snapshot-Bereinigung',
  'inventory':'Bestehende AutoSnap- und ZFS-Dienste sicher erkennen (nur lesend)',
  'autosnap':'Doppelte AutoSnap-Zeitpläne interaktiv bereinigen und sichern',
+ 'cluster':'Optionale Clusterinstallation: Knoten prüfen, auswählen und bestätigen',
  'confirm':'Reparatur trotz Kompatibilitätswarnung versuchen? [j/N]: ',
  'cancel':'Abgebrochen.', 'warning':'WARNUNG: Unbekannte Proxmox-Struktur. Keine blinden Änderungen; Schutzprüfungen bleiben aktiv.',
  'no_backup':'Keine Sicherungen vorhanden', 'snapshot':'Sicherung erstellt:',
@@ -43,13 +44,14 @@ EN={
  'emergency':'Capacity alerts, emergency preview and guarded cleanup',
  'inventory':'Read-only audit of existing AutoSnap and ZFS services',
  'autosnap':'Interactively resolve duplicate AutoSnap cron jobs with backup',
+ 'cluster':'Optional cluster installation: inspect, select and confirm nodes',
  'confirm':'Attempt repair despite compatibility warning? [y/N]: ',
  'cancel':'Cancelled.', 'warning':'WARNING: Unknown Proxmox layout. No blind modification; safety guards stay enabled.',
  'no_backup':'No backups found', 'snapshot':'Backup created:',
  'restore_note':'Automatic restore of old Proxmox files is blocked. Verify the backup and PVE version.',
  'error':'ERROR',
 }
-HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','capacity','emergency','inventory','autosnap')
+HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','capacity','emergency','inventory','autosnap','cluster')
 
 def language(requested=None):
     raw=(requested or os.environ.get('LC_ALL') or os.environ.get('LC_MESSAGES') or os.environ.get('LANG') or 'en').lower()
@@ -73,6 +75,13 @@ def main(argv=None):
         del argv[at:at+2]
     selected='de' if language(requested) is DE else 'en'
     from cli_locale import display_language
+    if argv and argv[0]=='cluster':
+        from zfsm_cluster import main as cluster_main
+        try:
+            return cluster_main(argv[1:] if len(argv)>1 else ['--help'], lang=selected)
+        except Exception as exc:
+            print(str(exc), file=sys.stderr)
+            return 1
     if argv and argv[0]=='autosnap':
         from zfsm_autosnap_resolve import main as autosnap_main
         with display_language(selected):

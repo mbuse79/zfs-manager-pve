@@ -5,6 +5,10 @@ Proxmox-Knotenoberfläche auf Port 8006 verwalten. Unabhängiges Community-Proje
 
 [English](README.md) · [RC9-Release](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-34-rc9) · [RC9 installieren](docs/INSTALL-RC9.md) · [Sicherheit](SECURITY.md)
 
+Entwicklung auf diesem Branch: [optionale Clusterinstallation](docs/CLUSTER-INSTALL.md)
+mit Knotenauswahl und Bestätigung. Noch nicht im veröffentlichten RC9 enthalten;
+reale Clustertests und eine neue Paketfreigabe stehen aus.
+
 ## RC9: kompakte native Oberfläche
 
 Paketversion **`1.0.0-34~rc9`**. Poolübersicht mit getrennten CAP-/FRAG-Werten,

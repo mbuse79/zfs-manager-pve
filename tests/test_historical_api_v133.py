@@ -6,6 +6,11 @@ ROOT=Path(__file__).resolve().parents[1]
 def historical_api_without_v133_topology():
     """Strictly preserve the 1.0.0-32 API excluding the new read-only route."""
     s=(ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()
+    # The separate cluster deployment routes must leave all snapshot handlers
+    # byte-identical. Their root-only authorization is tested independently.
+    start_cluster=s.index(b'# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT\n')
+    end_cluster=s.index(b'# END ZFSM OPTIONAL CLUSTER DEPLOYMENT\n',start_cluster)+len(b'# END ZFSM OPTIONAL CLUSTER DEPLOYMENT\n')
+    s=s[:start_cluster]+s[end_cluster:]
     # v34 RC6 adds a read-only external-service inventory; strip it for historical comparison.
     start6=s.index(b'# Read-only inventory: detects but NEVER manages external replication jobs.')
     end6=s.index(b'# Retention configuration is read from the existing distro cron entries.',start6)

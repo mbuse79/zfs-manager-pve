@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
 (async()=>{
  const extRoot=path.resolve(process.argv[2]),script=fs.readFileSync(process.argv[3],'utf8'),out=process.argv[4];
  const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
- const results=[],toolkit=process.argv[5]&&path.resolve(process.argv[5]);
+ const results=[],toolkit=process.argv[5]&&path.resolve(process.argv[5]),clusterMode=process.argv[6]==='cluster';
  for(const lang of ['de','en']){
   const page=await browser.newPage({viewport:{width:1640,height:1080}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -21,7 +21,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
   });
   await page.goto('http://rc9.test/');
   await page.waitForFunction(()=>window.Ext&&Ext.isReady);
-  await page.evaluate(({script,lang})=>{
+  await page.evaluate(({script,lang,clusterMode})=>{
    document.cookie='PVELangCookie='+lang;window.calls=[];
    const now=Math.floor(Date.now()/1000),guests=[],datasets=[],snapshots=[];
    [['vm',103,'RaspberryMatic',1],['vm',108,'Windows-11',3],['ct',701,'zmb-member',2],['ct',704,'zmb-admin',1]].forEach(([kind,id,name,count])=>{
@@ -40,15 +40,33 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
     'emergency-status':{pools:pools.map(p=>({name:p.name,percent:100*p.alloc/p.size,severity:'normal'})),policy:{auto_enabled:false},notification:{configured:false,targets:0}},
     'datasets':datasets.concat([{name:'rpool',type:'filesystem'}]),'snapshots':snapshots,'retention':ret,'guest-access':guests,'admin-status':{admin:1},
     'host-inventory':{autosnap:{ready:true,schedule_count:6},replication:{systemd_units:[],native_pve_jobs:0},monitoring:{checkzfs_package:'absent'},warnings:[]}};
-   window.Proxmox={defaultLang:lang,Utils:{API2Request(opts){
-    calls.push({url:opts.url,method:opts.method});if(opts.method!=='GET')throw Error('Mutation attempted');
+   window.Proxmox={defaultLang:lang,NodeName:'fixture-coordinator',UserName:clusterMode?'root@pam':'observer@pve',Utils:{API2Request(opts){
+    calls.push({url:opts.url,method:opts.method,params:opts.params});
+    if(clusterMode&&opts.url.includes('/cluster-')){
+     if(!opts.url.startsWith('/nodes/fixture-coordinator/'))throw Error('Cluster request used selected remote node instead of coordinator');
+     const route=opts.url.split('/').pop();let data;
+     if(route==='cluster-status')data={release:{version:'1.0.0-34~rc9'},nodes:[{name:'node-a',online:true},{name:'node-b',online:false}]};
+     else if(route==='cluster-preview'){
+      if(opts.method!=='POST'||opts.params.nodes!=='node-a')throw Error('Unexpected cluster preview selection');
+      data={job:'a'.repeat(32),upid:'fixture-preview'};
+     }else if(route==='cluster-install'){
+      if(opts.method!=='POST'||opts.params.confirm!==1||opts.params.plan!=='a'.repeat(32))throw Error('Unconfirmed cluster install');
+      data={job:'b'.repeat(32),upid:'fixture-install'};
+     }else if(route==='cluster-job'){
+      const install=opts.params.job==='b'.repeat(32);
+      data={kind:install?'install':'preview',status:'complete',ready:true,release:{version:'1.0.0-34~rc9'},
+       results:[{node:'node-a',status:install?'installed':'ready',log:'<img src=x onerror=alert(1)> fixture escaped'}]};
+     }else throw Error('Unexpected cluster route');
+     setTimeout(()=>opts.success({result:{data}}),0);return;
+    }
+    if(opts.method!=='GET')throw Error('Mutation attempted');
     const key=opts.url.includes('/disks/')?opts.url.split('/').slice(-2).join('/'):opts.url.split('/').pop();
     setTimeout(()=>{try{opts.success({result:{data:fixtures[key]}});if(opts.callback)opts.callback();}catch(e){window.fixtureError=e.stack;throw e;}},0);
    }}};
    const me={items:[]},caps={nodes:{'Sys.Audit':true,'Sys.Modify':true}};
    new Function('me','caps','nodename',script)(me,caps,'pve4');
    window.plugin=Ext.create('Ext.panel.Panel',Object.assign(me.items[0],{renderTo:'app',width:1600}));
-  },{script,lang});
+  },{script,lang,clusterMode});
   await page.waitForFunction(()=>window.plugin&&plugin.zfsReadOnly&&!plugin.zfsReadOnly.refreshing);
   const proof=await page.evaluate(async()=>{
    const p=plugin,technical=p.down('#zfsm-technical-details'),audit=p.down('#zfsm-snapshot-audit'),services=p.down('#zfsm-service-details');
@@ -87,6 +105,35 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    return {lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
   });
   assert.equal(proof.fixtureError,null);assert.equal(errors.length,0,errors.join('\n'));
+  if(clusterMode){
+   proof.cluster=await page.evaluate(async()=>{
+    const wait=async fn=>{for(let i=0;i<100;i++){if(fn())return;await new Promise(r=>setTimeout(r,20));}throw Error('Cluster dialog timeout');};
+    const button=plugin.down('#zfsm-cluster-open');if(button.hidden)throw Error('Root cluster control hidden');button.handler();
+    await wait(()=>Ext.ComponentQuery.query('window').some(w=>w.down('#cluster-nodes')));
+    const win=Ext.ComponentQuery.query('window').find(w=>w.down('#cluster-nodes')),grid=win.down('#cluster-nodes');
+    await wait(()=>grid.getStore().getCount()===2);
+    const selection=grid.getSelectionModel();
+    if(selection.getSelection().length)throw Error('Nodes selected automatically');
+    selection.select(grid.getStore().getAt(1));if(selection.getSelection().length)throw Error('Offline node selectable');
+    selection.select(grid.getStore().first());
+    const check=win.down('#cluster-check'),install=win.down('#cluster-install'),ack=win.down('#cluster-ack');
+    if(!install.disabled||!ack.disabled)throw Error('Installation enabled before preview');
+    check.handler();await wait(()=>!ack.disabled);
+    if(calls.some(c=>c.url.endsWith('cluster-install')))throw Error('Preview installed a package');
+    if(!install.disabled)throw Error('Installation enabled without checkbox');
+    if(win.down('#cluster-report').getEl().dom.querySelector('img'))throw Error('Backend text was not escaped');
+    ack.setValue(true);if(install.disabled)throw Error('Checkbox did not enable installation');
+    const oldConfirm=Ext.Msg.confirm;let confirmations=0;
+    Ext.Msg.confirm=(title,text,cb)=>{confirmations++;cb('yes');};install.handler();Ext.Msg.confirm=oldConfirm;
+    await wait(()=>calls.some(c=>c.url.endsWith('cluster-job')&&c.params.job==='b'.repeat(32))&&!check.disabled);
+    if(confirmations!==1||!install.disabled)throw Error('Missing confirmation or install control not reset');
+    const writes=calls.filter(c=>c.method==='POST');
+    if(writes.length!==2)throw Error('Unexpected mutation request count');
+    return {explicitSelection:true,offlineBlocked:true,previewRequired:true,checkboxRequired:true,
+      confirmationRequired:true,coordinatorRouting:true,backendHtmlEscaped:true,fixtureOnly:true};
+   });
+   assert.equal(errors.length,0,errors.join('\n'));
+  }
   await page.screenshot({path:out+'/rc9-'+lang+'.png',fullPage:true});
   results.push(proof);await page.close();
  }

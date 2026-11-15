@@ -20,6 +20,80 @@ use Fcntl qw(O_RDONLY O_NOFOLLOW);
 our $ADMINS_FILE = '/etc/pve-zfs-manager/admins.conf';
 our $PREVIEW_SECRET = '/etc/pve-zfs-manager/preview.key';
 our $GUEST_POLICY = '/usr/local/libexec/pve-zfs-manager/guest_policy.py';
+# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT
+our $CLUSTER_TOOL = '/usr/lib/pve-zfs-manager/zfsm_cluster.py';
+
+# Cluster package deployment uses the cluster's root SSH identity, so local
+# delegated snapshot administration alone must never authorize it.
+sub _cluster_root {
+    my ($node) = @_;
+    my $user = _admin_identity($node);
+    die "Clusterinstallation nur fuer root\@pam / Cluster installation requires root\@pam\n"
+        unless $user eq 'root@pam';
+    return $user;
+}
+sub _cluster_json {
+    my (@args) = @_;
+    my $data = decode_json(_run_capture('/usr/bin/python3', $CLUSTER_TOOL, @args));
+    die "Invalid cluster response\n" unless ref($data) eq 'HASH';
+    return $data;
+}
+sub _cluster_task {
+    my ($param, $operation, @args) = @_;
+    my $user = _cluster_root($param->{node});
+    my $id = substr(sha256_hex(join('|', $user, $$, time, rand(), _preview_secret())), 0, 32);
+    my $rpcenv = PVE::RPCEnvironment::get();
+    my $upid = $rpcenv->fork_worker('zfsmcluster', $param->{node}, $user, sub {
+        system('/usr/bin/python3', $CLUSTER_TOOL, '--lang', $param->{lang} // 'en',
+               $operation, '--job', $id, @args) == 0 or die "Cluster task failed; inspect task log\n";
+    });
+    return {job => $id, upid => $upid};
+}
+
+__PACKAGE__->register_method({
+    name=>'cluster_status', path=>'cluster-status', method=>'GET', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Root-only cluster membership discovery; no package or configuration changes.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node}); return _cluster_json('status'); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_job', path=>'cluster-job', method=>'GET', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Read the root-owned cluster deployment report.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        job=>{type=>'string',pattern=>'^[a-f0-9]{32}$',maxLength=>32}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        die "Invalid job ID\n" unless ($p->{job}//'') =~ /\A[a-f0-9]{32}\z/;
+        return _cluster_json('job','--job',$p->{job}); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_preview', path=>'cluster-preview', method=>'POST', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Explicitly stage and verify the pinned release on selected nodes; do not install.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        nodes=>{type=>'string',maxLength=>4096},lang=>{type=>'string',enum=>['de','en'],optional=>1}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        die "Invalid selected nodes\n" unless ($p->{nodes}//'') =~ /\A[A-Za-z0-9][A-Za-z0-9-]{0,62}(?:,[A-Za-z0-9][A-Za-z0-9-]{0,62}){0,63}\z/;
+        return _cluster_task($p,'preview','--nodes',$p->{nodes}); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_install', path=>'cluster-install', method=>'POST', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Apply a confirmed single-use cluster preview; stop on first failure.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        plan=>{type=>'string',pattern=>'^[a-f0-9]{32}$',maxLength=>32},
+        confirm=>{type=>'boolean'},lang=>{type=>'string',enum=>['de','en'],optional=>1}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        die "Confirmation required / Bestaetigung erforderlich\n" unless $p->{confirm};
+        die "Invalid preview ID\n" unless ($p->{plan}//'') =~ /\A[a-f0-9]{32}\z/;
+        return _cluster_task($p,'install','--plan',$p->{plan},'--confirmed'); },
+});
+# END ZFSM OPTIONAL CLUSTER DEPLOYMENT
 
 sub _admin_identity {
     my ($node) = @_;
