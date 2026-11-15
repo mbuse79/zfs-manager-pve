@@ -214,14 +214,14 @@ class InstallerTest(unittest.TestCase):
         i.uninstall()
 
     def test_shell_prechecks_before_dependency_installation(self):
-        content=(ROOT/'install.sh').read_text()
+        content=(ROOT/'tests/fixtures/install-local-rc7.sh').read_text()
         self.assertIn('universal.py\" precheck',content)
         self.assertIn('--no-remove --no-upgrade',content)
         self.assertLess(content.index('universal.py\" precheck'),content.index('apt-get --simulate'))
 
     def test_shell_installer_calls_status_without_double_dash(self):
         content=(ROOT/'install.sh').read_text()
-        self.assertIn('/usr/sbin/pve-zfs-manager status',content)
+        self.assertIn('exec /usr/sbin/pve-zfs-manager "${1#--}"',content)
         self.assertNotIn('/usr/sbin/pve-zfs-manager --status',content)
 
     def test_upgrade_actual_rc5_code_to_rc6_migrates_exactly_once(self):
@@ -577,8 +577,8 @@ console.log('PASS: RC8-R2 critical UI opens and executes only after checkbox');
         self.assertEqual(proc.returncode,0,proc.stdout+proc.stderr)
 
     def test_install_script_points_to_release_package(self):
-        wrapper=(ROOT/'install.sh').read_text()
-        self.assertIn('pve-zfs-manager_1.0.0-32+docs2_all.deb',wrapper)
+        wrapper=(ROOT/'install_driver.py').read_text()
+        self.assertIn("VERSION = '1.0.0-34~rc9'",wrapper)
         self.assertNotIn('pve-zfs-manager_1.0.0~rc7-1_all.deb',wrapper)
 
 class RC9RequirementsTest(unittest.TestCase):

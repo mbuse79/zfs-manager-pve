@@ -88,10 +88,45 @@ def get_status(guest, vmid):
         raise PolicyError('Gaststatus nicht eindeutig ermittelbar')
     return re.search(r'\bstatus:\s+(stopped|running)\b', proc.stdout).group(1)
 
+def bulk_guest_statuses():
+    """One read-only cluster inventory for UI; missing state remains UNKNOWN.
+
+    This result is NEVER used to authorize a write. Resolve operations obtain
+    an independent, fresh `qm status`/`pct status` for the selected guest.
+    """
+    try:
+        cp = subprocess.run(
+            ['/usr/bin/pvesh', 'get', '/cluster/resources', '--type', 'vm',
+             '--output-format', 'json'], capture_output=True, text=True,
+            timeout=6, check=False)
+        if cp.returncode or len(cp.stdout) > 2_000_000:
+            return {}
+        resources = json.loads(cp.stdout)
+        if not isinstance(resources, list):
+            return {}
+        statuses = {}
+        for row in resources:
+            if not isinstance(row, dict):
+                continue
+            kind = {'qemu':'vm', 'lxc':'lxc'}.get(row.get('type'))
+            vmid = row.get('vmid')
+            status = row.get('status')
+            if kind and isinstance(vmid, int) and vmid > 0 and status in ('running', 'stopped'):
+                statuses[(kind, vmid)] = status
+        return statuses
+    except (OSError, UnicodeError, subprocess.TimeoutExpired, ValueError):
+        return {}
+
 def resolve_all(storage_file=Path('/etc/pve/storage.cfg'),
                 lxc_dir=Path('/etc/pve/lxc'), vm_dir=Path('/etc/pve/qemu-server'),
-                check_status=True):
-    pools = storage_pools(read_text(storage_file))
+                check_status=True, status_mode='per_guest', target_dataset=None):
+    storage_text = read_text(storage_file)
+    pools = storage_pools(storage_text)
+    # Bulk status serves display only. A missing/uncertain state cannot enable
+    # delete or rollback buttons. For signed writes we use target-only status.
+    if status_mode not in ('per_guest', 'bulk', 'target'):
+        raise PolicyError('Ungueltige Gaststatus-Strategie')
+    status_map = bulk_guest_statuses() if check_status and status_mode == 'bulk' else {}
     owners = {}
     for kind, directory, key_regex in [('lxc', lxc_dir, KEYS_LXC), ('vm', vm_dir, KEYS_VM)]:
         if not directory.is_dir():
@@ -121,9 +156,16 @@ def resolve_all(storage_file=Path('/etc/pve/storage.cfg'),
                     non_zfs_disks.append(key)
             if not disks:
                 continue
-            state = get_status(kind,vmid) if check_status else 'stopped'
+            if not check_status:
+                state = 'stopped'  # Unit-test override only; CLI always checks.
+            elif status_mode == 'bulk':
+                state = status_map.get((kind, vmid), 'unknown')
+            elif status_mode == 'target':
+                state = get_status(kind, vmid) if target_dataset in (d for _, d in disks) else 'unknown'
+            else:
+                state = get_status(kind, vmid)
             protections = bool(opts.get('lock') or opts.get('template') == '1' or opts.get('protection') == '1')
-            fingerprint = hashlib.sha256((raw + '\0' + read_text(storage_file)).encode()).hexdigest()
+            fingerprint = hashlib.sha256((raw + '\0' + storage_text).encode()).hexdigest()
             # Include non-ZFS guest media in the multi-volume check; no partial live rollback.
             single_disk = len(disks) == 1 and len(non_zfs_disks) == 0
             for key, dataset in disks:
@@ -150,7 +192,10 @@ def main():
     parser.add_argument('--stop', action='store_true')
     parser.add_argument('--rollback', action='store_true')
     args = parser.parse_args()
-    owners = resolve_all()
+    if args.command == 'resolve' and (not args.dataset or not DATASET.fullmatch(args.dataset)):
+        raise PolicyError('Ungueltiges Dataset')
+    owners = (resolve_all(status_mode='bulk') if args.command == 'list' else
+              resolve_all(status_mode='target', target_dataset=args.dataset))
     if args.command == 'list':
         print(json.dumps(list(owners.values()), separators=(',',':')))
         return

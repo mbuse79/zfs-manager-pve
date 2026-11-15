@@ -1,0 +1,7 @@
+{
+  "tested_deb_sha256": "f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f",
+  "verified_rebuild_sha256": "9ec5a169accd2ac98f450c217b8598f507660047cc55ec18607935cd50550ebf",
+  "file_contents_and_modes_matched": 77,
+  "published_deb": "Use original tested file, not verification rebuild",
+  "difference": "Archive timestamps/compression metadata may change the rebuilt hash"
+}

@@ -28,3 +28,11 @@ Such interface patterns and short anchors are **not, by themselves, proof of cop
 `AGPL-3.0-only` has been selected **only for contributions that the project may license**. The repository's current `debian/copyright` still has a broad `Files: *` entry and needs file-/fragment-level review if third-party code is found. The historical tested baseline DEB `1.0.0-32` retains older copyright and third-party notices. The published `+docs2` package bundles this updated notice and was installed and CLI/GUI-checked on `pve-test` (PVE 9.2.25) on 2026-11-09. This technical validation is not a legal clearance. No third-party copyright ownership has been inferred from API calls or imports.
 
 **Publication update:** The repository and `v1.0.0-32` release were published on 2026-11-10 after the documented scoped technical comparison. The technical review did not establish concrete unauthorized copying. If identifiable third-party code is later found, the corresponding notices and source attributions must be added. No independent legal clearance is claimed; do not infer that host components are bundled.
+
+## RC9 distribution additions (2026-11-15)
+
+The full release ZIP additionally carries unmodified Debian Trixie DEBs for
+unzip 6.0-29+deb13u1 (Info-ZIP terms) and zfs-auto-snapshot 1.2.4-2 (GPL-2+).
+Their copyright/license texts and corresponding upstream/Debian source archives
+are under dependencies/. Project AGPL licensing does not replace these terms.
+ExtJS/Proxmox assets used by isolated browser tests are not bundled in the plugin.

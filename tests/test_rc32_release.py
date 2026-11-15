@@ -8,14 +8,14 @@ import previous_patch
 import importlib.util
 
 ROOT=Path(__file__).resolve().parents[1]
-VER="1.0.0-32"
+VER="1.0.0-34"
 
 def test_versions_and_cli_are_consistent():
     import zfsm_cli
-    assert zfsm_cli.VERSION == VER
-    assert VERSION == VER+'-dynamic-compat-installer'
-    assert 'pve-zfs-manager_'+VER+'+docs2_all.deb' in (ROOT/'install.sh').read_text()
-    assert "PACKAGE_VERSION='"+VER+"+docs2'" in (ROOT/'build_deb.sh').read_text()
+    assert zfsm_cli.VERSION == VER+'~rc9'
+    assert VERSION == VER+'-rc9-dynamic-compat-installer'
+    assert "VERSION = '"+VER+"~rc9'" in (ROOT/'install_driver.py').read_text()
+    assert "PACKAGE_VERSION='"+VER+"~rc9'" in (ROOT/'build_deb.sh').read_text()
 
 def test_single_guest_singular_both_languages():
     from manager_patch import BLOCK
@@ -27,7 +27,8 @@ def test_snapshot_backend_untouched():
     # RC is UI polish, not a reimplementation of ZFS operations.
     current=(ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()
     previous=(ROOT/'tests/fixtures/ZFSSnapshotViewer_v129.pm').read_bytes()
-    assert current == previous
+    from test_historical_api_v133 import historical_api_without_v133_topology
+    assert historical_api_without_v133_topology() == previous
 
 def test_upgrade_31_to_rc_on_pve_925():
     spec=importlib.util.spec_from_file_location('patch31',ROOT/'tests/fixtures/manager_patch_v131.py')

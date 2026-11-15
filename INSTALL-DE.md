@@ -1,3 +1,5 @@
+**RC9 (15.11.2026):** Current public instructions / Aktuelle öffentliche Anleitung: [docs/INSTALL-RC9.md](docs/INSTALL-RC9.md). Older text below describes historical releases. / Der folgende Text beschreibt historische Releases.
+
 # ZFS Manager for Proxmox VE 1.0.0-32 – Installation
 
 **Geprüfte Paketrevision (`1.0.0-32+docs2`):** Die exakte DEB (SHA256 `3fa2e7a8777e0c58b80cfadcafdd9b4eabc5da883c35e5e1672b9c3417d2251d`) wurde am **09.11.2026** per APT auf `pve-test` mit Proxmox VE 9.2.25 installiert. Der Maintainer bestätigte `zfsm version`, `zfsm status`, `zfsm check`, `zfsm services` und die Weboberfläche. Der Laufzeitcode ist gegenüber der zuvor getesteten `1.0.0-32` unverändert. Dies ist weder eine Kompatibilitätsfreigabe für andere PVE-Versionen noch eine abgeschlossene Rechteprüfung. Siehe `PACKAGE-STATUS.md`.

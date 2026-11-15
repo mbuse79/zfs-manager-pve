@@ -1,0 +1,50 @@
+Package: unzip
+Version: 6.0-29+deb13u1
+Installed-Size: 387
+Maintainer: Santiago Vila <sanvila@debian.org>
+Architecture: amd64
+Depends: libbz2-1.0, libc6 (>= 2.34)
+Suggests: zip
+Description-en: De-archiver for .zip files
+ InfoZIP's unzip program. With the exception of multi-volume archives
+ (ie, .ZIP files that are split across several disks using PKZIP's /& option),
+ this can handle any file produced either by PKZIP, or the corresponding
+ InfoZIP zip program.
+ .
+ This version supports encryption.
+Description-md5: b83e2b495da5d292f3fe6ab67b088c47
+Multi-Arch: foreign
+Homepage: https://infozip.sourceforge.net/UnZip.html
+Tag: implemented-in::c, interface::commandline, role::program,
+ scope::utility, use::checking, use::compressing,
+ works-with-format::zip, works-with::archive
+Section: utils
+Priority: optional
+Filename: pool/main/u/unzip/unzip_6.0-29+deb13u1_amd64.deb
+Size: 172916
+MD5sum: e75cd18d9111fd89f57277a52007000d
+SHA256: fc11f8736bdec6fc46a6864f75bce0c8206a790df37dbcab5ddb25b1bf0f58f0
+
+Package: zfs-auto-snapshot
+Version: 1.2.4-2
+Installed-Size: 41
+Maintainer: Jonathan Carter <jcc@debian.org>
+Architecture: all
+Depends: cron, zfsutils-linux
+Description-en: ZFS automatic snapshot service
+ Automatically create, rotate, and destroy periodic ZFS snapshots. This is
+ the utility that creates the @zfs-auto-snap_frequent, @zfs-auto-snap_hourly,
+ @zfs-auto-snap_daily, @zfs-auto-snap_weekly, and @zfs-auto-snap_monthly
+ snapshots if it is installed.
+ .
+ This program is a posixly correct bourne shell script. It depends only on
+ the zfs utilities and cron, and can run in the dash shell.
+Description-md5: 50b5e87f01f77e852b84260e57dc2473
+Homepage: https://github.com/zfsonlinux/zfs-auto-snapshot
+Section: contrib/utils
+Priority: optional
+Filename: pool/contrib/z/zfs-auto-snapshot/zfs-auto-snapshot_1.2.4-2_all.deb
+Size: 8608
+MD5sum: 86f578355f640e01d84d4c7cca0882cc
+SHA256: 775da7e3d2a0fa118ade18539aa445bf00a563bb2a3b5928a44ff5d862147a9d
+

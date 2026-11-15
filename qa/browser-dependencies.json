@@ -1,0 +1,9 @@
+{
+  "source": "Proxmox Trixie pve-no-subscription signed InRelease",
+  "release_signature": "Good signature: Proxmox Trixie Release Key; see browser-dependencies-signature.txt",
+  "packages": {
+    "libjs-extjs_7.0.0-9_all.deb": "fbedb5765a53b84dc32acfd200bb76bebc79b54aa2bd0f7aeef61cbb0cd62eb8",
+    "proxmox-widget-toolkit_5.2.9_all.deb": "415458d8c2219f1aeecc33d20d53fc3103bda803f412091a56499087e8a43220"
+  },
+  "distribution": "Used only by isolated browser tests; these third-party assets are NOT bundled into the plugin"
+}

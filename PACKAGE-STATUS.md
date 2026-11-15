@@ -1,3 +1,5 @@
+**RC9 update 2026-11-15:** Operator confirmed the requested practice tests and authorized publication of `1.0.0-34~rc9`. See RELEASE-QA.md for exact DEB identity and limitations. The following record remains historical.
+
 # Packaging and provenance status — live-tested revision `1.0.0-32+docs2`
 
 **Created:** 2026-11-09. **Public release verified:** 2026-11-10, tag `v1.0.0-32`, branch `main`. The published `.deb` is the exact `1.0.0-32+docs2` package tested on 2026-11-09. Older private-draft statements below have been superseded.

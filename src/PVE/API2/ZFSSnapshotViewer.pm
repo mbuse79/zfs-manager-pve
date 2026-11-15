@@ -219,6 +219,28 @@ __PACKAGE__->register_method({
     },
 });
 
+# Read-only inventory: detects but NEVER manages external replication jobs.
+# Credentials or ExecStart command arguments must not be exposed to the API.
+__PACKAGE__->register_method({
+    name => 'host_inventory', path => 'host-inventory', method => 'GET',
+    proxyto => 'node', protected => 1,
+    permissions => { check => ['perm','/nodes/{node}',['Sys.Audit']] },
+    description => 'Read-only host discovery of AutoSnap, monitoring and replication presence.',
+    parameters => { additionalProperties => 0,
+                    properties => { node => get_standard_option('pve-node') } },
+    returns => { type => 'object', additionalProperties => 1 },
+    code => sub {
+        my ($param) = @_;
+        my $raw = _run_capture('/usr/bin/python3',
+                               '/usr/lib/pve-zfs-manager/zfsm_host_audit.py','--json');
+        my $data = eval { decode_json($raw) };
+        die "Hostinventur lieferte ungueltige Daten\n"
+            unless ref($data) eq 'HASH' && ($data->{schema}//0)==1
+                   && ref($data->{autosnap}) eq 'HASH';
+        return $data;
+    },
+});
+
 # Retention configuration is read from the existing distro cron entries.
 # Cron retention read endpoint; separate Sys.Modify endpoint edits only a validated --keep value.
 our %RETENTION_CRON_FILES = (
@@ -1240,6 +1262,129 @@ for my $scope (qw(guest host)) {
                 $x->{token},$x->{confirm},$x->{critical_ack},$x->{allow_partial});},
     });
 }
+
+# v1.0.0-34: pool capacity alerts and signed emergency preview.
+# No unconfirmed writes. Every cleanup recomputes all safety exclusions.
+our $EMERGENCY_TOOL='/usr/lib/pve-zfs-manager/zfsm_emergency.py';
+sub _emergency_json {
+    my (@args)=@_;
+    my $out=_run_capture('/usr/bin/python3',$EMERGENCY_TOOL,@args);
+    my $v=eval {decode_json($out)};
+    die "Notfall-Antwort ungueltig\n" unless ref($v) eq 'HASH';
+    return $v;
+}
+sub _emergency_preview {
+    my($pool,$count)=@_;
+    die "Ungueltiger Pool\n" unless defined($pool) && $pool =~ /\A[A-Za-z0-9_.:-]{1,128}\z/;
+    die "Ungueltige Anzahl\n" unless defined($count) && $count =~ /\A\d{1,2}\z/ && $count>=1 && $count<=15;
+    my $plan=_emergency_json('preview','--pool',$pool,'--count',$count);
+    die "Ungueltige Notfallvorschau\n" unless $plan->{pool} eq $pool && $plan->{requested_count}==$count
+        && $plan->{digest} =~ /\A[a-f0-9]{64}\z/ && $plan->{delete_count}>=0 && $plan->{delete_count}<=15
+        && ref($plan->{targets}) eq 'ARRAY' && @{$plan->{targets}} == $plan->{delete_count};
+    # Existing session-bound HMAC and five-minute token lifespan.
+    $plan->{dataset}=$pool;
+    $plan->{snapshot}=$plan->{digest};
+    $plan->{token}=$plan->{digest};
+    return $plan;
+}
+sub _run_emergency_write {
+    my($pool,$count,$digest)=@_;
+    # Only this bounded root-owned helper may write; no shell, no free command input.
+    my $fh;
+    my $stdout='';
+    my $ok=eval {
+        local $SIG{ALRM}=sub {die "Notfallbereinigung dauert zu lange; Zustand pruefen\n"};
+        alarm(180);
+        open($fh,'-|','/usr/bin/python3',$EMERGENCY_TOOL,'cleanup-api',
+            '--pool',$pool,'--count',"$count",'--digest',$digest)
+            or die "Notfallprozess konnte nicht starten\n";
+        local $/;
+        $stdout=<$fh> // '';
+        die "Notfallantwort zu lang\n" if length($stdout)>40000;
+        close($fh) or die "Notfallprozess fehlgeschlagen; Loeschstand pruefen\n";
+        alarm(0);
+        1;
+    };
+    my $err=$@ if !$ok;
+    alarm(0);
+    if($err){close($fh) if defined($fh) && defined(fileno($fh));die $err}
+    my $res=eval {decode_json($stdout)};
+    die "Notfall-Ergebnis ungueltig; Loeschstand pruefen\n" unless ref($res) eq 'HASH';
+    return $res;
+}
+__PACKAGE__->register_method({
+    name=>'emergency_status',path=>'emergency-status',method=>'GET',proxyto=>'node',protected=>1,
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Audit']]},
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {return _emergency_json('status','--json')},
+});
+__PACKAGE__->register_method({
+    name=>'emergency_preview',path=>'emergency-preview',method=>'GET',proxyto=>'node',protected=>1,
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    parameters=>{additionalProperties=>0,properties=>{
+        node=>get_standard_option('pve-node'),pool=>{type=>'string',maxLength=>128},
+        count=>{type=>'integer',minimum=>1,maximum=>15},
+    }},returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {my($x)=@_;_require_zfsmgr_admin($x->{node});return _sign_preview(_emergency_preview($x->{pool},$x->{count}),'EMERGENCY-34')},
+});
+__PACKAGE__->register_method({
+    name=>'emergency_cleanup',path=>'emergency-cleanup',method=>'POST',proxyto=>'node',protected=>1,
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    parameters=>{additionalProperties=>0,properties=>{
+        node=>get_standard_option('pve-node'),pool=>{type=>'string',maxLength=>128},
+        count=>{type=>'integer',minimum=>1,maximum=>15},
+        token=>{type=>'string',maxLength=>80},
+        confirm=>{type=>'string',maxLength=>40},
+        critical_ack=>{type=>'integer',minimum=>1,maximum=>1},
+    }},returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {my($x)=@_;
+        _require_zfsmgr_admin($x->{node});
+        die "Zweite Warnung nicht bestaetigt\n" unless $x->{confirm} eq 'EMERGENCY-DELETE' && $x->{critical_ack}==1;
+        my $plan=_emergency_preview($x->{pool},$x->{count});
+        die "Keine loeschbaren Snapshots\n" unless $plan->{delete_count}>0;
+        _verify_preview($plan,'EMERGENCY-34',$x->{token});
+        return _run_emergency_write($x->{pool},$x->{count},$plan->{digest});
+    },
+});
+
+__PACKAGE__->register_method({
+    name=>'emergency_config',path=>'emergency-config',method=>'POST',proxyto=>'node',protected=>1,
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    parameters=>{additionalProperties=>0,properties=>{
+        node=>get_standard_option('pve-node'),pool=>{type=>'string',optional=>1,maxLength=>128},
+        enabled=>{type=>'integer',minimum=>0,maximum=>1},
+        confirm=>{type=>'string',maxLength=>32},
+    }},returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {my($x)=@_;
+        _require_zfsmgr_admin($x->{node});
+        if($x->{enabled}){
+            die "Bestaetigung fehlt\n" unless $x->{confirm} eq 'AUTO-ENABLE' &&
+                defined($x->{pool}) && $x->{pool}=~/\A[A-Za-z0-9_.:-]{1,128}\z/;
+            return _emergency_json('config','--enable-auto-pool',$x->{pool},'--ack-risk');
+        }
+        die "Bestaetigung fehlt\n" unless $x->{confirm} eq 'AUTO-DISABLE';
+        return _emergency_json('config','--disable-auto');
+    },
+});
+
+# v1.0.0-33: Dynamic, strictly read-only pool to physical member mapping.
+# Unlike /nodes/.../disks/list, only devices present in imported zpool status
+# are listed; pass-through/PBS disks are never declared unused or available.
+__PACKAGE__->register_method({
+    name=>'pool_topology',path=>'pool-topology',method=>'GET',proxyto=>'node',protected=>1,
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Audit']]},
+    description=>'Read imported ZFS pool topology and Proxmox roles without writes.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'array',items=>{type=>'object',additionalProperties=>1}},
+    code=>sub {
+        my ($p)=@_;
+        my $raw=_run_capture('/usr/bin/python3','/usr/lib/pve-zfs-manager/pool_discovery.py','--json');
+        my $rows=eval {decode_json($raw)};
+        die "ZFS-Pool-Topologie nicht lesbar\n" unless ref($rows) eq 'ARRAY';
+        return $rows;
+    },
+});
 
 # Read pool health, last scrub and read/write/checksum errors via zpool status.
 __PACKAGE__->register_method({

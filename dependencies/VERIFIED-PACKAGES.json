@@ -1,0 +1,14 @@
+[
+  {
+    "package": "zfs-auto-snapshot",
+    "version": "1.2.4-2",
+    "sha256": "775da7e3d2a0fa118ade18539aa445bf00a563bb2a3b5928a44ff5d862147a9d",
+    "archive_filename": "pool/contrib/z/zfs-auto-snapshot/zfs-auto-snapshot_1.2.4-2_all.deb"
+  },
+  {
+    "package": "unzip",
+    "version": "6.0-29+deb13u1",
+    "sha256": "fc11f8736bdec6fc46a6864f75bce0c8206a790df37dbcab5ddb25b1bf0f58f0",
+    "archive_filename": "pool/main/u/unzip/unzip_6.0-29+deb13u1_amd64.deb"
+  }
+]

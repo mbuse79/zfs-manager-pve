@@ -24,6 +24,6 @@ class BatchSafety(unittest.TestCase):
   self.assertIn("post.confirm='DELETE-BATCH-EXACT'",s)
  def test_version(self):
   s=(R/'src/universal.py').read_text()
-  self.assertIn('1.0.0-32-dynamic-compat-installer',s)
+  self.assertIn('1.0.0-34-rc9-dynamic-compat-installer',s)
   self.assertIn("operation='reload'",s)
 if __name__=='__main__':unittest.main()

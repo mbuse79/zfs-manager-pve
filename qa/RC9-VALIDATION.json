@@ -1,0 +1,20 @@
+{
+  "version": "1.0.0-34~rc9",
+  "tested_deb_sha256": "f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f",
+  "local_tests": {
+    "normal_passed": 238,
+    "normal_skipped": 9,
+    "normal_deselected": 5,
+    "fakeroot_passed": 18,
+    "overlap": 4,
+    "distinct_passed": 252
+  },
+  "browser": "Real ExtJS 7.0.0.168; DE/EN; API fixtures, no host connection",
+  "operator_confirmation": {
+    "date": "2026-11-15",
+    "statement": "alle tests bestanden , die version veröffentlichen",
+    "scope": "Requested RC9 practice tests on test PVE and pve4, confirmed by operator; not independently rerun by the build agent"
+  },
+  "previous_private_test_zip_sha256": "d184fcc958c84cb86eeb081ae48027b62026799b784f62b60697930899fe1e81",
+  "public_distribution": "Tested DEB and executable installers preserved; internal handovers omitted, public documentation added; new source/ZIP checksums apply."
+}
