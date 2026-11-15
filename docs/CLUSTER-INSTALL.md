@@ -75,8 +75,12 @@ Prüfungen. Die bisherigen Snapshot-Handler bleiben außerhalb des separat marki
 Clusterblocks bytegleich. Reale ExtJS-7-Browsertests in DE/EN prüfen Auswahl,
 Offline-Sperre, Steuerknoten-Routing, Vorschau, Bestätigung und HTML-Escaping.
 
-**Noch nicht durchgeführt:** echte Cluster-SSH-Verbindung, Installation über diese
-Funktion auf realen PVE-Knoten, realer Verbindungsabbruch während `dpkg` und
+**Vom Betreiber am 15.11.2026 bestätigt:** Clusterinstallation von einem PVE-9.2.26-
+Steuerknoten auf zwei bestehende PVE-Knoten (9.2.26 und 9.2.21), zuvor ohne Manager.
+Auf beiden Paketversion Fix2, Integrationsprüfung und Überwachungsdienste OK.
+Keine unabhängige Codex-Hostmessung und kein Nachweis einer frischen PVE-OS-Installation.
+
+**Noch nicht durchgeführt:** realer Verbindungsabbruch während `dpkg` und
 Mehrfachstart von verschiedenen realen Steuerknoten. Bisherige RC9-Hosttests sind
 kein Nachweis für diese neue Funktion. Keine Produktionshosts wurden angesprochen.
 
@@ -117,8 +121,9 @@ coordinator is processed last. Rollout stops on failure and reports completed,
 failed, uncertain and unstarted targets separately. Closing the window does not
 cancel the background task. Inspect uncertain targets before retrying.
 
-Automated tests use isolated fixtures and a real ExtJS 7 browser. Actual cluster SSH,
-cross-node package installation, interrupted `dpkg` and multiple real coordinators
-have **not** been tested. A disposable PVE-9 test cluster is required before a new
+Automated tests use isolated fixtures and a real ExtJS 7 browser. The operator confirmed real cross-node Fix2 installation on two existing PVE hosts
+(9.2.26 and 9.2.21) from one coordinator, with successful package/integration/service
+checks. This does not establish a fresh PVE OS or every GUI/snapshot operation.
+Interrupted `dpkg` and multiple simultaneous coordinators have **not** been tested. A disposable PVE-9 test cluster is required before a new
 test package can be approved. Existing RC9 live-host results do not validate this
 new feature. No hosts were accessed or modified during development.

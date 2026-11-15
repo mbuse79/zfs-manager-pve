@@ -9,7 +9,17 @@ verification. No changes to system DNS, SSH or Fabric configuration.
 root skips and five deselected ownership cases are run separately with fakeroot.
 New real Perl subprocess fixtures start with an empty membership cache and verify
 internal IPv4/IPv6 resolution and refusal of an unknown member. The Perl -T worker
-regression remains enabled. No real fixed-version PVE cluster test is claimed.
+regression remains enabled.
+
+Operator confirmation on 15 November 2026: real cluster rollout from a PVE 9.2.26
+coordinator installed Fix2 successfully on two existing PVE nodes, versions 9.2.26
+and 9.2.21. Both previously lacked the manager package. Integration checks, watcher
+and timer reported OK. Evidence is operator-provided logs/screenshot, not an
+independent developer host session. This confirms fresh manager installation on
+existing hosts; it does not establish a freshly installed PVE OS or every GUI/
+snapshot action. Transport IP/interface was not shown. Interrupted dpkg and
+multiple simultaneous coordinators remain untested. See
+qa/RC10-FIX2-OPERATOR-CLUSTER-REPORT.json. The tested DEB/ZIP remain unchanged.
 
 ---
 Historical Fix1 validation follows.

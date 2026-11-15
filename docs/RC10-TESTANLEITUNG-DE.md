@@ -80,7 +80,8 @@ Konfigurationen erhalten blieben und die Oberfläche nach Wechsel zwischen den
 Knoten funktioniert. Keine Schlüssel oder Zugangsdaten in Ausgaben aufnehmen.
 Details zu Sperren und Abbruchfällen: `CLUSTER-INSTALL.md`.
 
-Noch nicht nachgewiesen sind reale Cluster-SSH-Installation, mehrere reale
-Steuerknoten und realer Verbindungsabbruch während dpkg. Diese Punkte bleiben bis
-zu neuen Praxistests offen. Keine echte Snapshot-Löschung oder Rollback ist für
+Der Betreiber hat die reale Fix2-Clusterinstallation von einem Steuerknoten auf
+zwei bestehende PVE-Knoten (9.2.26 und 9.2.21) mit erfolgreichen Integrations-/
+Dienstprüfungen bestätigt. Mehrere gleichzeitig aktive Steuerknoten und realer
+Verbindungsabbruch während dpkg bleiben offen. Keine echte Snapshot-Löschung oder Rollback ist für
 den Clusterinstallationstest erforderlich.

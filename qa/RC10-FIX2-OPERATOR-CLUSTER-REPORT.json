@@ -1,0 +1,56 @@
+{
+  "version": "1.0.0-34~rc10+fix2",
+  "date": "2026-11-15",
+  "evidence": "Operator-provided cluster rollout output and screenshot in this conversation; not an independent developer host session",
+  "coordinator": {
+    "pve": "9.2.26",
+    "ui_banner": "RC10 fix2 test build"
+  },
+  "targets": [
+    {
+      "label": "target A",
+      "pve": "9.2.26",
+      "kernel": "7.0.14-24-pve",
+      "previous_package": "absent",
+      "result": "installed",
+      "package": "1.0.0-34~rc10+fix2",
+      "integration_check": "PASS",
+      "watcher": "active/enabled",
+      "timer": "active/enabled",
+      "overall": "OK"
+    },
+    {
+      "label": "target B",
+      "pve": "9.2.21",
+      "kernel": "7.0.14-19-pve",
+      "previous_package": "absent",
+      "result": "installed",
+      "package": "1.0.0-34~rc10+fix2",
+      "integration_check": "PASS",
+      "watcher": "active/enabled",
+      "timer": "active/enabled",
+      "overall": "OK"
+    }
+  ],
+  "confirmed_scope": [
+    "real cross-node SSH transport from one coordinator",
+    "fresh manager installation on two existing PVE nodes",
+    "package/integration/service checks after install"
+  ],
+  "not_established": [
+    "fresh PVE OS installation",
+    "effective IP/interface used by SSH",
+    "remote node GUI and snapshot functions",
+    "before/after comparison of individual configuration/schedules",
+    "interrupted dpkg",
+    "multiple simultaneous coordinators",
+    "offline rescue"
+  ],
+  "artifacts_unchanged": {
+    "source_commit": "7a14776359bb3fa8f95259d8de14ac3be76814b5",
+    "deb_sha256": "2c1ce00f36d4640c097c19448a6beadd9a1923bfec294e3ed07b6c8d77cd5921",
+    "zip_sha256": "481a78825377494123936fd653a4b259de5920cce5d5dceae986c6f267ba5b63"
+  },
+  "cloud_host_access_performed": false,
+  "new_public_release_authorized_by_this_report": false
+}
