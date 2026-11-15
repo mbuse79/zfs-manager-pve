@@ -1,3 +1,14 @@
+## 1.0.0-34 RC10 Fix2 – interne Clusteradressen (15.11.2026)
+
+- Standalone-SSH-Helfer lädt den Proxmox-Clusterzustand mit `cfs_update(1)`,
+  bevor er Zieladressen über `PVE::SSHInfo` ermittelt. Ohne Initialisierung
+  konnte Proxmox auf die Namensauflösung und eine öffentliche Adresse zurückfallen.
+- Nur numerische Adressen der bekannten Cluster-Mitglieder; kein DNS-Fallback
+  bei fehlenden Clusteradressen. IPv4/IPv6, HostKeyAlias und bestehende
+  Hostschlüsselprüfung bleiben erhalten. Keine DNS-/SSH-/Fabric-Konfigurationsänderung.
+- Echte isolierte Perl-Prozesse testen leeren Startzustand, interne IPv4/IPv6-
+  Adressen und fehlende Mitglieder. Keine neue reale Clusterinstallation bestätigt.
+
 ## 1.0.0-34 RC10 Fix1 – Perl-Taint-Modus (15.11.2026)
 
 - PVE4 meldete beim Cluster-Auftragsstart `Insecure dependency in system` unter Perl `-T`.

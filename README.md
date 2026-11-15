@@ -11,7 +11,7 @@ RC9; real cluster testing and a new package approval remain outstanding.
 
 ## RC10 test package
 
-`1.0.0-34~rc10+fix1`: optional cluster installation using a verified local distribution copy.
+`1.0.0-34~rc10+fix2`: optional cluster installation using a verified local distribution copy.
 Not a public release; real cluster tests remain outstanding.
 [German test instructions](docs/RC10-TESTANLEITUNG-DE.md).
 

@@ -1,3 +1,19 @@
+# RC10 Fix2 validation — 15 November 2026
+
+Version `1.0.0-34~rc10+fix2`. Fixes the standalone cluster SSH address resolver:
+strictly refresh PVE::Cluster state before calling PVE::SSHInfo; require a known
+member IP and refuse DNS fallback. Preserve node host-key aliases and strict SSH
+verification. No changes to system DNS, SSH or Fabric configuration.
+
+305 distinct tests: 284 normal plus 25 fakeroot, with four overlaps. Sixteen normal
+root skips and five deselected ownership cases are run separately with fakeroot.
+New real Perl subprocess fixtures start with an empty membership cache and verify
+internal IPv4/IPv6 resolution and refusal of an unknown member. The Perl -T worker
+regression remains enabled. No real fixed-version PVE cluster test is claimed.
+
+---
+Historical Fix1 validation follows.
+
 # RC10 Fix1 validation — 15 November 2026
 
 Version `1.0.0-34~rc10+fix1`. The operator reported a cluster task start failure

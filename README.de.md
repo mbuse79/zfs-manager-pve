@@ -11,7 +11,7 @@ reale Clustertests und eine neue Paketfreigabe stehen aus.
 
 ## RC10-Testversion / RC10 test package
 
-`1.0.0-34~rc10+fix1`: optionale Clusterinstallation mit geprüfter lokaler Verteilungskopie.
+`1.0.0-34~rc10+fix2`: optionale Clusterinstallation mit geprüfter lokaler Verteilungskopie.
 Noch kein öffentlicher Release; reale neue Clustertests stehen aus.
 [Deutsche Testanleitung](docs/RC10-TESTANLEITUNG-DE.md).
 

@@ -14,7 +14,7 @@ import zipfile
 
 import zfsm_cluster_remote as remote
 
-VERSION = '1.0.0-34~rc10+fix1'
+VERSION = '1.0.0-34~rc10+fix2'
 KEY = '0' * 32
 
 

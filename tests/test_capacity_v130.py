@@ -82,7 +82,7 @@ class Capacity30(unittest.TestCase):
         with patch.object(zfsm_cli,'collect_report',create=True):
             self.assertEqual(zfsm_cli.main(['capacity','--force']),2)
             self.assertEqual(zfsm_cli.main(['status','--json']),2)
-        self.assertEqual(zfsm_cli.VERSION,'1.0.0-34~rc10+fix1')
+        self.assertEqual(zfsm_cli.VERSION,'1.0.0-34~rc10+fix2')
         self.assertIn('capacity',zfsm_cli.HELP_COMMANDS)
 
     def test_js_capacity_report_parity(self):
@@ -142,7 +142,7 @@ class ActualUpgrade30(unittest.TestCase):
             state['installed_hashes']['gui']=i.sha(oldgui.encode()) if hasattr(i,'sha') else __import__('hashlib').sha256(oldgui.encode()).hexdigest()
             i.save_state(state)
             i.install()
-            self.assertEqual(i.state()['version'],'1.0.0-34-rc10-fix1-cluster-installer')
+            self.assertEqual(i.state()['version'],'1.0.0-34-rc10-fix2-cluster-installer')
             self.assertIn('zfs-capacity-audit',i.gui.read_text())
             i.status()
 

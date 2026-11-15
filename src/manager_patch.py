@@ -385,7 +385,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             "Snapshot usage by dataset – read only": "Snapshot-Verbrauch nach Dataset · nur lesend",
             "Services and replication": "Dienste und Replikation",
             "Advanced cleanup settings": "Erweiterte Bereinigungseinstellungen",
-            "RC10 fix1 test build": "RC10-Fix1-Testversion",
+            "RC10 fix2 test build": "RC10-Fix2-Testversion",
             "Details": "Details",
             "Keep per dataset; observed total across all datasets.": "Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.",
             "<p>Keep per dataset; observed total across all datasets.</p>": "<p>Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.</p>",
@@ -665,7 +665,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                     if(details){if(details.collapsed){details.expand();}else{details.collapse();}}
                 }}],
                 items: [
-                    {xtype:'component',html:'<span style="opacity:.75">'+safeZFSValue(nodename)+' · '+zfsL('RC10 fix1 test build')+'</span>'},
+                    {xtype:'component',html:'<span style="opacity:.75">'+safeZFSValue(nodename)+' · '+zfsL('RC10 fix2 test build')+'</span>'},
                     {xtype:'fieldset',itemId:'zfsm-pool-section',title:zfsL('Pools and storage'),collapsible:false,collapsed:false,padding:'8 10',layout:'anchor',
                      defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
                     {

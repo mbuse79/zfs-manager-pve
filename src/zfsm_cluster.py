@@ -8,6 +8,7 @@ import argparse
 from contextlib import contextmanager
 import fcntl
 import hashlib
+import ipaddress
 import json
 import os
 from pathlib import Path
@@ -23,7 +24,7 @@ import time
 import zfsm_cluster_remote as remote
 
 STATE = Path('/var/lib/pve-zfs-manager/cluster')
-RELEASE = {'version': '1.0.0-34~rc10+fix1', 'cache': True}
+RELEASE = {'version': '1.0.0-34~rc10+fix2', 'cache': True}
 
 
 class ClusterError(Exception):
@@ -102,7 +103,14 @@ def ssh_command(node):
     # Let Proxmox resolve the cluster address and its per-node known_hosts file.
     # Strict host-key checking is explicit even on PVE versions that fall back
     # to the system known_hosts configuration. No trust material is created.
-    code = ('my $info = PVE::SSHInfo::get_ssh_info($ARGV[0]); '
+    code = ('PVE::Cluster::cfs_update(1); '
+            'my $members = PVE::Cluster::get_members(); '
+            'my $member = ref($members) eq "HASH" ? $members->{$ARGV[0]} : undef; '
+            'die "No cluster member address; DNS fallback refused\\n" '
+            'unless ref($member) eq "HASH" && defined($member->{ip}); '
+            'my $info = PVE::SSHInfo::get_ssh_info($ARGV[0]); '
+            'die "SSH address differs from cluster membership\\n" '
+            'unless $info->{ip} eq $member->{ip}; '
             'print JSON::PP::encode_json(PVE::SSHInfo::ssh_info_to_command($info, '
             '"-T", "-oStrictHostKeyChecking=yes", "-oConnectTimeout=8", '
             '"-oServerAliveInterval=10", "-oServerAliveCountMax=3"));')
@@ -116,6 +124,11 @@ def ssh_command(node):
             not all(isinstance(x, str) for x in command) or
             '-oStrictHostKeyChecking=yes' not in command or not command[-1].startswith('root@')):
         raise ClusterError('Invalid Proxmox SSH command')
+    try:
+        ipaddress.ip_address(command[-1][len('root@'):])
+    except ValueError as exc:
+        raise ClusterError('Numeric cluster address required; DNS fallback refused / '
+                           'Numerische Clusteradresse erforderlich; kein DNS-Fallback') from exc
     return command
 
 
