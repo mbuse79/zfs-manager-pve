@@ -1,4 +1,4 @@
-# RC10-Testpaket – 1.0.0-34~rc10
+# RC10-Fix1-Testpaket – 1.0.0-34~rc10+fix1
 
 Nicht öffentlich freigegebene Testversion mit optionaler Clusterinstallation.
 Die bisherigen RC9-Tests bestätigen diese neue Clusterfunktion nicht. Zunächst
@@ -8,7 +8,7 @@ bestätigten neuen Praxistests.
 ## Installation auf dem Steuerknoten
 
 Das vollständige ZIP und dessen separat gelieferte SHA256 verwenden. ZIP mit
-Python oder unzip entpacken; der eigenständige `bootstrap-rc10.sh` benötigt kein
+Python oder unzip entpacken; der eigenständige `bootstrap-rc10-fix1.sh` benötigt kein
 vorinstalliertes unzip. Er wird ebenfalls vor Ausführung separat geprüft.
 
 In der Root-Shell des Test-PVE in das entpackte Paketverzeichnis wechseln:
@@ -27,7 +27,7 @@ zfsm services --lang de
 zfsm emergency status --lang de
 ```
 
-Erwartet: Paketversion `1.0.0-34~rc10`, erfolgreiche Integrationsprüfung und
+Erwartet: Paketversion `1.0.0-34~rc10+fix1`, erfolgreiche Integrationsprüfung und
 vorhandene Zeitpläne unverändert. Automatische Notfallbereinigung bleibt ohne
 vorherige ausdrückliche Aktivierung AUS. Der geprüfte ZIP-Installer registriert
 eine rootgeschützte Verteilungskopie des RC10-Pakets außerhalb des DEB. Diese

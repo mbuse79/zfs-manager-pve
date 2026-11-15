@@ -23,7 +23,7 @@ import time
 import zfsm_cluster_remote as remote
 
 STATE = Path('/var/lib/pve-zfs-manager/cluster')
-RELEASE = {'version': '1.0.0-34~rc10', 'cache': True}
+RELEASE = {'version': '1.0.0-34~rc10+fix1', 'cache': True}
 
 
 class ClusterError(Exception):

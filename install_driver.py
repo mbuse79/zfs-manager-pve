@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-VERSION = '1.0.0-34~rc10'
+VERSION = '1.0.0-34~rc10+fix1'
 HERE = Path(__file__).resolve().parent
 
 def run(argv, **kw):

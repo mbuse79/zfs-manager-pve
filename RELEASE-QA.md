@@ -1,3 +1,21 @@
+# RC10 Fix1 validation — 15 November 2026
+
+Version `1.0.0-34~rc10+fix1`. The operator reported a cluster task start failure
+under Proxmox Perl taint mode. The original RC10 error was reproduced exactly at
+its system() invocation under `perl -T`. Narrow captures now validate and untaint
+only the accepted argument grammars; the child environment is locally sanitized.
+Taint mode, authorization and all snapshot protections remain enabled.
+
+302 distinct tests: 281 normal plus 25 fakeroot, with four overlaps. The 16 normal
+skips and five deselected ownership cases are covered by the fakeroot run. These
+are isolated fixtures, including real subprocesses under Perl -T and upgrades
+from the exact previous RC9/RC10 GUI/API bytes. No fixed-version host test is yet
+confirmed. Real cluster installation, disconnect during dpkg and multiple real
+coordinators remain untested. This is a test package, not a public release.
+
+---
+Historical RC10 validation follows.
+
 # RC10 test package validation — 15 November 2026
 
 Version `1.0.0-34~rc10`, optional confirmed cluster installation using the complete

@@ -30,7 +30,7 @@ sub _cluster_root {
     my $user = _admin_identity($node);
     die "Clusterinstallation nur fuer root\@pam / Cluster installation requires root\@pam\n"
         unless $user eq 'root@pam';
-    return $user;
+    return 'root@pam';
 }
 sub _cluster_json {
     my (@args) = @_;
@@ -38,6 +38,9 @@ sub _cluster_json {
     # separate bounded reader so that existing snapshot limits stay unchanged.
     my ($fh, $raw);
     my $ok = eval {
+        local %ENV = %ENV;
+        $ENV{PATH} = '/usr/sbin:/usr/bin:/sbin:/bin';
+        delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
         local $SIG{ALRM} = sub { die "Cluster report timeout\n" };
         alarm(15);
         open($fh, '-|', '/usr/bin/python3', $CLUSTER_TOOL, @args) or die "Cluster report start failed\n";
@@ -66,12 +69,33 @@ sub _cluster_json {
 }
 sub _cluster_task {
     my ($param, $operation, @args) = @_;
-    my $user = _cluster_root($param->{node});
-    my $id = substr(sha256_hex(join('|', $user, $$, time, rand(), _preview_secret())), 0, 32);
+    # PVE workers run under perl -T. Successful non-capturing validation does
+    # NOT untaint input. Build every subprocess argument from narrow captures.
+    my ($node) = ($param->{node}//'') =~ /\A([A-Za-z0-9][A-Za-z0-9-]{0,62})\z/;
+    my ($lang) = ($param->{lang}//'en') =~ /\A(de|en)\z/;
+    my ($op) = ($operation//'') =~ /\A(preview|install)\z/;
+    die "Invalid cluster task arguments\n" unless defined($node) && defined($lang) && defined($op);
+    my @safe_args;
+    if ($op eq 'preview') {
+        die "Invalid preview arguments\n" unless @args == 2 && $args[0] eq '--nodes';
+        my ($nodes) = ($args[1]//'') =~ /\A([A-Za-z0-9][A-Za-z0-9-]{0,62}(?:,[A-Za-z0-9][A-Za-z0-9-]{0,62}){0,63})\z/;
+        die "Invalid selected nodes\n" unless defined($nodes);
+        @safe_args = ('--nodes', $nodes);
+    } else {
+        die "Invalid installation arguments\n" unless @args == 3 && $args[0] eq '--plan' && $args[2] eq '--confirmed';
+        my ($plan) = ($args[1]//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Invalid preview ID\n" unless defined($plan);
+        @safe_args = ('--plan', $plan, '--confirmed');
+    }
+    my $user = _cluster_root($node);
+    my ($id) = substr(sha256_hex(join('|', $user, $$, time, rand(), _preview_secret())), 0, 32) =~ /\A([a-f0-9]{32})\z/;
     my $rpcenv = PVE::RPCEnvironment::get();
-    my $upid = $rpcenv->fork_worker('zfsmcluster', $param->{node}, $user, sub {
-        system('/usr/bin/python3', $CLUSTER_TOOL, '--lang', $param->{lang} // 'en',
-               $operation, '--job', $id, @args) == 0 or die "Cluster task failed; inspect task log\n";
+    my $upid = $rpcenv->fork_worker('zfsmcluster', $node, $user, sub {
+        local %ENV = %ENV;
+        $ENV{PATH} = '/usr/sbin:/usr/bin:/sbin:/bin';
+        delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+        system('/usr/bin/python3', $CLUSTER_TOOL, '--lang', $lang,
+               $op, '--job', $id, @safe_args) == 0 or die "Cluster task failed; inspect task log\n";
     });
     return {job => $id, upid => $upid};
 }
@@ -92,8 +116,9 @@ __PACKAGE__->register_method({
         job=>{type=>'string',pattern=>'^[a-f0-9]{32}$',maxLength=>32}}},
     returns=>{type=>'object',additionalProperties=>1},
     code=>sub { my ($p)=@_; _cluster_root($p->{node});
-        die "Invalid job ID\n" unless ($p->{job}//'') =~ /\A[a-f0-9]{32}\z/;
-        return _cluster_json('job','--job',$p->{job}); },
+        my ($job) = ($p->{job}//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Invalid job ID\n" unless defined($job);
+        return _cluster_json('job','--job',$job); },
 });
 __PACKAGE__->register_method({
     name=>'cluster_preview', path=>'cluster-preview', method=>'POST', protected=>1, proxyto=>'node',

@@ -2,7 +2,7 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 # RC10 cluster test build; RC9 artifacts remain unchanged.
-PACKAGE_VERSION='1.0.0-34~rc10'
+PACKAGE_VERSION='1.0.0-34~rc10+fix1'
 PACKAGE_FILE="pve-zfs-manager_${PACKAGE_VERSION}_all.deb"
 # Passing packaging checks is not a legal provenance/redistribution clearance.
 

@@ -1,3 +1,13 @@
+## 1.0.0-34 RC10 Fix1 – Perl-Taint-Modus (15.11.2026)
+
+- PVE4 meldete beim Cluster-Auftragsstart `Insecure dependency in system` unter Perl `-T`.
+- Eng begrenzte Regex-Captures für Zielknoten, Sprache, Auftragskennung und Aktion;
+  Prozessumgebung lokal bereinigt, Taint-Modus bleibt aktiv.
+- Echter Prozessstart und Polling unter `perl -T` als Regressionstest ergänzt;
+  ursprünglicher RC10-Fehler mit derselben Testumgebung reproduziert.
+- RC9-/RC10-Upgrade in isolierten Dateisystemen geprüft. Keine neuen realen Hosttests.
+- Paketversion `1.0.0-34~rc10+fix1`, damit der Installer das Update tatsächlich ausführt.
+
 ## 1.0.0-34 RC10 – Cluster-Testversion (15.11.2026)
 
 - Native Clusterübersicht mit ausdrücklicher Knotenauswahl, temporärer Vorprüfung,
