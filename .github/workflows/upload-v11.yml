@@ -1,0 +1,28 @@
+name: Upload authorized 1.1 release assets
+on:
+  push:
+    branches: [release-assets/v1.1]
+permissions:
+  contents: write
+concurrency: upload-v11-assets
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify exact release files
+        working-directory: .release-upload
+        run: |
+          sha256sum -c SHA256SUMS
+          echo '02aced7abd67ac6d4e675eedf5758004e67f7e9435cb32b06790cb0b0983a4f5  pve-zfs-manager_1.1_all.deb' | sha256sum -c -
+          echo 'fcdde5fba9bbcf29ca2a5463a586de65689a014f1f9e47bd81040720957873ed  BuMaVory-ZFS-Manager-1.1.zip' | sha256sum -c -
+      - name: Upload to existing draft only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh release view v1.1 --json isDraft --jq '.isDraft' | grep -Fx true
+          gh release upload v1.1 .release-upload/*
