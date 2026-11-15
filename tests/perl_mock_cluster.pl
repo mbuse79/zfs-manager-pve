@@ -46,4 +46,15 @@ my $writes=0;
     $routes{cluster_install}{code}->({node=>'fixture',plan=>'a'x32,confirm=>1});
     die 'Confirmed root operation blocked' unless $writes==1;
 }
+{
+    require File::Temp;
+    my ($fh,$name)=File::Temp::tempfile(UNLINK=>1);
+    print $fh "import json, sys\nprint(json.dumps({'log': 'x' * int(sys.argv[1])}))\n";
+    close($fh);
+    local $PVE::API2::ZFSSnapshotViewer::CLUSTER_TOOL=$name;
+    my $report=PVE::API2::ZFSSnapshotViewer::_cluster_json('200000');
+    die 'Large multi-node report truncated' unless length($report->{log})==200000;
+    my $ok=eval{PVE::API2::ZFSSnapshotViewer::_cluster_json('2200000');1};
+    die 'Unbounded cluster report accepted' if $ok || $@ !~ /Cluster report too large/;
+}
 print "PASS: cluster deployment is root-only, token-blocked, confirmed and scoped\n";

@@ -34,7 +34,33 @@ sub _cluster_root {
 }
 sub _cluster_json {
     my (@args) = @_;
-    my $data = decode_json(_run_capture('/usr/bin/python3', $CLUSTER_TOOL, @args));
+    # A 64-node report can exceed the snapshot helper's 100 KB ceiling. Keep a
+    # separate bounded reader so that existing snapshot limits stay unchanged.
+    my ($fh, $raw);
+    my $ok = eval {
+        local $SIG{ALRM} = sub { die "Cluster report timeout\n" };
+        alarm(15);
+        open($fh, '-|', '/usr/bin/python3', $CLUSTER_TOOL, @args) or die "Cluster report start failed\n";
+        $raw = '';
+        while (1) {
+            my $chunk;
+            my $count = read($fh, $chunk, 8192);
+            die "Cluster report read failed\n" unless defined($count);
+            last unless $count;
+            $raw .= $chunk;
+            die "Cluster report too large\n" if length($raw) > 2_000_000;
+        }
+        close($fh) or die "Cluster report failed\n";
+        alarm(0);
+        1;
+    };
+    my $err = $@;
+    alarm(0);
+    if (!$ok) {
+        close($fh) if defined($fh) && defined(fileno($fh));
+        die $err;
+    }
+    my $data = decode_json($raw);
     die "Invalid cluster response\n" unless ref($data) eq 'HASH';
     return $data;
 }
