@@ -17,7 +17,7 @@ jobs:
         working-directory: .release-upload
         run: |
           sha256sum -c SHA256SUMS
-          echo 'f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f  pve-zfs-manager_1.0.0-34~rc9_all.deb' | sha256sum -c -
+          echo 'f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f  pve-zfs-manager_1.0.0-34.rc9_all.deb' | sha256sum -c -
           echo '7b2ba31290b5e45913f7a715075b1b844e4d57f151f8effd39fcb5e747768e5e  BuMaVory-ZFS-Manager-1.0.0-34-rc9.zip' | sha256sum -c -
       - name: Upload files to existing draft (no publication)
         env:
@@ -25,4 +25,4 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           gh release view v1.0.0-34-rc9 --json isDraft --jq '.isDraft' | grep -Fx true
-          gh release upload v1.0.0-34-rc9 .release-upload/*
+          gh release upload v1.0.0-34-rc9 .release-upload/SHA256SUMS .release-upload/RELEASE-RC9.md --clobber

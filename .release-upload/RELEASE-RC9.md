@@ -8,6 +8,7 @@ Der Betreiber hat am 15.11.2026 die angeforderten Praxistests auf Test-PVE und b
 - `BuMaVory-ZFS-Manager-1.0.0-34-rc9.zip`: vollständige Lieferung mit DEB, Quellen/Builddateien, Installern, zusätzlichen Abhängigkeiten samt Lizenzen/korrespondierenden Quellen und Manifest.
 - `bootstrap-rc9.sh`: SHA256 `ae5cf53ac8bed2bc71e1ede9502de95b018828387505a11b37124ce4c34ac0d5`.
 - `SHA256SUMS`: äußere Prüfsummen aller Release-Dateien.
+- GitHub ersetzt im einzelnen DEB-Dateinamen `~` durch `.`. Die Paketversion bleibt `1.0.0-34~rc9`; im ZIP bleibt der ursprüngliche Dateiname erhalten.
 - [Öffentliche Installation und Prüfmodus](https://github.com/mbuse79/zfs-manager-pve/blob/main/docs/INSTALL-RC9.md).
 
 Die öffentliche ZIP hat eine neue Prüfsumme, weil interne Übergabeunterlagen entfallen und öffentliche Dokumentation ergänzt wurde. DEB und ausführbare Installer bleiben unverändert. Sicherheits-/Gast-/Replikationsschutz bleibt erhalten; automatische Notfallbereinigung ist standardmäßig AUS. Bestehende AutoSnap-Aufbewahrung kann weiterhin bei Zeitplanläufen ältere automatische Snapshots entfernen.
