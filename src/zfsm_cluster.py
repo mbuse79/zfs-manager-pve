@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Opt-in cluster deployment of an explicitly pinned, published ZFSM bundle.
+"""Opt-in cluster deployment of an locally registered, verified ZFSM bundle.
 
 No automatic rollout, scheduler, credential provisioning or configuration sync.
 Root-only plans are single-use and expire five minutes after preparation.
@@ -19,18 +19,11 @@ import subprocess
 import sys
 import tempfile
 import time
-import urllib.request
 
 import zfsm_cluster_remote as remote
 
 STATE = Path('/var/lib/pve-zfs-manager/cluster')
-RELEASE = {
-    'version': '1.0.0-34~rc9',
-    'url': 'https://github.com/mbuse79/zfs-manager-pve/releases/download/v1.0.0-34-rc9/'
-           'BuMaVory-ZFS-Manager-1.0.0-34-rc9.zip',
-    'sha256': '7b2ba31290b5e45913f7a715075b1b844e4d57f151f8effd39fcb5e747768e5e',
-    'deb_sha256': 'f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f',
-}
+RELEASE = {'version': '1.0.0-34~rc10', 'cache': True}
 
 
 class ClusterError(Exception):
@@ -156,16 +149,13 @@ def transport(node, mode, request=None, bundle=None):
 
 
 def bundle_bytes():
-    with urllib.request.urlopen(RELEASE['url'], timeout=60) as response:
-        if not response.url.startswith('https://'):
-            raise ClusterError('HTTPS required')
-        data = response.read(remote.MAX_ZIP + 1)
-    if len(data) > remote.MAX_ZIP or hashlib.sha256(data).hexdigest() != RELEASE['sha256']:
-        raise ClusterError('Pinned release checksum mismatch / Release-Prüfsumme stimmt nicht')
-    # Complete verification also happens remotely before included code runs.
-    with tempfile.TemporaryDirectory(prefix='zfsm-cluster-verify-') as td:
-        remote.unpack(data, RELEASE['sha256'], Path(td))
-    return data
+    if RELEASE.get('cache'):
+        from zfsm_cluster_cache import load
+        meta, data = load()
+        if meta != RELEASE:
+            raise ClusterError('Registered bundle changed; repeat preview / Clusterpaket verändert; Vorschau erneuern')
+        return data
+    raise ClusterError('Verified local cluster bundle required / Geprüftes lokales Clusterpaket erforderlich')
 
 
 def selection(names, cluster):
@@ -349,6 +339,14 @@ def main(argv=None, lang='de'):
     lang = args.lang
     if os.geteuid() != 0:
         raise ClusterError('Root-Rechte erforderlich / root required')
+    if args.command != 'job':
+        global RELEASE
+        from zfsm_cluster_cache import load
+        try:
+            RELEASE, _ = load()
+        except FileNotFoundError as exc:
+            raise ClusterError('RC10 cluster bundle missing. Install using the full verified ZIP. / '
+                               'RC10-Clusterpaket fehlt. Mit der vollständigen geprüften ZIP installieren.') from exc
     if args.command == 'status':
         print(json.dumps({'release': RELEASE, **inventory()}, ensure_ascii=False))
         return 0

@@ -12,10 +12,10 @@ VER="1.0.0-34"
 
 def test_versions_and_cli_are_consistent():
     import zfsm_cli
-    assert zfsm_cli.VERSION == VER+'~rc9'
-    assert VERSION == VER+'-rc9-dynamic-compat-installer'
-    assert "VERSION = '"+VER+"~rc9'" in (ROOT/'install_driver.py').read_text()
-    assert "PACKAGE_VERSION='"+VER+"~rc9'" in (ROOT/'build_deb.sh').read_text()
+    assert zfsm_cli.VERSION == VER+'~rc10'
+    assert VERSION == VER+'-rc10-cluster-installer'
+    assert "VERSION = '"+VER+"~rc10'" in (ROOT/'install_driver.py').read_text()
+    assert "PACKAGE_VERSION='"+VER+"~rc10'" in (ROOT/'build_deb.sh').read_text()
 
 def test_single_guest_singular_both_languages():
     from manager_patch import BLOCK

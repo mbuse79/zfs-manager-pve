@@ -1,4 +1,4 @@
-"""PVE node UI with dynamic ZFS pool discovery and guarded snapshots (1.0.0-33 RC1)."""
+"""PVE node UI with dynamic ZFS pool discovery and guarded snapshots and optional cluster installation (RC10)."""
 from previous_patch import HELPERS
 
 START = '        // BEGIN PVE-ZFS-MANAGER-READONLY-v1.0.0-rc9\n'
@@ -385,7 +385,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             "Snapshot usage by dataset – read only": "Snapshot-Verbrauch nach Dataset · nur lesend",
             "Services and replication": "Dienste und Replikation",
             "Advanced cleanup settings": "Erweiterte Bereinigungseinstellungen",
-            "RC9 test build": "RC9-Testversion",
+            "RC10 test build": "RC10-Testversion",
             "Details": "Details",
             "Keep per dataset; observed total across all datasets.": "Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.",
             "<p>Keep per dataset; observed total across all datasets.</p>": "<p>Vorgabe je Dataset · beobachtete Anzahl über alle Datasets.</p>",
@@ -665,7 +665,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                     if(details){if(details.collapsed){details.expand();}else{details.collapse();}}
                 }}],
                 items: [
-                    {xtype:'component',html:'<span style="opacity:.75">'+safeZFSValue(nodename)+' · '+zfsL('RC9 test build')+'</span>'},
+                    {xtype:'component',html:'<span style="opacity:.75">'+safeZFSValue(nodename)+' · '+zfsL('RC10 test build')+'</span>'},
                     {xtype:'fieldset',itemId:'zfsm-pool-section',title:zfsL('Pools and storage'),collapsible:false,collapsed:false,padding:'8 10',layout:'anchor',
                      defaults:{anchor:'100%',margin:'0 0 6 0'},items:[
                     {

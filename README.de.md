@@ -9,6 +9,12 @@ Entwicklung auf diesem Branch: [optionale Clusterinstallation](docs/CLUSTER-INST
 mit Knotenauswahl und Bestätigung. Noch nicht im veröffentlichten RC9 enthalten;
 reale Clustertests und eine neue Paketfreigabe stehen aus.
 
+## RC10-Testversion / RC10 test package
+
+`1.0.0-34~rc10`: optionale Clusterinstallation mit geprüfter lokaler Verteilungskopie.
+Noch kein öffentlicher Release; reale neue Clustertests stehen aus.
+[Deutsche Testanleitung](docs/RC10-TESTANLEITUNG-DE.md).
+
 ## RC9: kompakte native Oberfläche
 
 Paketversion **`1.0.0-34~rc9`**. Poolübersicht mit getrennten CAP-/FRAG-Werten,

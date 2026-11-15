@@ -20,7 +20,7 @@ class UpgradeAndReconcile13(unittest.TestCase):
    self.assertEqual(i.classify()[0],'v1_12')
    i.install()
    self.assertEqual(i.classify()[0],'rc9')
-   self.assertEqual(i.state()['version'],'1.0.0-34-rc9-dynamic-compat-installer')
+   self.assertEqual(i.state()['version'],'1.0.0-34-rc10-cluster-installer')
    i.gui.write_text(SRC_GUI)
    i.nodes.write_text(SRC_NODES)
    i.reconcile()

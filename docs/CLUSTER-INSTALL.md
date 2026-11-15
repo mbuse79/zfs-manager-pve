@@ -1,8 +1,6 @@
 # Optionale Clusterinstallation / Optional cluster installation
 
-**Unveröffentlichter Entwicklungsstand auf Basis von RC9.** Der veröffentlichte
-RC9-Release enthält diese Funktion noch nicht. Kein neuer Versionsname und kein
-Installationspaket werden mit dieser Änderung freigegeben.
+**RC10-Testversion `1.0.0-34~rc10` auf Basis von RC9.** Noch kein öffentlicher Release; neue Cluster-Praxistests stehen aus. Installation über die vollständige geprüfte ZIP, siehe `RC10-TESTANLEITUNG-DE.md`.
 
 ## Deutsch
 
@@ -32,17 +30,12 @@ ist. Die Funktion benötigt zunächst einen entsprechend aktualisierten Steuerkn
    Ergebnis eines Knotens unbekannt sein. Vor einem neuen Versuch dort den
    Paket-/Integrationsstatus prüfen. Das Schließen des Dialogs stoppt keine Aufgabe.
 
-Der erste Entwicklungsschritt verteilt bewusst den **veröffentlichten RC9**:
-
-- Version: `1.0.0-34~rc9`
-- ZIP-SHA256: `7b2ba31290b5e45913f7a715075b1b844e4d57f151f8effd39fcb5e747768e5e`
-- DEB-SHA256: `f48f7cfef9aacd070a3185c896b49b85149c90fe4b4595a15929bd2dee6a776f`
-
-Das ist keine automatische Verteilung beliebiger Dateien vom Steuerknoten.
-Eine spätere Zielversion muss ausdrücklich mit Herkunft und Prüfsummen registriert
-werden. Die Clusterfunktion selbst ist derzeit nur im Entwicklungsquellstand des
-Steuerknotens vorhanden; sie wird durch das Verteilen des bestehenden RC9-Pakets
-nicht auf die Zielknoten nachgerüstet.
+Der verifizierte RC10-ZIP-Installer hinterlegt eine rootgeschützte Verteilungskopie
+mit vollständigem Manifest und berechneten ZIP-/DEB-Prüfsummen. Der Clusterverteiler
+liest diese Kopie und prüft sie erneut. Er verteilt damit **RC10 einschließlich der
+Clusterfunktion**, keine RC9-Altversion. Host-Konfigurationen werden nicht kopiert.
+Bei reiner DEB-Installation fehlt die Verteilungskopie; die Clusterfunktion meldet
+dann den nötigen vollständigen ZIP-Installationsweg. Keine automatische Netzquelle.
 
 Die vorhandene Proxmox-SSH-Anbindung (`PVE::SSHInfo`) bestimmt Zieladresse,
 HostKeyAlias und gegebenenfalls die knotenspezifische `ssh_known_hosts`-Datei.
@@ -101,19 +94,20 @@ Vor einer neuen Testpaketfreigabe auf einem entbehrlichen PVE-9-Testcluster prü
 
 ## English
 
-This is **unreleased source development**, not part of the published RC9 package.
+This is the **unreleased RC10 test package**, not part of the published RC9 package.
 The native **Cluster installation** dialog uses the web session's origin node as
 coordinator even when another node is selected. Select targets explicitly, run the
 preflight, review each result, tick the approval box and confirm installation.
 Offline nodes cannot be selected. Temporary staging during preflight does not
 install packages. Plans expire after five minutes and are single-use.
 
-The initial target is the exact published RC9 artifact pinned above. This does not
-copy arbitrary local files or distribute the new cluster controller itself. Same
-or newer installations are checked and left unchanged. Newer target releases must
-be explicitly registered with their trusted checksums. Existing per-node settings,
-schedules and safety controls are retained; there is no configuration sync or
-automatic installation on cluster join.
+The verified full-ZIP installer registers a root-owned copy of the complete RC10
+bundle, including its manifest and calculated ZIP/DEB checksums. Deployment uses
+this verified copy and distributes RC10 including the cluster feature. Host settings
+are excluded. A bare DEB installation does not register a bundle; the full verified
+ZIP is required. No automatic online source is used. Same or newer installations
+are checked and left unchanged. Existing per-node settings and schedules are retained;
+there is no configuration sync or automatic installation on cluster join.
 
 Only `root@pam` can use the API. The CLI requires local root. Existing Proxmox
 cluster SSH configuration is used with strict host-key verification and batch mode;

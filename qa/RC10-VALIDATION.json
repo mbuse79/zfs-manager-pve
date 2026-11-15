@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0-34~rc10",
+  "date": "2026-11-15",
+  "base": "published RC9 2e4cf1aa241187a3b15bb3d839e1d57e23b467ac and PR #2",
+  "normal": {
+    "passed": 279,
+    "skipped": 16,
+    "deselected": 5
+  },
+  "fakeroot": {
+    "passed": 25,
+    "overlap_with_normal": 4
+  },
+  "distinct_passed": 300,
+  "browser": "DE/EN real ExtJS 7, API fixtures only; explicit selection, offline guard, coordinator routing, preview and confirmation passed",
+  "not_tested": [
+    "real cluster SSH",
+    "real cross-node dpkg install",
+    "real disconnect during dpkg",
+    "multiple real coordinators",
+    "real offline rescue"
+  ],
+  "hosts_accessed": 0,
+  "public_release": false
+}

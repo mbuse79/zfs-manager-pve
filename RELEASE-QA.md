@@ -1,3 +1,24 @@
+# RC10 test package validation — 15 November 2026
+
+Version `1.0.0-34~rc10`, optional confirmed cluster installation using the complete
+verified RC10 bundle registered locally by the ZIP installer. No public release
+and no real host/cluster installation performed in this development session.
+
+300 distinct tests passed: 279 normal; 25 with fakeroot, including four overlapping
+cases. The 16 skipped normal root fixtures and five deselected ownership cases
+were all run separately with fakeroot. Real ExtJS 7 browser checks passed in DE/EN
+with isolated API fixtures. Published RC9 GUI/API bytes were upgraded in an isolated
+filesystem with node configuration, schedules and secrets preserved. Cache tests
+verify full manifests, DEB metadata, corruption, symlinks, modes and version checks.
+
+Not tested: actual cluster SSH, actual cross-node installation through this feature,
+real interruption during dpkg, multiple real coordinators or real offline rescue.
+RC9 operator confirmations do not validate RC10. See docs/RC10-TESTANLEITUNG-DE.md.
+
+---
+
+Historical RC9 validation follows; it describes the previous package only.
+
 # RC9 release validation / Veröffentlichungsnachweis
 
 Release candidate `v1.0.0-34-rc9`, Debian version `1.0.0-34~rc9`.

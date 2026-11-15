@@ -1,12 +1,12 @@
-## Unveröffentlicht – optionale Clusterinstallation
+## 1.0.0-34 RC10 – Cluster-Testversion (15.11.2026)
 
 - Native Clusterübersicht mit ausdrücklicher Knotenauswahl, temporärer Vorprüfung,
   einmaliger Bestätigung und Proxmox-Hintergrundauftrag; zusätzlich `zfsm cluster`.
 - Root-only, bestehende Proxmox-SSH-Vertrauensbeziehung, Quorum, Versions-/Identitäts-
-  und Prüfsummenprüfung; erster Verteilungspfad für das unveränderte öffentliche RC9.
+  und Prüfsummenprüfung; Verteilung des geprüften RC10 aus einer rootgeschützten lokalen Paketkopie.
 - Keine automatische Verteilung, Konfigurationssynchronisierung oder Downgrades;
   Teilfehler stoppen die Verteilung und bleiben je Knoten sichtbar.
-- Quellstand/Fixturetests; noch kein neuer Paketbau, Release oder realer Clustertest.
+- Testpaket mit vollständiger ZIP und DEB; kein öffentlicher Release oder realer Clustertest.
 - Details und Testplan: `docs/CLUSTER-INSTALL.md`.
 
 ## Veröffentlichung RC9 (15.11.2026)

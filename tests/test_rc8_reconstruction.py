@@ -117,7 +117,8 @@ def test_cli_english_json_boundary_and_confirmation_tokens():
  (None,['unzip','zfs-auto-snapshot'],True),(None,['unzip','zfs-auto-snapshot'],False),
 ])
 def test_driver_upgrade_and_fresh_install_exact_archives(tmp_path,monkeypatch,existing,missing,check_only):
-    import zfsm_host_audit
+    import zfsm_host_audit, zfsm_cluster_cache
+    monkeypatch.setattr(zfsm_cluster_cache, 'register', lambda source: {})
     monkeypatch.setattr(driver,'HERE',tmp_path)
     dep=tmp_path/'dependencies';dep.mkdir()
     for n in missing:(dep/(n+'_test_all.deb')).touch()
@@ -172,8 +173,10 @@ def test_bootstrap_rejects_unsafe_zip_before_code(tmp_path,monkeypatch,kind):
     code=(ROOT/'bootstrap-rc8.sh').read_text().split("<<'PYBOOT'\n",1)[1].rsplit('\nPYBOOT',1)[0]
     with pytest.raises(ValueError):exec(compile(code,'bootstrap-rc8.sh','exec'),{'__name__':'test'})
 
-@pytest.mark.parametrize('current',['1.0.0-34~rc9','1.0.0-35'])
+@pytest.mark.parametrize('current',[driver.VERSION,'1.0.0-35'])
 def test_same_or_newer_manager_never_reinstalled(tmp_path,monkeypatch,current):
+    import zfsm_cluster_cache
+    monkeypatch.setattr(zfsm_cluster_cache, 'register', lambda source: {})
     monkeypatch.setattr(driver.os,'geteuid',lambda:0)
     monkeypatch.setattr(driver,'HERE',tmp_path)
     def output(argv):

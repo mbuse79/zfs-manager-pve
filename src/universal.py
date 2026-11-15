@@ -36,7 +36,7 @@ import manager_patch_rc6
 import previous_patch
 import patch_nav
 
-VERSION = '1.0.0-34-rc9-dynamic-compat-installer'
+VERSION = '1.0.0-34-rc10-cluster-installer'
 COMPATIBLE = re.compile(r'^pve-manager/(?:9\.[0-9]+\.[0-9]+)/')
 # SHA256 of stock 9.1.1 files reported by the fresh pvetest2 node on 2026-10-23.
 # Guard against unexpected customizations despite compatible-looking navigation anchors.
