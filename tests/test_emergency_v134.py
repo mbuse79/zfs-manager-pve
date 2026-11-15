@@ -112,7 +112,7 @@ def test_api_permissions_hmac_and_ui_persistent_warning():
 def test_cli_includes_emergency():
     import zfsm_cli
     assert 'emergency' in zfsm_cli.HELP_COMMANDS
-    assert zfsm_cli.VERSION=='1.0.0-34~rc9'
+    assert zfsm_cli.VERSION=='1.1'
 
 
 def test_apply_cannot_delete_last_snapshot_even_between_writes():

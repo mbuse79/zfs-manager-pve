@@ -1,3 +1,93 @@
+# Version 1.1 validation — 15 November 2026
+
+Published at the maintainer's explicit request as **1.1**. The previously tested
+Fix2 functionality is preserved: all 43 runtime source files match after normalizing
+only exact version assignments/labels in five files. Installer differences are
+limited to package version and success labels; bootstrap changes only its filename.
+See qa/V1.1-RUNTIME-COMPARISON.json and qa/V1.1-VALIDATION.json.
+
+307 distinct automated tests passed: 286 normal, plus 25 fakeroot cases including
+four overlaps. Sixteen skipped root fixtures and five deselected ownership cases
+were executed separately under fakeroot. DE/EN browser checks use real ExtJS 7 and
+isolated API fixtures. Exact version ordering and the Fix2-to-1.1 installer path
+were checked; 1.1 is newer than 1.0.0-34~rc10+fix2.
+
+The operator confirmed the Fix2 predecessor's real cluster installation from a
+PVE 9.2.26 coordinator onto PVE 9.2.26 and 9.2.21 targets, with post-install
+integration/service checks. This is operator evidence, not a developer host session.
+The exact 1.1 binary was rebuilt for release identification and automatically
+verified, not independently reinstalled on a real host. Real interrupted dpkg,
+multiple simultaneous coordinators, a separate ordinary-Ethernet scenario and real
+offline rescue remain unverified. No host accessed or modified by this release task.
+
+---
+Historical validation follows for the corresponding earlier packages.
+
+# RC10 Fix2 validation — 15 November 2026
+
+Version `1.0.0-34~rc10+fix2`. Fixes the standalone cluster SSH address resolver:
+strictly refresh PVE::Cluster state before calling PVE::SSHInfo; require a known
+member IP and refuse DNS fallback. Preserve node host-key aliases and strict SSH
+verification. No changes to system DNS, SSH or Fabric configuration.
+
+305 distinct tests: 284 normal plus 25 fakeroot, with four overlaps. Sixteen normal
+root skips and five deselected ownership cases are run separately with fakeroot.
+New real Perl subprocess fixtures start with an empty membership cache and verify
+internal IPv4/IPv6 resolution and refusal of an unknown member. The Perl -T worker
+regression remains enabled.
+
+Operator confirmation on 15 November 2026: real cluster rollout from a PVE 9.2.26
+coordinator installed Fix2 successfully on two existing PVE nodes, versions 9.2.26
+and 9.2.21. Both previously lacked the manager package. Integration checks, watcher
+and timer reported OK. Evidence is operator-provided logs/screenshot, not an
+independent developer host session. This confirms fresh manager installation on
+existing hosts; it does not establish a freshly installed PVE OS or every GUI/
+snapshot action. Transport IP/interface was not shown. Interrupted dpkg and
+multiple simultaneous coordinators remain untested. See
+qa/RC10-FIX2-OPERATOR-CLUSTER-REPORT.json. The tested DEB/ZIP remain unchanged.
+
+---
+Historical Fix1 validation follows.
+
+# RC10 Fix1 validation — 15 November 2026
+
+Version `1.0.0-34~rc10+fix1`. The operator reported a cluster task start failure
+under Proxmox Perl taint mode. The original RC10 error was reproduced exactly at
+its system() invocation under `perl -T`. Narrow captures now validate and untaint
+only the accepted argument grammars; the child environment is locally sanitized.
+Taint mode, authorization and all snapshot protections remain enabled.
+
+302 distinct tests: 281 normal plus 25 fakeroot, with four overlaps. The 16 normal
+skips and five deselected ownership cases are covered by the fakeroot run. These
+are isolated fixtures, including real subprocesses under Perl -T and upgrades
+from the exact previous RC9/RC10 GUI/API bytes. No fixed-version host test is yet
+confirmed. Real cluster installation, disconnect during dpkg and multiple real
+coordinators remain untested. This is a test package, not a public release.
+
+---
+Historical RC10 validation follows.
+
+# RC10 test package validation — 15 November 2026
+
+Version `1.0.0-34~rc10`, optional confirmed cluster installation using the complete
+verified RC10 bundle registered locally by the ZIP installer. No public release
+and no real host/cluster installation performed in this development session.
+
+300 distinct tests passed: 279 normal; 25 with fakeroot, including four overlapping
+cases. The 16 skipped normal root fixtures and five deselected ownership cases
+were all run separately with fakeroot. Real ExtJS 7 browser checks passed in DE/EN
+with isolated API fixtures. Published RC9 GUI/API bytes were upgraded in an isolated
+filesystem with node configuration, schedules and secrets preserved. Cache tests
+verify full manifests, DEB metadata, corruption, symlinks, modes and version checks.
+
+Not tested: actual cluster SSH, actual cross-node installation through this feature,
+real interruption during dpkg, multiple real coordinators or real offline rescue.
+RC9 operator confirmations do not validate RC10. See docs/RC10-TESTANLEITUNG-DE.md.
+
+---
+
+Historical RC9 validation follows; it describes the previous package only.
+
 # RC9 release validation / Veröffentlichungsnachweis
 
 Release candidate `v1.0.0-34-rc9`, Debian version `1.0.0-34~rc9`.

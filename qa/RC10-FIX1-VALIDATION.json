@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-34~rc10+fix1",
+  "date": "2026-11-15",
+  "reported_issue": "Insecure dependency in system while running with -T switch, original RC10 API line 73",
+  "original_error_reproduced": true,
+  "real_perl_taint_subprocess_test": "passed; preview, install, polling, status, invalid targets/languages, locally sanitized PATH",
+  "normal": {
+    "passed": 281,
+    "skipped": 16,
+    "deselected": 5
+  },
+  "fakeroot": {
+    "passed": 25,
+    "overlap": 4
+  },
+  "distinct_tests": 302,
+  "fixed_version_real_host_test": false,
+  "public_release": false
+}

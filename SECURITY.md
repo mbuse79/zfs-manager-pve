@@ -2,7 +2,11 @@
 
 ## Scope
 
-v1.0.0-32 is a technical final build. The exact final Debian package was installed and GUI/CLI-tested on Proxmox VE 9.2.25 on 2026-11-07. This is independent community software, not an official Proxmox product. No support or compatibility guarantee applies to other untested versions.
+Version 1.1 supports structurally compatible PVE 9.x integrations. The operator
+confirmed its Fix2 predecessor's real cluster installation on PVE 9.2.26 and 9.2.21.
+The exact 1.1 package was rebuilt for release identification and automatically
+tested; this is not a claim of a new 1.1 real-host test or universal future support.
+This is independent community software, not an official Proxmox product.
 
 ## Reporting a vulnerability
 

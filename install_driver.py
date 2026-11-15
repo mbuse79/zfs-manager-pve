@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-VERSION = '1.0.0-34~rc9'
+VERSION = '1.1'
 HERE = Path(__file__).resolve().parent
 
 def run(argv, **kw):
@@ -74,6 +74,10 @@ def main(argv=None):
         raise RuntimeError('Wrong package metadata / Falsche Paketmetadaten')
     current=installed('pve-zfs-manager')
     if current and subprocess.run(['dpkg','--compare-versions',current,'ge',VERSION]).returncode==0:
+        if current == VERSION and not args.check_only:
+            sys.path.insert(0, '/usr/lib/pve-zfs-manager')
+            from zfsm_cluster_cache import register
+            register(HERE)
         say('Gleiche oder neuere Version vorhanden; keine Änderung: '+current,'Same or newer version installed; no change: '+current)
         return 0
     alternative=competing()
@@ -129,8 +133,10 @@ def main(argv=None):
         # dpkg installs only verified local files; it never resolves additional packages.
         run(['dpkg','-i',*archives,str(deb)])
         for cmd in (['zfsm','version','--lang',args.lang],['zfsm','check','--lang',args.lang],['zfsm','services','--lang',args.lang]): run(cmd)
-        say('RC8 installiert. Bestehende Sicherheits- und Bereinigungseinstellungen bleiben erhalten.',
-            'RC8 installed. Existing safety and cleanup settings are preserved.')
+        from zfsm_cluster_cache import register
+        register(HERE)
+        say('Version 1.1 installiert. Bestehende Sicherheits- und Bereinigungseinstellungen bleiben erhalten.',
+            'Version 1.1 installed. Existing safety and cleanup settings are preserved.')
     return 0
 
 if __name__=='__main__':

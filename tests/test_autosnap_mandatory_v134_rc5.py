@@ -15,7 +15,7 @@ def test_dependency_is_mandatory_and_not_checkzfs_or_zsync():
     assert 'zfs-auto-snapshot' in control
     assert 'checkzfs' not in control.lower()
     assert 'zsync' not in control.lower()
-    assert "PACKAGE_VERSION='1.0.0-34~rc9'" in build
+    assert "PACKAGE_VERSION='1.1'" in build
 
 
 def test_autosnap_install_not_done_in_dpkg_hooks():

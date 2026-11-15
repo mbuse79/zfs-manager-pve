@@ -1,0 +1,264 @@
+{
+  "base_commit": "7a14776359bb3fa8f95259d8de14ac3be76814b5",
+  "normalization": "Only exact version assignments and user-facing version labels normalized; all other runtime bytes identical",
+  "files": [
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer.pm",
+      "before": "c310b85ec18b15c67b4d80a486eed7e3dbbc2e23fe7b8828ed28ad9695d0c30d",
+      "after": "c310b85ec18b15c67b4d80a486eed7e3dbbc2e23fe7b8828ed28ad9695d0c30d",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_rc6.pm",
+      "before": "4c4435d5998bbedfe408f2e21b2001f273882ba7c2ddfeb0fa59e86d2032c1f9",
+      "after": "4c4435d5998bbedfe408f2e21b2001f273882ba7c2ddfeb0fa59e86d2032c1f9",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_rc7.pm",
+      "before": "7f122395c70dfa49e566880843774543f50df84ec61c4485d0d19a1c45ffc22c",
+      "after": "7f122395c70dfa49e566880843774543f50df84ec61c4485d0d19a1c45ffc22c",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_rc8r2.pm",
+      "before": "167cd165a19182fb7aeb913b08c12a61c2c4caf8b6367370942f76601082652a",
+      "after": "167cd165a19182fb7aeb913b08c12a61c2c4caf8b6367370942f76601082652a",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_rc9.pm",
+      "before": "cca971d81cf918eda0043677f96cc25c3cd10e4af284ec5b11a545bf57b03036",
+      "after": "cca971d81cf918eda0043677f96cc25c3cd10e4af284ec5b11a545bf57b03036",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_v1_4.pm",
+      "before": "8c8b7f55d180960c2daefde7151cabf852981591d5ef2fcc82232bd4db836d22",
+      "after": "8c8b7f55d180960c2daefde7151cabf852981591d5ef2fcc82232bd4db836d22",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_v1_5.pm",
+      "before": "ac6226908f1f8a643462a0897be8e73b3cd9e6efe84ba8f84663c74b1b288067",
+      "after": "ac6226908f1f8a643462a0897be8e73b3cd9e6efe84ba8f84663c74b1b288067",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/PVE/API2/ZFSSnapshotViewer_v1_6.pm",
+      "before": "0c9078674df02eccc8118432e37350f6f1dc68e4365fd44b0c4fc3a357dae9a7",
+      "after": "0c9078674df02eccc8118432e37350f6f1dc68e4365fd44b0c4fc3a357dae9a7",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/adminctl.py",
+      "before": "1ddb9650e4257d8b504f01f9c05c7e8976bf1d92f58de24517e6f7635bffb8ff",
+      "after": "1ddb9650e4257d8b504f01f9c05c7e8976bf1d92f58de24517e6f7635bffb8ff",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/cli_locale.py",
+      "before": "51c742ddcb1ad4c9965a5eb4e10a00adc6e0414923b11a3a9ddaaadeb00dcdac",
+      "after": "51c742ddcb1ad4c9965a5eb4e10a00adc6e0414923b11a3a9ddaaadeb00dcdac",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/libexec/guest_policy.py",
+      "before": "395f00f34da3de7d2af8ec29b005e1afc0b57aafcc2be4d796d87f3513dcd335",
+      "after": "395f00f34da3de7d2af8ec29b005e1afc0b57aafcc2be4d796d87f3513dcd335",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/libexec/guest_policy_rc9.py",
+      "before": "ab38d967dd1659c012c982b8112c4ce412368a61ab1753034a9aab95065f041a",
+      "after": "ab38d967dd1659c012c982b8112c4ce412368a61ab1753034a9aab95065f041a",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/libexec/guest_policy_v1_10.py",
+      "before": "23114b5931720374ea43b10ee6854f529a845979049f9745c64598cba78e5afb",
+      "after": "23114b5931720374ea43b10ee6854f529a845979049f9745c64598cba78e5afb",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch.py",
+      "before": "5119559f00850aee08ffb5cb6f93fb3fff908afeff4a0bcafece08299779c7d0",
+      "after": "924d9bee7a0f59a372c1c7bd7647daf9bd035545208c3556de0dc6eaa3cb84b1",
+      "version_label_only_change": true
+    },
+    {
+      "file": "src/manager_patch_rc5.py",
+      "before": "ccaed1da0f1eefacd7e0369768c9ffa7dbeaec4c5a0120e9f2adf082675e1195",
+      "after": "ccaed1da0f1eefacd7e0369768c9ffa7dbeaec4c5a0120e9f2adf082675e1195",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_rc6.py",
+      "before": "05e9f40928ae3ff668de580baa1ecbdf9d4ca645a77e24bf1fb03175c579cbed",
+      "after": "05e9f40928ae3ff668de580baa1ecbdf9d4ca645a77e24bf1fb03175c579cbed",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_rc7.py",
+      "before": "b5b49e980de7dd522e85fa1c26e303850afa530088e9f338a2199a0afdf94a50",
+      "after": "b5b49e980de7dd522e85fa1c26e303850afa530088e9f338a2199a0afdf94a50",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_rc8.py",
+      "before": "4b023b9b24874d3f37f49a810b45401914b89e01378785324ababc8c5cd09029",
+      "after": "4b023b9b24874d3f37f49a810b45401914b89e01378785324ababc8c5cd09029",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_rc8r2.py",
+      "before": "3934b26747fe356b7425295a6426b9cd00e436c186f00c31a6674225a6a686ca",
+      "after": "3934b26747fe356b7425295a6426b9cd00e436c186f00c31a6674225a6a686ca",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_rc9.py",
+      "before": "b4d6af89812caee8fec942b407928d0d1075e5424f1b5efe8ec5c10f3a6a9267",
+      "after": "b4d6af89812caee8fec942b407928d0d1075e5424f1b5efe8ec5c10f3a6a9267",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_10.py",
+      "before": "b257536275da414472201274b0d59717993312c5908805c8a7c4599dff654509",
+      "after": "b257536275da414472201274b0d59717993312c5908805c8a7c4599dff654509",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_12.py",
+      "before": "390e4072bfcfa54ceb7fcf277a7696babd910497a89b5f450df303f586912c1d",
+      "after": "390e4072bfcfa54ceb7fcf277a7696babd910497a89b5f450df303f586912c1d",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_2.py",
+      "before": "429d88b298339b3feecb8122767dfb2ef49e566b246d70aa68e2dce8b1c0c7a1",
+      "after": "429d88b298339b3feecb8122767dfb2ef49e566b246d70aa68e2dce8b1c0c7a1",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_4.py",
+      "before": "729dd738aa28ad9442440001d4345384448bdd0c052eb0127a460812ef7349e0",
+      "after": "729dd738aa28ad9442440001d4345384448bdd0c052eb0127a460812ef7349e0",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_5.py",
+      "before": "29f550d0542834d6aab1b9691f502e2774fb13b619cf2ff57c8025de6b569355",
+      "after": "29f550d0542834d6aab1b9691f502e2774fb13b619cf2ff57c8025de6b569355",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_6.py",
+      "before": "542d05f9aa9aca5501dde9746e54c023a04e81d25ab1ad3d5291a5fca2fa568f",
+      "after": "542d05f9aa9aca5501dde9746e54c023a04e81d25ab1ad3d5291a5fca2fa568f",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_7.py",
+      "before": "b199d9c8318b62797ec35d6735b0b3a0fe0ea83c1e92f422eb640be4fa6c2bb7",
+      "after": "b199d9c8318b62797ec35d6735b0b3a0fe0ea83c1e92f422eb640be4fa6c2bb7",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/manager_patch_v1_8.py",
+      "before": "23a543e5f0707f50ada3fd947720b28509c3f9cf16d5a64eb3df0bb1ce06fa27",
+      "after": "23a543e5f0707f50ada3fd947720b28509c3f9cf16d5a64eb3df0bb1ce06fa27",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/offline_recovery.py",
+      "before": "2d695e7ebf14aea10c114808aa0697c1763ee43af801b2ae48a777f267f052f4",
+      "after": "2d695e7ebf14aea10c114808aa0697c1763ee43af801b2ae48a777f267f052f4",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/patch_nav.py",
+      "before": "798305ceae21aabb1931db84895fa92365c0bc43227f17cfe697ff3afb6bef7c",
+      "after": "798305ceae21aabb1931db84895fa92365c0bc43227f17cfe697ff3afb6bef7c",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/pool_discovery.py",
+      "before": "cc01ad3820561592a2d87be641ceb9e4789833997570d97d44753f8032d0af17",
+      "after": "cc01ad3820561592a2d87be641ceb9e4789833997570d97d44753f8032d0af17",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/previous_patch.py",
+      "before": "452a60ae466d955f148037207d5be8a88513228b014b95f74f46dada5b7f072a",
+      "after": "452a60ae466d955f148037207d5be8a88513228b014b95f74f46dada5b7f072a",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/universal.py",
+      "before": "34db18c78e88b1d1ad15949362497036eb2e422fc960c5f4b522756a74988ea6",
+      "after": "9fe7386c3426c1bb17f982df2fb809172e97d7c0b1f046a1055acf22f1ce5a82",
+      "version_label_only_change": true
+    },
+    {
+      "file": "src/zfsm_autosnap_resolve.py",
+      "before": "50b8aacf4564bc9e304c310938559e183b562077f1a252a4dbab666b8d051b52",
+      "after": "50b8aacf4564bc9e304c310938559e183b562077f1a252a4dbab666b8d051b52",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_backends.py",
+      "before": "1fa00c4f18dd1bf2b6daf5b5dc817fdeb7d1259735cc19863aa82cec7f73de74",
+      "after": "1fa00c4f18dd1bf2b6daf5b5dc817fdeb7d1259735cc19863aa82cec7f73de74",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_capacity.py",
+      "before": "70e75857a45276464f98ba6e9f7448135869348afc0dfd4811c61abedf707467",
+      "after": "70e75857a45276464f98ba6e9f7448135869348afc0dfd4811c61abedf707467",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_cli.py",
+      "before": "4412a9b20de2be18bd9a2167a6ceec1183c0ed0635711b2524c471600c44637f",
+      "after": "a41495695d7737261f7338cd44d2d19794a554271acd134ea34b43a8d4610103",
+      "version_label_only_change": true
+    },
+    {
+      "file": "src/zfsm_cluster.py",
+      "before": "476dcb1651757ee17791c5f21684e45e3e5c73e7c02639e84f9e9c2cffdee2a8",
+      "after": "8e25f0845866e2a5f47187ee958249f117ee6c29c5350d5646b7a3b7684b716b",
+      "version_label_only_change": true
+    },
+    {
+      "file": "src/zfsm_cluster_cache.py",
+      "before": "5b732c7a8e4691cdad3639bd724e1014bada1e2b1425de9ac7ea66b531b112a0",
+      "after": "3b799b35694e32509a780390554c3250eefc3b943a7d3ff90a0a0a0155c87222",
+      "version_label_only_change": true
+    },
+    {
+      "file": "src/zfsm_cluster_remote.py",
+      "before": "d19ee448df0fd8b361a0f0560e827d70d8f79cdd0b0fc40ee08e62dad4a802a7",
+      "after": "d19ee448df0fd8b361a0f0560e827d70d8f79cdd0b0fc40ee08e62dad4a802a7",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_emergency.py",
+      "before": "2d1d6b51c0a118996437992279f7cd77e2c30e85526c4b442d0b7bd07f218e25",
+      "after": "2d1d6b51c0a118996437992279f7cd77e2c30e85526c4b442d0b7bd07f218e25",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_host_audit.py",
+      "before": "c6e556ba4e59800d88034428cf61b85fcd4057e6b61bd301435466bfbb36bc76",
+      "after": "c6e556ba4e59800d88034428cf61b85fcd4057e6b61bd301435466bfbb36bc76",
+      "version_label_only_change": false
+    },
+    {
+      "file": "src/zfsm_notify.py",
+      "before": "7c514914d33acc2abcbf3713ab3ee046634063d500878c17ed2a7b0f9ada9a3c",
+      "after": "7c514914d33acc2abcbf3713ab3ee046634063d500878c17ed2a7b0f9ada9a3c",
+      "version_label_only_change": false
+    }
+  ]
+}

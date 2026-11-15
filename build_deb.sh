@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-# RC9 release: preserve the documentation bytes included in the tested DEB.
-PACKAGE_VERSION='1.0.0-34~rc9'
+# Version 1.1 release build.
+PACKAGE_VERSION='1.1'
 PACKAGE_FILE="pve-zfs-manager_${PACKAGE_VERSION}_all.deb"
 # Passing packaging checks is not a legal provenance/redistribution clearance.
 
@@ -24,7 +24,7 @@ if [[ ! -s "$HERE/LICENSE" ]] || [[ ! -s "$HERE/debian/copyright" ]]; then
   echo 'STOP: Approved LICENSE and Debian copyright file are required before packaging.' >&2
   exit 2
 fi
-DOCS="$HERE/packaging/rc9-tested-docs"
+DOCS="$HERE"
 BUILD="$HERE/_deb_build"
 rm -rf "$BUILD"
 mkdir -p "$BUILD/lib/systemd/system" "$BUILD/DEBIAN" "$BUILD/usr/lib/pve-zfs-manager/libexec" "$BUILD/usr/lib/pve-zfs-manager/PVE/API2" "$BUILD/usr/sbin" "$BUILD/usr/share/doc/pve-zfs-manager"
@@ -46,8 +46,9 @@ cp "$DOCS/POOLALARME-34-RC4-DE.md" "$DOCS/AUTOSNAP-34-RC5-DE.md" "$BUILD/usr/sha
 cp "$DOCS/HOSTPRUEFUNG-34-RC6-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/CODE-PROVENANCE-REVIEW.md" "$DOCS/MAINTAINER.md" "$DOCS/INSTALL.de.md" "$DOCS/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/RC9-TESTANLEITUNG-DE.md" "$DOCS/RC9-AENDERUNGEN-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$HERE/docs/CLUSTER-INSTALL.md" "$HERE/docs/INSTALL-1.1.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
-cp "$DOCS/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
+cp "$HERE/debian/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
 cat > "$BUILD/DEBIAN/control" <<EOF
 Package: pve-zfs-manager
 Version: ${PACKAGE_VERSION}

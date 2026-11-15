@@ -35,7 +35,7 @@ jobs:
         run: python -m pip install --disable-pip-version-check -r requirements-test.txt
 
       - name: Check quick installer shell syntax
-        run: bash -n quick-install.sh bootstrap-rc9.sh install-local.sh install.sh build_deb.sh
+        run: bash -n quick-install.sh bootstrap-rc9.sh bootstrap-rc10.sh bootstrap-rc10-fix1.sh bootstrap-rc10-fix2.sh bootstrap-1.1.sh install-local.sh install.sh build_deb.sh
 
       - name: Check Python syntax
         run: python -m compileall -q src tests
@@ -63,3 +63,4 @@ jobs:
           tests/test_pool_only_v134_rc4.py::test_previous_quota_alarm_is_discarded_without_recovery_spam
           tests/test_pool_only_v134_rc4.py::test_real_pool_alarm_unchanged_with_no_target
           tests/test_autosnap_mandatory_v134_rc5.py tests/test_unzip_bootstrap_rc7.py
+          tests/test_cluster_install.py::test_cluster_root_owned_store_and_single_controller_lock tests/test_cluster_cache.py

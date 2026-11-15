@@ -20,6 +20,131 @@ use Fcntl qw(O_RDONLY O_NOFOLLOW);
 our $ADMINS_FILE = '/etc/pve-zfs-manager/admins.conf';
 our $PREVIEW_SECRET = '/etc/pve-zfs-manager/preview.key';
 our $GUEST_POLICY = '/usr/local/libexec/pve-zfs-manager/guest_policy.py';
+# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT
+our $CLUSTER_TOOL = '/usr/lib/pve-zfs-manager/zfsm_cluster.py';
+
+# Cluster package deployment uses the cluster's root SSH identity, so local
+# delegated snapshot administration alone must never authorize it.
+sub _cluster_root {
+    my ($node) = @_;
+    my $user = _admin_identity($node);
+    die "Clusterinstallation nur fuer root\@pam / Cluster installation requires root\@pam\n"
+        unless $user eq 'root@pam';
+    return 'root@pam';
+}
+sub _cluster_json {
+    my (@args) = @_;
+    # A 64-node report can exceed the snapshot helper's 100 KB ceiling. Keep a
+    # separate bounded reader so that existing snapshot limits stay unchanged.
+    my ($fh, $raw);
+    my $ok = eval {
+        local %ENV = %ENV;
+        $ENV{PATH} = '/usr/sbin:/usr/bin:/sbin:/bin';
+        delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+        local $SIG{ALRM} = sub { die "Cluster report timeout\n" };
+        alarm(15);
+        open($fh, '-|', '/usr/bin/python3', $CLUSTER_TOOL, @args) or die "Cluster report start failed\n";
+        $raw = '';
+        while (1) {
+            my $chunk;
+            my $count = read($fh, $chunk, 8192);
+            die "Cluster report read failed\n" unless defined($count);
+            last unless $count;
+            $raw .= $chunk;
+            die "Cluster report too large\n" if length($raw) > 2_000_000;
+        }
+        close($fh) or die "Cluster report failed\n";
+        alarm(0);
+        1;
+    };
+    my $err = $@;
+    alarm(0);
+    if (!$ok) {
+        close($fh) if defined($fh) && defined(fileno($fh));
+        die $err;
+    }
+    my $data = decode_json($raw);
+    die "Invalid cluster response\n" unless ref($data) eq 'HASH';
+    return $data;
+}
+sub _cluster_task {
+    my ($param, $operation, @args) = @_;
+    # PVE workers run under perl -T. Successful non-capturing validation does
+    # NOT untaint input. Build every subprocess argument from narrow captures.
+    my ($node) = ($param->{node}//'') =~ /\A([A-Za-z0-9][A-Za-z0-9-]{0,62})\z/;
+    my ($lang) = ($param->{lang}//'en') =~ /\A(de|en)\z/;
+    my ($op) = ($operation//'') =~ /\A(preview|install)\z/;
+    die "Invalid cluster task arguments\n" unless defined($node) && defined($lang) && defined($op);
+    my @safe_args;
+    if ($op eq 'preview') {
+        die "Invalid preview arguments\n" unless @args == 2 && $args[0] eq '--nodes';
+        my ($nodes) = ($args[1]//'') =~ /\A([A-Za-z0-9][A-Za-z0-9-]{0,62}(?:,[A-Za-z0-9][A-Za-z0-9-]{0,62}){0,63})\z/;
+        die "Invalid selected nodes\n" unless defined($nodes);
+        @safe_args = ('--nodes', $nodes);
+    } else {
+        die "Invalid installation arguments\n" unless @args == 3 && $args[0] eq '--plan' && $args[2] eq '--confirmed';
+        my ($plan) = ($args[1]//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Invalid preview ID\n" unless defined($plan);
+        @safe_args = ('--plan', $plan, '--confirmed');
+    }
+    my $user = _cluster_root($node);
+    my ($id) = substr(sha256_hex(join('|', $user, $$, time, rand(), _preview_secret())), 0, 32) =~ /\A([a-f0-9]{32})\z/;
+    my $rpcenv = PVE::RPCEnvironment::get();
+    my $upid = $rpcenv->fork_worker('zfsmcluster', $node, $user, sub {
+        local %ENV = %ENV;
+        $ENV{PATH} = '/usr/sbin:/usr/bin:/sbin:/bin';
+        delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+        system('/usr/bin/python3', $CLUSTER_TOOL, '--lang', $lang,
+               $op, '--job', $id, @safe_args) == 0 or die "Cluster task failed; inspect task log\n";
+    });
+    return {job => $id, upid => $upid};
+}
+
+__PACKAGE__->register_method({
+    name=>'cluster_status', path=>'cluster-status', method=>'GET', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Root-only cluster membership discovery; no package or configuration changes.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node}); return _cluster_json('status'); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_job', path=>'cluster-job', method=>'GET', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Read the root-owned cluster deployment report.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        job=>{type=>'string',pattern=>'^[a-f0-9]{32}$',maxLength=>32}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        my ($job) = ($p->{job}//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Invalid job ID\n" unless defined($job);
+        return _cluster_json('job','--job',$job); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_preview', path=>'cluster-preview', method=>'POST', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Explicitly stage and verify the pinned release on selected nodes; do not install.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        nodes=>{type=>'string',maxLength=>4096},lang=>{type=>'string',enum=>['de','en'],optional=>1}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        die "Invalid selected nodes\n" unless ($p->{nodes}//'') =~ /\A[A-Za-z0-9][A-Za-z0-9-]{0,62}(?:,[A-Za-z0-9][A-Za-z0-9-]{0,62}){0,63}\z/;
+        return _cluster_task($p,'preview','--nodes',$p->{nodes}); },
+});
+__PACKAGE__->register_method({
+    name=>'cluster_install', path=>'cluster-install', method=>'POST', protected=>1, proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    description=>'Apply a confirmed single-use cluster preview; stop on first failure.',
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),
+        plan=>{type=>'string',pattern=>'^[a-f0-9]{32}$',maxLength=>32},
+        confirm=>{type=>'boolean'},lang=>{type=>'string',enum=>['de','en'],optional=>1}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub { my ($p)=@_; _cluster_root($p->{node});
+        die "Confirmation required / Bestaetigung erforderlich\n" unless $p->{confirm};
+        die "Invalid preview ID\n" unless ($p->{plan}//'') =~ /\A[a-f0-9]{32}\z/;
+        return _cluster_task($p,'install','--plan',$p->{plan},'--confirmed'); },
+});
+# END ZFSM OPTIONAL CLUSTER DEPLOYMENT
 
 sub _admin_identity {
     my ($node) = @_;

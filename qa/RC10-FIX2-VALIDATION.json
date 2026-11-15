@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0-34~rc10+fix2",
+  "date": "2026-11-15",
+  "normal": {
+    "passed": 284,
+    "skipped": 16,
+    "deselected": 5
+  },
+  "fakeroot": {
+    "passed": 25,
+    "overlap": 4
+  },
+  "distinct_tests": 305,
+  "address_tests": "Real Perl subprocess fixtures start with empty PVE cluster state; cfs_update(1) supplies member IPv4/IPv6; unknown member must not use DNS fallback",
+  "taint_regression_retained": true,
+  "real_fixed_version_cluster_installation": {
+    "operator_confirmed": true,
+    "report": "RC10-FIX2-OPERATOR-CLUSTER-REPORT.json"
+  },
+  "host_dns_ssh_fabric_settings_changed": false,
+  "public_release": false
+}
