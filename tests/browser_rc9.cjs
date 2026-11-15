@@ -45,7 +45,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
     if(clusterMode&&opts.url.includes('/cluster-')){
      if(!opts.url.startsWith('/nodes/fixture-coordinator/'))throw Error('Cluster request used selected remote node instead of coordinator');
      const route=opts.url.split('/').pop();let data;
-     if(route==='cluster-status')data={release:{version:'1.0.0-34~rc10'},nodes:[{name:'node-a',online:true},{name:'node-b',online:false}]};
+     if(route==='cluster-status')data={release:{version:'1.1'},nodes:[{name:'node-a',online:true},{name:'node-b',online:false}]};
      else if(route==='cluster-preview'){
       if(opts.method!=='POST'||opts.params.nodes!=='node-a')throw Error('Unexpected cluster preview selection');
       data={job:'a'.repeat(32),upid:'fixture-preview'};
@@ -54,7 +54,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
       data={job:'b'.repeat(32),upid:'fixture-install'};
      }else if(route==='cluster-job'){
       const install=opts.params.job==='b'.repeat(32);
-      data={kind:install?'install':'preview',status:'complete',ready:true,release:{version:'1.0.0-34~rc10'},
+      data={kind:install?'install':'preview',status:'complete',ready:true,release:{version:'1.1'},
        results:[{node:'node-a',status:install?'installed':'ready',log:'<img src=x onerror=alert(1)> fixture escaped'}]};
      }else throw Error('Unexpected cluster route');
      setTimeout(()=>opts.success({result:{data}}),0);return;

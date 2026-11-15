@@ -24,7 +24,7 @@ import time
 import zfsm_cluster_remote as remote
 
 STATE = Path('/var/lib/pve-zfs-manager/cluster')
-RELEASE = {'version': '1.0.0-34~rc10+fix2', 'cache': True}
+RELEASE = {'version': '1.1', 'cache': True}
 
 
 class ClusterError(Exception):
@@ -358,8 +358,8 @@ def main(argv=None, lang='de'):
         try:
             RELEASE, _ = load()
         except FileNotFoundError as exc:
-            raise ClusterError('RC10 cluster bundle missing. Install using the full verified ZIP. / '
-                               'RC10-Clusterpaket fehlt. Mit der vollständigen geprüften ZIP installieren.') from exc
+            raise ClusterError('Version 1.1 cluster bundle missing. Install using the full verified ZIP. / '
+                               'Clusterpaket für Version 1.1 fehlt. Mit der vollständigen geprüften ZIP installieren.') from exc
     if args.command == 'status':
         print(json.dumps({'release': RELEASE, **inventory()}, ensure_ascii=False))
         return 0

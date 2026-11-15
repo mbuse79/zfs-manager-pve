@@ -1,63 +1,55 @@
-# BuMaVory ZFS Manager für Proxmox VE
+# BuMaVory ZFS Manager für Proxmox VE — 1.1
 
-ZFS-Pools, VM-/LXC-Snapshots und Aufbewahrung direkt in der vorhandenen
-Proxmox-Knotenoberfläche auf Port 8006 verwalten. Unabhängiges Community-Projekt.
+Pools, VM-/LXC-Snapshots und Aufbewahrung in der vorhandenen Proxmox-Oberfläche
+auf Port 8006 verwalten. Unabhängiges Community-Projekt.
 
-[English](README.md) · [RC9-Release](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-34-rc9) · [RC9 installieren](docs/INSTALL-RC9.md) · [Sicherheit](SECURITY.md)
+[English](README.md) · [Release 1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1) · [Installation](docs/INSTALL-1.1.md) · [Clusteranleitung](docs/CLUSTER-INSTALL.md)
 
-Entwicklung auf diesem Branch: [optionale Clusterinstallation](docs/CLUSTER-INSTALL.md)
-mit Knotenauswahl und Bestätigung. Noch nicht im veröffentlichten RC9 enthalten;
-reale Clustertests und eine neue Paketfreigabe stehen aus.
+## Version 1.1
 
-## RC10-Testversion / RC10 test package
+Kompakte native Oberfläche mit getrennten CAP-/FRAG-Werten, einklappbaren Details,
+genau zwei Snapshot-Tabs und einer gemeinsamen Aufbewahrungstabelle. GUI und CLI
+auf Deutsch und Englisch.
 
-`1.0.0-34~rc10+fix2`: optionale Clusterinstallation mit geprüfter lokaler Verteilungskopie.
-Noch kein öffentlicher Release; reale neue Clustertests stehen aus.
-[Deutsche Testanleitung](docs/RC10-TESTANLEITUNG-DE.md).
+Optionale Clusterinstallation mit bewusster Knotenauswahl, Vorprüfung und fünf
+Minuten gültiger, einmaliger Bestätigung. Die vollständige geprüfte lokale
+Paketkopie wird über die bestehende Proxmox-Root-SSH-Anbindung verteilt.
+Cluster-Mitgliedsadressen werden vorher eingelesen; unbekannte Adressen führen
+zum Abbruch statt zu einem DNS-Fallback. Keine automatische Verteilung,
+Konfigurationssynchronisierung oder Installation beim Clusterbeitritt.
 
-## RC9: kompakte native Oberfläche
+Der Betreiber bestätigte die reale Clusterinstallation des Fix2-Vorgängers von
+PVE 9.2.26 auf Knoten mit PVE 9.2.26 und 9.2.21. Version 1.1 übernimmt diese
+Funktionalität mit neuer Kennzeichnung und Release-Dokumentation. Automatische
+Regressionen und DE-/EN-Browsertests: [RELEASE-QA.md](RELEASE-QA.md). Das exakte
+1.1-DEB wurde nicht erneut unabhängig auf einem Host installiert. Reale Offline-
+Rettung, Abbruch während dpkg und parallele reale Steuerknoten bleiben ungeprüft.
 
-Paketversion **`1.0.0-34~rc9`**. Poolübersicht mit getrennten CAP-/FRAG-Werten,
-einklappbare technische Details und die beiden Snapshot-Tabs. Die gemeinsame
-Aufbewahrungstabelle unterscheidet Vorgaben je Dataset von der beobachteten
-Gesamtsumme. Oberfläche und CLI auf Deutsch und Englisch.
+## Installation und Upgrade
 
-![Implementierte RC9-Oberfläche mit Testdaten, kein Produktivhost-Screenshot](docs/rc9-ui-de.png)
+Die **vollständige Release-ZIP** mit geprüftem `bootstrap-1.1.sh` verwenden oder
+entpacken und zunächst `bash install-local.sh --check-only --lang de` ausführen.
+[Anleitung und Prüfsummenprüfung](docs/INSTALL-1.1.md).
+Eine reine DEB-Installation registriert keine Cluster-Verteilungskopie. Für die
+Clusterfunktion deshalb die vollständige ZIP verwenden. Neuere Paketversionen
+werden nicht absichtlich herabgestuft. Bei Quellarchiven gilt die versionierte
+Anleitung; der Schnellinstaller auf `main` kann nach dem Release geändert werden.
 
-Der Betreiber hat am 15. November 2026 die angeforderten Tests auf der frischen
-Test-PVE und dem vorhandenen Host als erfolgreich bestätigt und die Veröffentlichung
-beauftragt. Im Entwicklungsverlauf wurden PVE 9.1.1 und 9.2.26 verwendet. 252
-unterschiedliche lokale Regressionstests und zusätzliche ExtJS-7-Browsertests mit
-API-Fixtures sind dokumentiert. Das ist keine pauschale Freigabe unbekannter
-Proxmox-Strukturen oder ein realer Offline-Rettungstest. Siehe [Prüfbericht](RELEASE-QA.md).
-
-## Installation
-
-RC9 wird als **Release Candidate** veröffentlicht. Die vollständige Release-ZIP
-verwenden und mit dem geprüften Bootstrap oder `install-local.sh` zunächst
-`--check-only` ausführen. Der Weg gilt für Neuinstallation und RC7-/RC8-Upgrade.
-**[Anleitung mit Prüfsummenprüfung](docs/INSTALL-RC9.md)**.
-
-Alle PVE-9.x-Versionsnummern werden ohne Minor-/Patch-Rückfrage akzeptiert; echte
-Strukturfehler stoppen weiterhin. Keine Freigabe für PVE 8/10. Die ZIP enthält das
-unveränderte getestete DEB, Quell-/Builddateien, Installer und die zusätzlichen
-Debian-Abhängigkeiten für amd64/all mit Lizenzen und korrespondierenden Quellen.
-Keine allgemeinen System-/Proxmox-Upgrades und keine automatische Paketreparatur.
-Nicht unterstützte konkurrierende Snapshot-Verwaltungen werden als Konflikt gemeldet.
-
-Der ältere stabile [Release v1.0.0-32](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.0.0-32)
-bleibt unverändert. `quick-install.sh` zielt weiterhin auf diesen stabilen Release
-und ist nicht der Einstieg für RC9. Neuere Manager-Versionen werden nicht herabgestuft.
+PVE 9.x ohne Minor-/Patch-Rückfrage; echte Strukturprüfungen bleiben erforderlich.
+Keine Freigabe für PVE 8/10. Zusätzliche gebündelte Abhängigkeiten für amd64/all.
+Keine allgemeinen System-/Proxmox-Upgrades, automatische Paketreparatur oder
+stille Ersetzung nicht unterstützter Snapshot-Programme. Einstellungen und
+individuelle Zeitpläne bleiben auf jedem Knoten erhalten.
 
 ## Sicherheit und Lizenz
 
-Löschen und Rollback benötigen Vorschau, Berechtigung und Bestätigung. Unabhängige
-Backups bereithalten. Aktionen über mehrere Datenträger sind nicht atomar.
-Automatische **Notfallbereinigung** ist standardmäßig AUS; vorhandene ausdrückliche
-Aktivierungen bleiben erhalten. Die bestehende AutoSnap-Aufbewahrung kann ältere
-automatische Snapshots bei späteren Zeitplanläufen entfernen. Snapshot-Verbrauch
-ist keine Prognose des durch Löschen freigegebenen Platzes.
+Vorschau, Berechtigungen und Bestätigungen vor Löschen/Rollback bleiben erhalten.
+Mehrere Datenträger/Knoten werden nicht atomar verändert. Ein Verteilungsfehler
+stoppt weitere Installationen; unklare Zielzustände vor Wiederholung prüfen.
+Automatische Notfallbereinigung standardmäßig AUS, vorhandene ausdrückliche
+Aktivierungen bleiben erhalten. Die bestehende AutoSnap-Aufbewahrung kann bei
+Zeitplanläufen ältere automatische Snapshots entfernen. Unabhängige Backups behalten.
 
-Eigene Projektbeiträge: [AGPL-3.0-only](LICENSE). Fremde Rechte bleiben getrennt;
-siehe [Drittanbieterhinweise](THIRD_PARTY_NOTICES.md) und [begrenzten Herkunftsvergleich](CODE-PROVENANCE-REVIEW.md).
+Eigene Beiträge: [AGPL-3.0-only](LICENSE); fremde Rechte bleiben getrennt.
+[Drittanbieterhinweise](THIRD_PARTY_NOTICES.md) · [Herkunftsvergleich](CODE-PROVENANCE-REVIEW.md).
 Kontakt: [BuMaVory Project](mailto:bumavory@buse.rocks).

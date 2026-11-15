@@ -1,10 +1,10 @@
 # Optionale Clusterinstallation / Optional cluster installation
 
-**RC10-Testversion `1.0.0-34~rc10` auf Basis von RC9.** Noch kein öffentlicher Release; neue Cluster-Praxistests stehen aus. Installation über die vollständige geprüfte ZIP, siehe `RC10-TESTANLEITUNG-DE.md`.
+**Version 1.1.** Vollständige geprüfte ZIP installieren: [INSTALL-1.1.md](INSTALL-1.1.md).
 
 ## Deutsch
 
-ZFS Manager erhält eine Schaltfläche **Clusterinstallation** in der vorhandenen
+ZFS Manager bietet die Schaltfläche **Clusterinstallation** in der vorhandenen
 Proxmox-Oberfläche. Der Steuerknoten ist der Knoten, über den die Weboberfläche
 geöffnet wurde (`Proxmox.NodeName`), auch wenn links ein anderer Knoten ausgewählt
 ist. Die Funktion benötigt zunächst einen entsprechend aktualisierten Steuerknoten.
@@ -12,8 +12,8 @@ ist. Die Funktion benötigt zunächst einen entsprechend aktualisierten Steuerkn
 1. Als `root@pam` öffnen und Zielknoten ausdrücklich auswählen. Keine Vorauswahl;
    die Checkbox im Tabellenkopf kann alle verfügbaren Knoten auswählen. Offline-
    Knoten bleiben gesperrt.
-2. **Ausgewählte Knoten prüfen** lädt das fest gepinnte öffentliche Paket einmal
-   auf den Steuerknoten. Es wird zur Vorprüfung vorübergehend auf die ausgewählten
+2. **Ausgewählte Knoten prüfen** verwendet die bereits registrierte geprüfte Paketkopie
+   auf dem Steuerknoten. Sie wird zur Vorprüfung vorübergehend auf die ausgewählten
    Knoten übertragen, vollständig geprüft und anschließend wieder entfernt.
    Dieser Schritt installiert keine Pakete und verändert keine Zeitpläne.
 3. Die Vorschau zeigt Version, Paketstatus und Installerergebnis je Knoten.
@@ -30,10 +30,10 @@ ist. Die Funktion benötigt zunächst einen entsprechend aktualisierten Steuerkn
    Ergebnis eines Knotens unbekannt sein. Vor einem neuen Versuch dort den
    Paket-/Integrationsstatus prüfen. Das Schließen des Dialogs stoppt keine Aufgabe.
 
-Der verifizierte RC10-ZIP-Installer hinterlegt eine rootgeschützte Verteilungskopie
+Der verifizierte ZIP-Installer von Version 1.1 hinterlegt eine rootgeschützte Verteilungskopie
 mit vollständigem Manifest und berechneten ZIP-/DEB-Prüfsummen. Der Clusterverteiler
-liest diese Kopie und prüft sie erneut. Er verteilt damit **RC10 einschließlich der
-Clusterfunktion**, keine RC9-Altversion. Host-Konfigurationen werden nicht kopiert.
+liest diese Kopie und prüft sie erneut. Er verteilt damit **Version 1.1 einschließlich der
+Clusterfunktion**. Host-Konfigurationen werden nicht kopiert.
 Bei reiner DEB-Installation fehlt die Verteilungskopie; die Clusterfunktion meldet
 dann den nötigen vollständigen ZIP-Installationsweg. Keine automatische Netzquelle.
 
@@ -44,7 +44,7 @@ Anmeldung müssen vorab durch den Administrator geklärt werden. Es werden keine
 Schlüssel, Passwörter oder SSH-Freigaben erzeugt. API-Tokens und lediglich lokal
 freigegebene Snapshot-Administratoren dürfen keine Clusterinstallation starten.
 
-CLI nach Installation eines zukünftigen geprüften Pakets mit dieser Funktion:
+CLI nach Installation der vollständigen geprüften Version 1.1:
 
 ```bash
 zfsm cluster status --lang de
@@ -84,7 +84,7 @@ Keine unabhängige Codex-Hostmessung und kein Nachweis einer frischen PVE-OS-Ins
 Mehrfachstart von verschiedenen realen Steuerknoten. Bisherige RC9-Hosttests sind
 kein Nachweis für diese neue Funktion. Keine Produktionshosts wurden angesprochen.
 
-Vor einer neuen Testpaketfreigabe auf einem entbehrlichen PVE-9-Testcluster prüfen:
+Bei weiteren Praxistests auf einem entbehrlichen PVE-9-Testcluster prüfen:
 
 - Neuinstallation und Upgrade eines älteren Managers, bestehende Zeitpläne und
   Konfigurationen vor/nach dem Test vergleichen; automatische Notfallbereinigung
@@ -98,16 +98,16 @@ Vor einer neuen Testpaketfreigabe auf einem entbehrlichen PVE-9-Testcluster prü
 
 ## English
 
-This is the **unreleased RC10 test package**, not part of the published RC9 package.
+Version **1.1** includes optional cluster installation.
 The native **Cluster installation** dialog uses the web session's origin node as
 coordinator even when another node is selected. Select targets explicitly, run the
 preflight, review each result, tick the approval box and confirm installation.
 Offline nodes cannot be selected. Temporary staging during preflight does not
 install packages. Plans expire after five minutes and are single-use.
 
-The verified full-ZIP installer registers a root-owned copy of the complete RC10
+The verified full-ZIP installer registers a root-owned copy of the complete version 1.1
 bundle, including its manifest and calculated ZIP/DEB checksums. Deployment uses
-this verified copy and distributes RC10 including the cluster feature. Host settings
+this verified copy and distributes version 1.1 including the cluster feature. Host settings
 are excluded. A bare DEB installation does not register a bundle; the full verified
 ZIP is required. No automatic online source is used. Same or newer installations
 are checked and left unchanged. Existing per-node settings and schedules are retained;

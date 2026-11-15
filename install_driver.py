@@ -10,7 +10,7 @@ import subprocess
 import sys
 import tempfile
 
-VERSION = '1.0.0-34~rc10+fix2'
+VERSION = '1.1'
 HERE = Path(__file__).resolve().parent
 
 def run(argv, **kw):
@@ -135,8 +135,8 @@ def main(argv=None):
         for cmd in (['zfsm','version','--lang',args.lang],['zfsm','check','--lang',args.lang],['zfsm','services','--lang',args.lang]): run(cmd)
         from zfsm_cluster_cache import register
         register(HERE)
-        say('RC10 installiert. Bestehende Sicherheits- und Bereinigungseinstellungen bleiben erhalten.',
-            'RC10 installed. Existing safety and cleanup settings are preserved.')
+        say('Version 1.1 installiert. Bestehende Sicherheits- und Bereinigungseinstellungen bleiben erhalten.',
+            'Version 1.1 installed. Existing safety and cleanup settings are preserved.')
     return 0
 
 if __name__=='__main__':

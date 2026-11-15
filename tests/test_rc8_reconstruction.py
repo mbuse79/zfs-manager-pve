@@ -114,6 +114,7 @@ def test_cli_english_json_boundary_and_confirmation_tokens():
 
 @pytest.mark.parametrize('existing,missing,check_only',[
  ('1.0.0-34~rc7',[],True),('1.0.0-34~rc7',[],False),
+ ('1.0.0-34~rc10+fix2',[],True),('1.0.0-34~rc10+fix2',[],False),
  (None,['unzip','zfs-auto-snapshot'],True),(None,['unzip','zfs-auto-snapshot'],False),
 ])
 def test_driver_upgrade_and_fresh_install_exact_archives(tmp_path,monkeypatch,existing,missing,check_only):
@@ -173,7 +174,7 @@ def test_bootstrap_rejects_unsafe_zip_before_code(tmp_path,monkeypatch,kind):
     code=(ROOT/'bootstrap-rc8.sh').read_text().split("<<'PYBOOT'\n",1)[1].rsplit('\nPYBOOT',1)[0]
     with pytest.raises(ValueError):exec(compile(code,'bootstrap-rc8.sh','exec'),{'__name__':'test'})
 
-@pytest.mark.parametrize('current',[driver.VERSION,'1.0.0-35'])
+@pytest.mark.parametrize('current',[driver.VERSION,'2.0.0'])
 def test_same_or_newer_manager_never_reinstalled(tmp_path,monkeypatch,current):
     import zfsm_cluster_cache
     monkeypatch.setattr(zfsm_cluster_cache, 'register', lambda source: {})

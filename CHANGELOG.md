@@ -1,3 +1,16 @@
+## 1.1 (15.11.2026)
+
+- Veröffentlichung des vom Betreiber bestätigten RC10-Fix2-Funktionsstands als 1.1.
+- Optionale Clusterinstallation mit Knotenauswahl, Vorprüfung und Bestätigung;
+  vollständiges geprüftes Paket lokal registriert, keine Konfigurationssynchronisierung.
+- Clusterzustand vor SSH-Adressauswahl laden, keine DNS-Ausweichadresse bei fehlendem
+  Mitglied; IPv4/IPv6 und bestehende Hostschlüsselprüfung. Perl-Taint-Modus berücksichtigt.
+- Paket, CLI, GUI und Cluster-Verteilung einheitlich 1.1; Upgrade von Fix2 ohne Downgrade.
+- Bestehende Snapshot-/Replikations-/Löschschutzregeln und Zeitpläne erhalten;
+  automatische Notfallbereinigung standardmäßig AUS. Kein allgemeines Systemupgrade.
+- Reale Clusterinstallation des Fix2-Vorgängers auf PVE 9.2.26/9.2.21 vom Betreiber
+  bestätigt; exaktes 1.1-DEB neu automatisiert geprüft, nicht erneut live installiert.
+
 ## 1.0.0-34 RC10 Fix2 – interne Clusteradressen (15.11.2026)
 
 - Standalone-SSH-Helfer lädt den Proxmox-Clusterzustand mit `cfs_update(1)`,

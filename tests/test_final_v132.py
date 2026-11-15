@@ -5,10 +5,10 @@ from universal import VERSION
 ROOT=Path(__file__).resolve().parents[1]
 
 def test_final_version_consistency():
-    assert zfsm_cli.VERSION=='1.0.0-34~rc10+fix2'
-    assert VERSION=='1.0.0-34-rc10-fix2-cluster-installer'
-    assert "PACKAGE_VERSION='1.0.0-34~rc10+fix2'" in (ROOT/'build_deb.sh').read_text()
-    assert "VERSION = '1.0.0-34~rc10+fix2'" in (ROOT/'install_driver.py').read_text()
+    assert zfsm_cli.VERSION=='1.1'
+    assert VERSION=='1.1-cluster-installer'
+    assert "PACKAGE_VERSION='1.1'" in (ROOT/'build_deb.sh').read_text()
+    assert "VERSION = '1.1'" in (ROOT/'install_driver.py').read_text()
 
 def test_publication_safety_docs_and_no_hardcoded_private_url():
     for name in ('README.md','INSTALL.md','TRADEMARK.md','SECURITY.md','PUBLICATION-CHECKLIST.md','LICENSING-REVIEW.md'):

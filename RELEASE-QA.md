@@ -1,3 +1,28 @@
+# Version 1.1 validation — 15 November 2026
+
+Published at the maintainer's explicit request as **1.1**. The previously tested
+Fix2 functionality is preserved: all 43 runtime source files match after normalizing
+only exact version assignments/labels in five files. Installer differences are
+limited to package version and success labels; bootstrap changes only its filename.
+See qa/V1.1-RUNTIME-COMPARISON.json and qa/V1.1-VALIDATION.json.
+
+307 distinct automated tests passed: 286 normal, plus 25 fakeroot cases including
+four overlaps. Sixteen skipped root fixtures and five deselected ownership cases
+were executed separately under fakeroot. DE/EN browser checks use real ExtJS 7 and
+isolated API fixtures. Exact version ordering and the Fix2-to-1.1 installer path
+were checked; 1.1 is newer than 1.0.0-34~rc10+fix2.
+
+The operator confirmed the Fix2 predecessor's real cluster installation from a
+PVE 9.2.26 coordinator onto PVE 9.2.26 and 9.2.21 targets, with post-install
+integration/service checks. This is operator evidence, not a developer host session.
+The exact 1.1 binary was rebuilt for release identification and automatically
+verified, not independently reinstalled on a real host. Real interrupted dpkg,
+multiple simultaneous coordinators, a separate ordinary-Ethernet scenario and real
+offline rescue remain unverified. No host accessed or modified by this release task.
+
+---
+Historical validation follows for the corresponding earlier packages.
+
 # RC10 Fix2 validation — 15 November 2026
 
 Version `1.0.0-34~rc10+fix2`. Fixes the standalone cluster SSH address resolver:

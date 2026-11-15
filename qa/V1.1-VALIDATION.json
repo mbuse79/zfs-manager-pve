@@ -1,0 +1,26 @@
+{
+  "version": "1.1",
+  "date": "2026-11-15",
+  "release_authorization": "Maintainer explicitly requested publication as version 1.1 in this session",
+  "normal": {
+    "passed": 286,
+    "skipped": 16,
+    "deselected": 5
+  },
+  "fakeroot": {
+    "passed": 25,
+    "overlap": 4
+  },
+  "distinct_tests": 307,
+  "runtime_comparison": "43 runtime files compared with tested Fix2; only 5 version/GUI-label changes; exact normalized comparison passed",
+  "installer_comparison": "Only package version and success labels changed; bootstrap only its filename; normalized comparisons passed",
+  "predecessor_operator_host_evidence": "RC10-FIX2-OPERATOR-CLUSTER-REPORT.json",
+  "exact_1_1_host_test": false,
+  "not_tested": [
+    "interrupted dpkg on a real host",
+    "simultaneous real coordinators",
+    "real offline rescue",
+    "separate ordinary Ethernet deployment scenario"
+  ],
+  "browser": "German and English real ExtJS 7 using isolated API fixtures"
+}

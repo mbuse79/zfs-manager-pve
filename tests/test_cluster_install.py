@@ -25,7 +25,7 @@ A, B, C = 'a' * 32, 'b' * 32, 'c' * 32
 @pytest.fixture(autouse=True)
 def fixture_release(monkeypatch):
     # Concrete hashes of fixture bytes, never a claimed real release checksum.
-    monkeypatch.setattr(c, 'RELEASE', {'version': '1.0.0-34~rc10+fix2', 'cache': True,
+    monkeypatch.setattr(c, 'RELEASE', {'version': '1.1', 'cache': True,
         'sha256': hashlib.sha256(b'verified-fixture').hexdigest(),
         'deb_sha256': hashlib.sha256(b'fixture-deb').hexdigest()})
 

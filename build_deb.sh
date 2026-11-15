@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
-# RC10 cluster test build; RC9 artifacts remain unchanged.
-PACKAGE_VERSION='1.0.0-34~rc10+fix2'
+# Version 1.1 release build.
+PACKAGE_VERSION='1.1'
 PACKAGE_FILE="pve-zfs-manager_${PACKAGE_VERSION}_all.deb"
 # Passing packaging checks is not a legal provenance/redistribution clearance.
 
@@ -46,7 +46,7 @@ cp "$DOCS/POOLALARME-34-RC4-DE.md" "$DOCS/AUTOSNAP-34-RC5-DE.md" "$BUILD/usr/sha
 cp "$DOCS/HOSTPRUEFUNG-34-RC6-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/CODE-PROVENANCE-REVIEW.md" "$DOCS/MAINTAINER.md" "$DOCS/INSTALL.de.md" "$DOCS/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/RC9-TESTANLEITUNG-DE.md" "$DOCS/RC9-AENDERUNGEN-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
-cp "$HERE/docs/CLUSTER-INSTALL.md" "$HERE/docs/RC10-TESTANLEITUNG-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$HERE/docs/CLUSTER-INSTALL.md" "$HERE/docs/INSTALL-1.1.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
 cp "$HERE/debian/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
 cat > "$BUILD/DEBIAN/control" <<EOF
