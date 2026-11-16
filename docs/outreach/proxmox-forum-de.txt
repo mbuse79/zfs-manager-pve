@@ -1,0 +1,38 @@
+Titel: BuMaVory ZFS Manager 1.1 – ZFS-Snapshots in der Proxmox-Oberfläche (Community-Projekt)
+
+Hallo zusammen,
+
+ich bin Maintainer von BuMaVory ZFS Manager und möchte das Projekt vorstellen.
+Es integriert ZFS-Verwaltung in die vorhandene Proxmox-Knotenoberfläche auf Port 8006.
+Ein separates Webportal wird nicht benötigt. Es ist ein unabhängiges Community-Projekt,
+kein offizielles Proxmox-Produkt.
+
+Version 1.1 bietet:
+- Poolübersicht mit getrennten CAP-/FRAG-Werten und einklappbaren Details.
+- Gruppierte VM-/LXC-Datenträger und Snapshots sowie eine eigene ZFS-Dataset-Ansicht.
+- Übersicht und bestätigte Änderungen der vorhandenen AutoSnap-Aufbewahrung.
+- Optionale Clusterinstallation mit Knotenauswahl, Vorprüfung und Bestätigung.
+- Deutsche und englische GUI sowie CLI.
+
+Die Clusterverteilung übernimmt keine Konfigurationen zwischen Knoten. Bestehende
+Zeitpläne bleiben lokal. Snapshot-Löschung und Rollback behalten Vorschau und
+Berechtigungs-/Schutzprüfungen. Automatische Notfallbereinigung ist standardmäßig aus;
+bestehende AutoSnap-Aufbewahrung kann weiterhin bei Zeitplanläufen ältere Snapshots entfernen.
+
+Zielplattform ist strukturell passende PVE 9.x. Der Betreiber bestätigte die reale
+Clusterinstallation des Fix2-Vorgängers auf PVE 9.2.26 und 9.2.21. Version 1.1 wurde
+mit neuer Kennzeichnung und Dokumentation gebaut und automatisiert geprüft; genaue
+Nachweise und offene Punkte stehen im Prüfbericht. Bitte zuerst auf einem Testhost
+prüfen und unabhängige Backups behalten.
+
+Projekt und Screenshots: https://github.com/mbuse79/zfs-manager-pve
+Release 1.1: https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1
+Installation: https://github.com/mbuse79/zfs-manager-pve/blob/main/docs/INSTALL-1.1.md
+Prüfbericht: https://github.com/mbuse79/zfs-manager-pve/blob/main/RELEASE-QA.md
+
+Rückmeldungen zu verständlicher Bedienung und Erfahrungen mit unterschiedlichen
+PVE-9-Konfigurationen sind willkommen. Fehler, Wünsche und Kompatibilitätsberichte
+können über die GitHub-Issue-Vorlagen gemeldet werden.
+
+Die beigefügten Bilder/Demo zeigen die tatsächliche Oberfläche mit gekennzeichneten
+Testdaten, keine Aufzeichnung eines produktiven Hosts.

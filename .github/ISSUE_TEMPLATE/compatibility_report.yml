@@ -1,0 +1,45 @@
+name: Erfahrung teilen / Compatibility report
+description: Erfolgreiche oder fehlgeschlagene Tests dokumentieren / Share successful or failed tests.
+title: "[Experience]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Keine riskanten Aktionen nur für diesen Bericht ausführen. Bitte genau angeben, was tatsächlich geprüft wurde.
+        Do not run risky actions just for this report. State exactly what was tested.
+  - type: input
+    id: versions
+    attributes:
+      label: ZFSM- und PVE-Version / ZFSM and PVE versions
+      placeholder: "ZFSM 1.1 / pve-manager 9.x.y"
+    validations:
+      required: true
+  - type: dropdown
+    id: scenario
+    attributes:
+      label: Szenario / Scenario
+      options:
+        - Neue ZFSM-Installation auf bestehender PVE / New ZFSM install on existing PVE
+        - Neue ZFSM-Installation auf frisch installierter PVE / New ZFSM install on fresh PVE OS
+        - ZFSM-Upgrade / ZFSM upgrade
+        - Clusterinstallation / Cluster deployment
+    validations:
+      required: true
+  - type: textarea
+    id: tested
+    attributes:
+      label: Was wurde tatsächlich geprüft? / What was actually tested?
+      description: Zum Beispiel Vorprüfung, GUI-Laden, Dienste, Snapshot-Anzeige oder Clusterverteilung / For example preflight, GUI loading, services, snapshot display or cluster rollout.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Ergebnis und offene Punkte / Result and untested areas
+    validations:
+      required: true
+  - type: input
+    id: network
+    attributes:
+      label: Bei Clusterbetrieb Netztyp / Network type if clustered
+      placeholder: Management-Ethernet, Fabric, IPv4/IPv6; keine privaten Adressen nötig / No private addresses needed

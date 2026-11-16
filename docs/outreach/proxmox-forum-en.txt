@@ -1,0 +1,36 @@
+Title: BuMaVory ZFS Manager 1.1 – ZFS snapshots in the Proxmox interface (community project)
+
+Hi everyone,
+
+I maintain BuMaVory ZFS Manager and would like to introduce the project. It adds
+ZFS management to the existing Proxmox node interface on port 8006, without a
+separate web portal. This is an independent community project, not an official
+Proxmox product.
+
+Version 1.1 includes:
+- Pool capacity and fragmentation shown separately, with collapsible details.
+- Grouped VM/LXC disks and snapshots plus a separate ZFS dataset view.
+- Overview and reviewed changes to existing AutoSnap retention.
+- Optional cluster installation with explicit node selection, preflight and confirmation.
+- German and English GUI and CLI.
+
+Cluster rollout does not synchronize node configuration. Existing schedules remain
+local. Snapshot deletion/rollback keep previews, authorization and protection checks.
+Emergency cleanup defaults to OFF; existing scheduled AutoSnap retention can still
+remove older automatic snapshots.
+
+The target is structurally compatible PVE 9.x. The operator confirmed the Fix2
+predecessor's real cluster rollout on PVE 9.2.26 and 9.2.21. Version 1.1 was rebuilt
+with release identification/documentation and automatically checked. Evidence and
+untested areas are in the QA report. Please start on a test host and keep independent
+backups.
+
+Project and screenshots: https://github.com/mbuse79/zfs-manager-pve
+Release: https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1
+Installation: https://github.com/mbuse79/zfs-manager-pve/blob/main/docs/INSTALL-1.1.md
+QA: https://github.com/mbuse79/zfs-manager-pve/blob/main/RELEASE-QA.md
+
+I'd welcome feedback on usability and experiences with other PVE-9 setups. GitHub
+has issue forms for bugs, feature requests and compatibility reports.
+The images/demo show the real UI with labelled sample data, not a production-host
+installation recording.

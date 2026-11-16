@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Sicherheitslücke vertraulich melden / Report a vulnerability privately
+    url: https://github.com/mbuse79/zfs-manager-pve/security
+    about: Keine Exploit-Details oder Zugangsdaten öffentlich posten / Do not post exploit details or credentials publicly.

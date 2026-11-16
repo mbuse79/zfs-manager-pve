@@ -1,0 +1,22 @@
+name: Funktionswunsch / Feature request
+description: Einen konkreten Bedarf beschreiben / Describe a concrete need.
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Welches Problem möchtest du lösen? / What problem would you like to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: desired
+    attributes:
+      label: Gewünschter Ablauf / Desired workflow
+      description: Ein konkretes Beispiel hilft / A concrete example helps.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Kontext / Context
+      description: Optional Versionen, Neuinstallation oder Clusterbetrieb nennen / Optionally include versions and whether this is a fresh install or cluster.

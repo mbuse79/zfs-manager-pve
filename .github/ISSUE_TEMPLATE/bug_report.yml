@@ -1,0 +1,65 @@
+name: Fehler melden / Bug report
+description: Einen nachvollziehbaren Fehler melden / Report a reproducible problem.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Deutsch oder English sind willkommen. Dieses Issue ist öffentlich: keine Schlüssel, Tokens oder privaten Hostdaten einfügen.
+        German or English is welcome. This issue is public: remove keys, tokens and private host data.
+  - type: input
+    id: plugin_version
+    attributes:
+      label: ZFSM-Version / ZFSM version
+      description: Ausgabe von zfsm version; sensible Angaben entfernen / Output of zfsm version with sensitive details removed.
+      placeholder: "1.1"
+    validations:
+      required: true
+  - type: input
+    id: pve_version
+    attributes:
+      label: Proxmox-Version / Proxmox version
+      description: Ausgabe von pveversion / Output of pveversion.
+    validations:
+      required: true
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installationsweg / Installation method
+      options:
+        - Vollständige Release-ZIP / Complete release ZIP
+        - Schnellinstaller / Quick installer
+        - Clusterinstallation / Cluster deployment
+        - Nur DEB / Bare DEB
+        - Anderer Weg / Another method
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Sprache / Language
+      placeholder: GUI Deutsch, CLI --lang de / GUI English, CLI --lang en
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Schritte / Steps to reproduce
+      description: Was wurde angeklickt oder ausgeführt? / What did you click or run?
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Erwartet und tatsächlich / Expected and actual result
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Fehlermeldung oder Protokoll / Error or log
+      description: Nur relevante, anonymisierte Zeilen / Relevant redacted lines only.
+      render: text
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Optionaler Screenshot / Optional screenshot
+      description: Private Gastnamen und Adressen unkenntlich machen / Hide private guest names and addresses.
