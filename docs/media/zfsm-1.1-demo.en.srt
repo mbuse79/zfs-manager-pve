@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:12,000
+Manage ZFS in the existing Proxmox interface.
+
+2
+00:00:12,000 --> 00:00:28,000
+Pool capacity and fragmentation stay separate.
+
+3
+00:00:28,000 --> 00:00:50,000
+Browse grouped VM/LXC disks and snapshots.
+
+4
+00:00:50,000 --> 00:01:04,000
+Two views: VMs/LXC and ZFS datasets.
+
+5
+00:01:04,000 --> 00:01:22,000
+Retention per dataset and observed totals.
+
+6
+00:01:22,000 --> 00:01:36,000
+Explicitly select cluster nodes; offline nodes stay blocked.
+
+7
+00:01:36,000 --> 00:01:50,000
+Demo preflight only. Installation requires approval and confirmation.
+
+8
+00:01:50,000 --> 00:02:00,000
+Source and installation: github.com/mbuse79/zfs-manager-pve
+

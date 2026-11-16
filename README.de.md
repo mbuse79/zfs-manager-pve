@@ -3,7 +3,28 @@
 Pools, VM-/LXC-Snapshots und Aufbewahrung in der vorhandenen Proxmox-Oberfläche
 auf Port 8006 verwalten. Unabhängiges Community-Projekt.
 
-[English](README.md) · [Release 1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1) · [Installation](docs/INSTALL-1.1.md) · [Clusteranleitung](docs/CLUSTER-INSTALL.md)
+[English](README.md) · **[Version 1.1 herunterladen](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1)** · **[Installieren / aktualisieren](docs/INSTALL-1.1.md)** · [Clusteranleitung](docs/CLUSTER-INSTALL.md)
+
+[![Regression CI](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml/badge.svg)](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml)
+
+![Oberfläche 1.1 mit Poolübersicht, gruppierten Snapshots und Aufbewahrung; gekennzeichnete Testdaten](docs/media/overview-de.png)
+
+*Echter Panelcode mit Testdaten in einem isolierten Browser, kein Produktivhost-Screenshot.*
+**[Zweiminütigen Oberflächenrundgang ansehen/herunterladen](docs/media/zfsm-1.1-demo-en.mp4)** · [Deutsche Untertitel](docs/media/zfsm-1.1-demo.de.srt)
+
+| Was du prüfen möchtest | Wo du es findest |
+| --- | --- |
+| Poolbelegung und Fragmentierung | Getrennte CAP-/FRAG-Übersicht und einklappbare Details |
+| Gast-Datenträger und Snapshots | Gruppierte VMs-/LXC-Ansicht und separater Dataset-Tab |
+| Bestehende AutoSnap-Aufbewahrung | Vorgaben je Dataset, beobachtete Gesamtzahl und bestätigte Änderungen |
+| Weitere Clusterknoten | Bewusste Auswahl, Vorprüfung und bestätigte Installation |
+
+<details>
+<summary>Cluster-Knotenauswahl ansehen (Testdaten)</summary>
+
+![Optionale Clusterinstallation mit ausdrücklicher Knotenauswahl und gesperrtem Offline-Knoten](docs/media/cluster-de.png)
+
+</details>
 
 ## Version 1.1
 
@@ -40,6 +61,15 @@ Keine Freigabe für PVE 8/10. Zusätzliche gebündelte Abhängigkeiten für amd6
 Keine allgemeinen System-/Proxmox-Upgrades, automatische Paketreparatur oder
 stille Ersetzung nicht unterstützter Snapshot-Programme. Einstellungen und
 individuelle Zeitpläne bleiben auf jedem Knoten erhalten.
+
+## Rückmeldungen und Kompatibilitätsberichte
+
+[Fehler melden](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=bug_report.yml) ·
+[Funktion wünschen](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=feature_request.yml) ·
+[PVE-Erfahrung teilen](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=compatibility_report.yml).
+Deutsch und Englisch sind willkommen. Plugin-/PVE-Version, Installationsweg,
+tatsächlich geprüfte Schritte und anonymisierte Fehlermeldung angeben.
+Sicherheitslücken bitte vertraulich gemäß [Sicherheitsrichtlinie](SECURITY.md) melden.
 
 ## Sicherheit und Lizenz
 

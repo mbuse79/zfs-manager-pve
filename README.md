@@ -3,7 +3,28 @@
 Manage pools, VM/LXC snapshots and retention in the existing Proxmox node interface
 on port 8006. Independent community software, not a Proxmox product.
 
-[Deutsch](README.de.md) · [Release 1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1) · [Installation](docs/INSTALL-1.1.md) · [Cluster guide](docs/CLUSTER-INSTALL.md)
+[Deutsch](README.de.md) · **[Download 1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1)** · **[Install / upgrade](docs/INSTALL-1.1.md)** · [Cluster guide](docs/CLUSTER-INSTALL.md)
+
+[![Regression CI](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml/badge.svg)](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml)
+
+![Version 1.1 panel: pools, grouped snapshots and retention; labelled sample data](docs/media/overview-en.png)
+
+*Actual panel code with sample data in an isolated browser, not a production-host screenshot.*
+**[Watch/download the two-minute interface tour](docs/media/zfsm-1.1-demo-en.mp4)** · [German subtitles](docs/media/zfsm-1.1-demo.de.srt)
+
+| What you want to inspect | Where to find it |
+| --- | --- |
+| Pool usage and fragmentation | Separate CAP/FRAG overview and collapsible technical details |
+| Guest disks and snapshots | Grouped VMs/LXC view plus a separate dataset tab |
+| Existing AutoSnap retention | Per-dataset keep values, observed totals and reviewed changes |
+| Another cluster node | Explicit selection, preflight and confirmed installation |
+
+<details>
+<summary>Cluster selection screenshot (sample data)</summary>
+
+![Optional cluster installation: explicit node selection and an offline node blocked](docs/media/cluster-en.png)
+
+</details>
 
 ## Version 1.1
 
@@ -37,6 +58,15 @@ PVE 9.x without minor/patch confirmation; actual structural checks remain requir
 PVE 8/10 are not enabled. Bundled additional dependencies target amd64/all.
 No general system/Proxmox upgrades, automatic package repair, or unsupported
 snapshot-backend replacement. Existing per-node settings and schedules are kept.
+
+## Feedback and compatibility reports
+
+[Report a bug](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=bug_report.yml) ·
+[Request a feature](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=feature_request.yml) ·
+[Share a PVE compatibility report](https://github.com/mbuse79/zfs-manager-pve/issues/new?template=compatibility_report.yml).
+German and English are welcome. Include plugin/PVE versions, installation method,
+what you actually tested and a redacted error. Report vulnerabilities privately
+through [Security](SECURITY.md).
 
 ## Safety and licensing
 

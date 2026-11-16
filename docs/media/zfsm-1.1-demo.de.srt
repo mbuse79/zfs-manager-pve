@@ -1,0 +1,32 @@
+1
+00:00:00,000 --> 00:00:12,000
+ZFS in der vorhandenen Proxmox-Oberfläche verwalten.
+
+2
+00:00:12,000 --> 00:00:28,000
+Poolbelegung und Fragmentierung getrennt betrachten.
+
+3
+00:00:28,000 --> 00:00:50,000
+VM-/LXC-Datenträger und Snapshots gruppiert durchsuchen.
+
+4
+00:00:50,000 --> 00:01:04,000
+Zwei Ansichten: VMs/LXC und ZFS-Datasets.
+
+5
+00:01:04,000 --> 00:01:22,000
+Aufbewahrung je Dataset und beobachtete Gesamtzahl.
+
+6
+00:01:22,000 --> 00:01:36,000
+Clusterknoten ausdrücklich auswählen; Offline-Knoten bleiben gesperrt.
+
+7
+00:01:36,000 --> 00:01:50,000
+Nur Demo-Vorprüfung. Installation braucht zusätzlich Häkchen und Bestätigung.
+
+8
+00:01:50,000 --> 00:02:00,000
+Quellcode und Installation: github.com/mbuse79/zfs-manager-pve
+

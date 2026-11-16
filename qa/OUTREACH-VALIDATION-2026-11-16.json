@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-16",
+  "scope": "Documentation, issue forms and labelled demonstration media only; no runtime/package/release changes",
+  "video": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1440,
+        "height": 948
+      }
+    ],
+    "format": {
+      "duration": "120.000000",
+      "size": "1799458"
+    }
+  },
+  "browser_proofs": {
+    "de": {
+      "lang": "de",
+      "realHostsContacted": 0,
+      "actualInstalls": 0,
+      "errors": [],
+      "apiFixtureCalls": 25
+    },
+    "en": {
+      "lang": "en",
+      "realHostsContacted": 0,
+      "actualInstalls": 0,
+      "errors": [],
+      "apiFixtureCalls": 25
+    }
+  },
+  "github_metadata_update": "HTTP 403 Resource not accessible by integration; manual settings prepared",
+  "external_posts_sent": false,
+  "forum_rules_read": "https://forum.proxmox.com/help/terms/",
+  "reddit_rules_verified": false,
+  "reddit_rules_status": "HTTP 403",
+  "media_sha256": {
+    "README.md": "eb70afbbd4033aa38d7a83da1e38989be6a67e91b44cfb267a5de03ce094689b",
+    "cluster-de.png": "5f76363343c703f21c7f06f42baac79eb3353de74a31c5a86a93f646975d40a6",
+    "cluster-en.png": "c36353001ad92c94c4440b11755de307efba30d52a74d69b388474b685615f5c",
+    "overview-de.png": "31132e2e933bb342ced3e4f275a4788f1957d620598420c26740ea301288b983",
+    "overview-en.png": "d3f34b6e03f0028f974e0d2f72b6f18297d8cbb35e63f4eaa798cde0d07c0c91",
+    "zfsm-1.1-demo-en.mp4": "2abca28291e6e7b3a4466711313378dda23d83766f1eeaee8b0d23e562a7bbb3",
+    "zfsm-1.1-demo.de.srt": "d08fec7213620ab843c861b88fe85672d80f771828de5c7ec96b1fee87ffaa8d",
+    "zfsm-1.1-demo.en.srt": "be42e324adeb0a6131ac81586ad1cc2cf70bd71ac6421c1c51a42499e4472716"
+  },
+  "video_below_2_mib": true
+}
