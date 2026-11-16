@@ -13,7 +13,7 @@
     ],
     "format": {
       "duration": "120.000000",
-      "size": "2189679"
+      "size": "1799458"
     }
   },
   "browser_proofs": {
@@ -43,8 +43,9 @@
     "cluster-en.png": "c36353001ad92c94c4440b11755de307efba30d52a74d69b388474b685615f5c",
     "overview-de.png": "31132e2e933bb342ced3e4f275a4788f1957d620598420c26740ea301288b983",
     "overview-en.png": "d3f34b6e03f0028f974e0d2f72b6f18297d8cbb35e63f4eaa798cde0d07c0c91",
-    "zfsm-1.1-demo-en.mp4": "5168480d8cbb2475ee5f330c88875d82bd12d77abf2682eb0a052ab5bb3f2645",
+    "zfsm-1.1-demo-en.mp4": "2abca28291e6e7b3a4466711313378dda23d83766f1eeaee8b0d23e562a7bbb3",
     "zfsm-1.1-demo.de.srt": "d08fec7213620ab843c861b88fe85672d80f771828de5c7ec96b1fee87ffaa8d",
     "zfsm-1.1-demo.en.srt": "be42e324adeb0a6131ac81586ad1cc2cf70bd71ac6421c1c51a42499e4472716"
-  }
+  },
+  "video_below_2_mib": true
 }
