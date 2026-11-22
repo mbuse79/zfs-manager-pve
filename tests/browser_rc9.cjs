@@ -3,7 +3,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
 (async()=>{
  const extRoot=path.resolve(process.argv[2]),script=fs.readFileSync(process.argv[3],'utf8'),out=process.argv[4];
  const browser=await chromium.launch({executablePath:'/usr/bin/chromium',headless:true,args:['--no-sandbox']});
- const results=[],toolkit=process.argv[5]&&path.resolve(process.argv[5]),clusterMode=process.argv[6]==='cluster';
+ const results=[],toolkit=process.argv[5]&&path.resolve(process.argv[5]),clusterMode=process.argv[6]==='cluster',guestMode=process.argv[6]==='guest';
  for(const lang of ['de','en']){
   const page=await browser.newPage({viewport:{width:1640,height:1080}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -21,10 +21,10 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
   });
   await page.goto('http://rc9.test/');
   await page.waitForFunction(()=>window.Ext&&Ext.isReady);
-  await page.evaluate(({script,lang,clusterMode})=>{
+  await page.evaluate(({script,lang,clusterMode,guestMode})=>{
    document.cookie='PVELangCookie='+lang;window.calls=[];
    const now=Math.floor(Date.now()/1000),guests=[],datasets=[],snapshots=[];
-   [['vm',103,'RaspberryMatic',1],['vm',108,'Windows-11',3],['ct',701,'zmb-member',2],['ct',704,'zmb-admin',1]].forEach(([kind,id,name,count])=>{
+   [['vm',103,'RaspberryMatic',1],['vm',108,'Windows-11',3],['lxc',701,'zmb-member',2],['lxc',704,'zmb-admin',1]].forEach(([kind,id,name,count])=>{
     for(let i=0;i<count;i++){
      const ds='rpool/data/'+(kind==='vm'?'vm-':'subvol-')+id+'-disk-'+i;
      guests.push({guest:kind,vmid:id,display_name:name,drive:'disk'+i,dataset:ds,disk_count:count,can_create:1,can_delete:1,can_rollback:1});
@@ -59,6 +59,22 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
      }else throw Error('Unexpected cluster route');
      setTimeout(()=>opts.success({result:{data}}),0);return;
     }
+    if(guestMode && /\/guest-(autosnap|delete-all)(-preview)?$/.test(opts.url)){
+     const preview=opts.url.endsWith('-preview'),deleting=opts.url.includes('delete-all');
+     const disks=guests.filter(g=>g.guest===opts.params.guest && String(g.vmid)===String(opts.params.vmid));
+     if(!disks.length)throw Error('Missing explicit guest identity');
+     let data;
+     if(preview){
+      if(opts.method!=='GET')throw Error('Preview mutated');
+      data={token:'fixture-token',targets:disks.map(g=>({dataset:g.dataset,snapshot:'fixture-snap',previous:'fixture property state'}))};
+     }else{
+      if(opts.method!=='POST'||opts.params.token!=='fixture-token'||opts.params.critical_ack!==1)throw Error('Unconfirmed guest action');
+      if(opts.params.confirm!==(deleting?'GUEST-DELETE-ALL':'GUEST-AUTOSNAP')+':'+opts.params.guest+':'+opts.params.vmid)throw Error('Wrong confirmation');
+      if(!deleting)disks.forEach(g=>g.autosnap_excluded=opts.params.excluded);
+      data={finished:disks.map(g=>g.dataset),non_atomic:1};
+     }
+     setTimeout(()=>opts.success({result:{data}}),0);return;
+    }
     if(opts.method!=='GET')throw Error('Mutation attempted');
     const key=opts.url.includes('/disks/')?opts.url.split('/').slice(-2).join('/'):opts.url.split('/').pop();
     setTimeout(()=>{try{opts.success({result:{data:fixtures[key]}});if(opts.callback)opts.callback();}catch(e){window.fixtureError=e.stack;throw e;}},0);
@@ -66,7 +82,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    const me={items:[]},caps={nodes:{'Sys.Audit':true,'Sys.Modify':true}};
    new Function('me','caps','nodename',script)(me,caps,'pve4');
    window.plugin=Ext.create('Ext.panel.Panel',Object.assign(me.items[0],{renderTo:'app',width:1600}));
-  },{script,lang,clusterMode});
+  },{script,lang,clusterMode,guestMode});
   await page.waitForFunction(()=>window.plugin&&plugin.zfsReadOnly&&!plugin.zfsReadOnly.refreshing);
   const proof=await page.evaluate(async()=>{
    const p=plugin,technical=p.down('#zfsm-technical-details'),audit=p.down('#zfsm-snapshot-audit'),services=p.down('#zfsm-service-details');
@@ -131,6 +147,42 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
     if(writes.length!==2)throw Error('Unexpected mutation request count');
     return {explicitSelection:true,offlineBlocked:true,previewRequired:true,checkboxRequired:true,
       confirmationRequired:true,coordinatorRouting:true,backendHtmlEscaped:true,fixtureOnly:true};
+   });
+   assert.equal(errors.length,0,errors.join('\n'));
+  }
+  if(guestMode){
+   proof.guestControls=await page.evaluate(async()=>{
+    const p=plugin,tree=p.down('#zfs-guest-snapshot-tree');
+    const wait=async fn=>{for(let i=0;i<100;i++){if(fn())return;await new Promise(r=>setTimeout(r,20));}throw Error('Guest control timeout');};
+    const getGuest=kind=>tree.getRootNode().childNodes.find(g=>g.get('guestType')===kind);
+    let confirms=0;const oldConfirm=Ext.Msg.confirm;
+    Ext.Msg.confirm=(title,text,callback)=>{confirms++;callback('yes');};
+    for(const kind of ['vm','lxc']){
+     for(const action of ['autosnap','autosnap','delete-all']){
+      const rec=getGuest(kind),before=calls.filter(c=>c.method==='POST').length;
+      const column=tree.columns.find(c=>c.xtype==='widgetcolumn');
+      const widget=column.getWidget(rec),button=widget.down(action==='autosnap'?'#guest-autosnap':'#guest-delete-all');
+      if(button.hidden||button.disabled)throw Error('Guest action unavailable');
+      button.handler(button);
+      await wait(()=>Ext.ComponentQuery.query('window').some(w=>w.down('#ack')));
+      const win=Ext.ComponentQuery.query('window').find(w=>w.down('#ack'));
+      const execute=win.getDockedItems('toolbar[dock="bottom"]')[0].items.last();
+      execute.handler();
+      if(calls.filter(c=>c.method==='POST').length!==before)throw Error('Unchecked action wrote');
+      win.down('#ack').setValue(true);execute.handler();
+      await wait(()=>!p.zfsReadOnly.saving&&!p.zfsReadOnly.refreshing);
+      if(calls.filter(c=>c.method==='POST').length!==before+1)throw Error('Missing confirmed write');
+      if(!getGuest(kind).get('autosnapExcluded')&&action==='autosnap'&&before%3===0)throw Error('Exclusion status not refreshed');
+      if(tree.getRootNode().childNodes.some(g=>g.isExpanded()))throw Error('Action expanded guest');
+     }
+    }
+    if(confirms!==6)throw Error('Second confirmations missing');
+    Ext.Msg.confirm=oldConfirm;
+    p.zfsReadOnly.isAdmin=false;
+    const count=calls.length;p.zfsmGuestWide('delete-all',getGuest('vm'));
+    if(calls.length!==count)throw Error('Read-only session enabled action');
+    p.zfsReadOnly.isAdmin=true;
+    return {vmAndLxc:true,excludeAndEnable:true,deleteAll:true,checkboxRequired:true,secondConfirmation:true,refreshPreservesCollapse:true,fixtureOnly:true};
    });
    assert.equal(errors.length,0,errors.join('\n'));
   }
