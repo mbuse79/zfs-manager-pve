@@ -27,7 +27,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    [['vm',103,'RaspberryMatic',1],['vm',108,'Windows-11',3],['lxc',701,'zmb-member',2],['lxc',704,'zmb-admin',1]].forEach(([kind,id,name,count])=>{
     for(let i=0;i<count;i++){
      const ds='rpool/data/'+(kind==='vm'?'vm-':'subvol-')+id+'-disk-'+i;
-     guests.push({guest:kind,vmid:id,display_name:name,drive:'disk'+i,dataset:ds,disk_count:count,can_create:1,can_delete:1,can_rollback:1});
+     guests.push({guest:kind,vmid:id,display_name:name,drive:'disk'+i,dataset:ds,disk_count:count,can_create:1,can_delete:1,can_rollback:1,autosnap_excluded:(id===108 || (id===701 && i===0))?1:0});
      datasets.push({name:ds,type:kind==='vm'?'volume':'filesystem'});
      ['hourly','daily'].forEach((label,j)=>snapshots.push({dataset:ds,snapshot:'zfs-auto-snap_'+label+'-sample',used:1024*(i+1),creation:now-j*86400}));
     }
@@ -93,6 +93,18 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    const tree=p.down('#zfs-guest-snapshot-tree');
    if(tree.getRootNode().childNodes.length!==4)throw Error('Fixture guests missing');
    if(tree.getRootNode().childNodes.some(n=>n.isExpanded()))throw Error('Guests must start collapsed');
+   const autoSnapColors={};
+   for(const [id,state] of [[103,'included'],[108,'excluded'],[701,'partial']]){
+    const rec=tree.getRootNode().childNodes.find(g=>g.get('guestId')===String(id));
+    const row=tree.getView().getNode(rec),cell=row&&row.querySelector('.x-grid-cell');
+    const color=cell&&getComputedStyle(cell).backgroundColor;
+    if(!row||!(row.classList.contains('zfsm-autosnap-'+state)||row.querySelector('.zfsm-autosnap-'+state)))throw Error('Missing AutoSnap row status: '+state);
+    const rgba=color.match(/[0-9.]+/g).map(Number);
+    if(rgba.length!==4||rgba[3]<=0||rgba[3]>.13)throw Error('AutoSnap tint is missing or too strong: '+color);
+    if(state==='included'&&rgba[1]<=rgba[0])throw Error('Included guest is not green');
+    if(state==='excluded'&&rgba[0]<=rgba[1])throw Error('Excluded guest is not red');
+    autoSnapColors[state]=color;
+   }
    const first=tree.getRootNode().firstChild;first.expand();
    const group=first.firstChild;group.set('batchMarked',true);
    const check=tree.columns[0];check.fireEvent('checkchange',check,tree.getStore().indexOf(group),true);
@@ -118,7 +130,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    if(new Set(sectionIds).size!==sectionIds.length)throw Error('Duplicate section IDs');
    if(p.down('#zfs-ro-retention').getEl().dom.querySelectorAll('tbody tr')[1].children[2].textContent.trim()!=='7')throw Error('Observed total missing');
    tree.getRootNode().firstChild.collapse();
-   return {lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
+   return {autoSnapColors,lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
   });
   assert.equal(proof.fixtureError,null);assert.equal(errors.length,0,errors.join('\n'));
   if(clusterMode){
@@ -151,6 +163,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    assert.equal(errors.length,0,errors.join('\n'));
   }
   if(guestMode){
+   await page.screenshot({path:out+'/autosnap-status-'+lang+'.png',fullPage:true});
    proof.guestControls=await page.evaluate(async()=>{
     const p=plugin,tree=p.down('#zfs-guest-snapshot-tree');
     const wait=async fn=>{for(let i=0;i<100;i++){if(fn())return;await new Promise(r=>setTimeout(r,20));}throw Error('Guest control timeout');};

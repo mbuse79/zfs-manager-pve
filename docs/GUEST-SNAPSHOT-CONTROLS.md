@@ -84,3 +84,17 @@ innerhalb von `PVE.node.Config` steht. Nur der begrenzte ZFS-Manager-Block wird
 ersetzt. Replikationspanel und fremde API-Einträge bleiben unverändert. Andere
 zusätzliche Verweise, doppelte Manager-Blöcke, fehlende Registrierung und beschädigte
 Marker führen weiterhin zum Abbruch der Vorprüfung.
+
+## AutoSnap row colors / Dezente AutoSnap-Zeilenfarben
+
+Guest rows use very light green for disks included in AutoSnap, light red when all
+configured ZFS disks are excluded, and light amber when only some are excluded.
+A small legend explains the colors. The colors reflect AutoSnap exclusion settings,
+not proof that a schedule recently ran or that a snapshot succeeded. Snapshot-group
+selection remains visually distinct. This display change does not edit settings.
+
+Gastzeilen sind sehr leicht grün hinterlegt, wenn die Datenträger einbezogen sind,
+sehr leicht rot bei vollständigem Ausschluss und dezent gelb bei Teilausschluss.
+Eine kleine Legende erklärt die Farben. Die Färbung zeigt die AutoSnap-Auswahl,
+nicht den Erfolg eines Zeitplanlaufs. Die Markierung ausgewählter Snapshot-Gruppen
+bleibt getrennt erkennbar. Die Darstellung ändert keine Einstellungen.

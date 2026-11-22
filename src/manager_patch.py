@@ -25,6 +25,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'Enable AutoSnap': 'AutoSnap einschalten',
             'Delete all snapshots': 'Alle Snapshots löschen',
             'AutoSnap excluded': 'AutoSnap ausgeschlossen',
+            'AutoSnap included': 'AutoSnap einbezogen',
+            'AutoSnap partly excluded': 'AutoSnap teilweise ausgeschlossen',
             'All snapshots of this guest will be permanently deleted.': 'Alle Snapshots dieses Gastes werden endgültig gelöscht.',
             'This changes AutoSnap on all currently configured ZFS disks, including all six intervals. Manual snapshots remain available. Existing snapshots are retained. Reapply after adding or moving disks.': 'Dies ändert AutoSnap auf allen aktuell zugeordneten ZFS-Datenträgern einschließlich aller sechs Intervalle. Manuelle Snapshots bleiben möglich. Bestehende Snapshots bleiben erhalten. Nach Hinzufügen oder Verschieben von Datenträgern erneut anwenden.',
             'Enabling explicitly enables all AutoSnap intervals on these disks.': 'Einschalten aktiviert alle AutoSnap-Intervalle auf diesen Datenträgern ausdrücklich.',
@@ -816,7 +818,10 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         {xtype:'button',text:zfsL('Advanced: selected disks'),handler:function(b){b.up('#zfsmanager-readonly').zfsGroupAction('create');}},
                         {xtype:'button',text:zfsL('Batch delete'),iconCls:'fa fa-scissors',handler:function(b){b.up('#zfsmanager-readonly').zfsmRunBatch('guest');}}
                     ]},
-                    { xtype: 'component', cls:'zfsm-section-head', html: '<small>'+zfsL('Deletion and rollback require preview and confirmation.')+'</small>' },
+                    { xtype: 'component', cls:'zfsm-section-head', html: '<small>'+zfsL('Deletion and rollback require preview and confirmation.')+
+                        ' &nbsp; <span style="color:#3db982">●</span> '+zfsL('AutoSnap included')+
+                        ' &nbsp; <span style="color:#dc5050">●</span> '+zfsL('AutoSnap excluded')+
+                        ' &nbsp; <span style="color:#d2a037">●</span> '+zfsL('AutoSnap partly excluded')+'</small>' },
                     {
                         xtype:'treepanel', itemId:'zfs-guest-snapshot-tree',
                         rootVisible:false, height:390, useArrows:true,
@@ -827,6 +832,10 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             // Highlight batch selection independently of the active/hovered row.
                             // The framework re-renders updated records when batchMarked changes.
                             getRowClass: function(rec) {
+                                if (rec && rec.get('kind') === 'guest') {
+                                    return rec.get('autosnapExcluded') ? 'zfsm-autosnap-excluded' :
+                                        rec.get('autosnapPartial') ? 'zfsm-autosnap-partial' : 'zfsm-autosnap-included';
+                                }
                                 if (!rec || !rec.get('batchMarked')) { return ''; }
                                 if (rec.get('kind') === 'group-snapshot') { return 'zfsm-marked-snapshot'; }
                                 if (rec.get('kind') === 'snapshot' && rec.parentNode &&
@@ -865,7 +874,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             }
                         },
                         store:Ext.create('Ext.data.TreeStore', {
-                            fields:['label','dataset','snapshot','kind','complete','guestId','guestType','snapCount','batchMarked','autosnapExcluded','canDeleteAll'],
+                            fields:['label','dataset','snapshot','kind','complete','guestId','guestType','snapCount','batchMarked','autosnapExcluded','autosnapPartial','canDeleteAll'],
                             root:{expanded:true,children:[]}
                         }),
                         columns:[
@@ -1353,6 +1362,22 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 '.zfsm-marked-disk .x-grid-cell:first-child { box-shadow: inset 2px 0 0 #2997ed; }'
                             ].join('\n')));
                             document.head.appendChild(batchStyle);
+                        }
+                        if (!document.getElementById('zfsm-autosnap-status-v111')) {
+                            var statusStyle=document.createElement('style');
+                            statusStyle.id='zfsm-autosnap-status-v111';
+                            statusStyle.appendChild(document.createTextNode([
+                                '.zfsm-autosnap-included .x-grid-cell { background-color: rgba(61,185,130,.065) !important; }',
+                                '.zfsm-autosnap-excluded .x-grid-cell { background-color: rgba(220,80,80,.075) !important; }',
+                                '.zfsm-autosnap-partial .x-grid-cell { background-color: rgba(210,160,55,.07) !important; }',
+                                '.x-grid-item-over .zfsm-autosnap-included .x-grid-cell { background-color: rgba(61,185,130,.11) !important; }',
+                                '.x-grid-item-over .zfsm-autosnap-excluded .x-grid-cell { background-color: rgba(220,80,80,.12) !important; }',
+                                '.x-grid-item-over .zfsm-autosnap-partial .x-grid-cell { background-color: rgba(210,160,55,.11) !important; }',
+                                '.zfsm-autosnap-included .x-grid-cell:first-child { box-shadow: inset 3px 0 0 rgba(61,185,130,.4); }',
+                                '.zfsm-autosnap-excluded .x-grid-cell:first-child { box-shadow: inset 3px 0 0 rgba(220,80,80,.4); }',
+                                '.zfsm-autosnap-partial .x-grid-cell:first-child { box-shadow: inset 3px 0 0 rgba(210,160,55,.4); }'
+                            ].join('\n')));
+                            document.head.appendChild(statusStyle);
                         }
                         view.zfsmBatchGuest={};view.zfsmBatchDataset={};
                         view.zfsmGuestWide=function(action,rec){
@@ -1903,6 +1928,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                         (disks.every(function(d){return !!d.autosnap_excluded;})?' – '+zfsL('AutoSnap excluded'):''),guestId:String(g.id),guestType:String(g.kind),
                                     complete:disks.length+' '+zfsL(disks.length===1?'disk':'disks'),snapCount:groups.length,
                                     autosnapExcluded:disks.every(function(d){return !!d.autosnap_excluded;}),
+                                    autosnapPartial:disks.some(function(d){return !!d.autosnap_excluded;}) &&
+                                        !disks.every(function(d){return !!d.autosnap_excluded;}),
                                     canDeleteAll:disks.every(function(d){return !!d.can_delete;}),
                                     expanded:state.expandedGuests[k]===true,
                                     children:groups});
