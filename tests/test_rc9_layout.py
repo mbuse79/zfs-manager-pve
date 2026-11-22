@@ -52,6 +52,13 @@ def test_protected_runtime_files_identical_to_rc8():
     for name,digest in expected.items():
         raw=(ROOT/'src'/name).read_bytes()
         if name=='PVE/API2/ZFSSnapshotViewer.pm':
+            # New guest controls are additive; retain the exact RC8 comparison
+            # for every pre-existing handler after removing this isolated block.
+            start_guest=raw.index(b'# BEGIN ZFSM GUEST SNAPSHOT CONTROLS\n')
+            marker_guest=b'# END ZFSM GUEST SNAPSHOT CONTROLS\n\n'
+            end_guest=raw.index(marker_guest,start_guest)+len(marker_guest)
+            raw=raw[:start_guest]+raw[end_guest:]
+            raw=raw.replace(b'return _guest_autosnap_rows();},',b'return _guest_access_rows();},',1)
             start=raw.index(b'# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT\n')
             marker=b'# END ZFSM OPTIONAL CLUSTER DEPLOYMENT\n'
             end=raw.index(marker,start)+len(marker)

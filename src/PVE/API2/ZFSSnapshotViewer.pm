@@ -639,7 +639,7 @@ __PACKAGE__->register_method({
     description=>'Read-only mapping of explicitly configured Proxmox guest ZFS disks.',
     parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
     returns=>{type=>'array',items=>{type=>'object',additionalProperties=>1}},
-    code=>sub {my ($p)=@_; return _guest_access_rows();},
+    code=>sub {my ($p)=@_; return _guest_autosnap_rows();},
 });
 __PACKAGE__->register_method({
     name=>'admin_status',path=>'admin-status',method=>'GET',protected=>1,proxyto=>'node',
@@ -1387,6 +1387,144 @@ for my $scope (qw(guest host)) {
                 $x->{token},$x->{confirm},$x->{critical_ack},$x->{allow_partial});},
     });
 }
+
+# BEGIN ZFSM GUEST SNAPSHOT CONTROLS
+sub _guest_autosnap_rows {
+    my $rows=_guest_access_rows();
+    if (@$rows) {
+        my @safe;
+        for my $row (@$rows) {
+            die "Ungueltiges Dataset\n" unless $row->{dataset} =~ /\A([A-Za-z0-9_.:~-]+(?:\/[A-Za-z0-9_.:~-]+)*)\z/;
+            push @safe,$1;
+        }
+        my $raw_props=_run_capture('/usr/sbin/zfs','get','-H','-o','name,property,value',
+            join(',',_autosnap_properties()),@safe);
+        my %props;
+        for my $line (split /\n/,$raw_props) {
+            my ($ds,$prop,$value)=split /\t/,$line;
+            $props{$ds}{$prop}=$value if defined($value);
+        }
+        for my $row (@$rows) {
+            my $p=$props{$row->{dataset}} || {};
+            my @values=map {lc($p->{$_}//'-')} _autosnap_properties();
+            my $base=shift @values;
+            $row->{autosnap_excluded}=($base eq 'false' || !(grep {$_ ne 'false'} @values)) ? 1 : 0;
+        }
+    }
+    return $rows;
+}
+# Guest-wide actions resolve every currently configured ZFS disk server-side.
+# No caller-selected subset can turn a guest-wide action into a partial selection.
+sub _whole_guest_disks {
+    my ($guest,$vmid,$stop)=@_;
+    die "Ungueltiger Gast\n" unless defined($guest) && $guest =~ /\A(vm|lxc)\z/
+        && defined($vmid) && $vmid =~ /\A[1-9][0-9]{1,8}\z/;
+    my @names=map {$_->{dataset}} grep {($_->{guest}//'') eq $guest && ($_->{vmid}//'') eq $vmid} @{_guest_access_rows()};
+    die "Keine ZFS-Datentraeger fuer diesen Gast\n" unless @names;
+    # Resolver JSON is tainted under perl -T; recapture before any subprocess.
+    @names=map {
+        die "Ungueltiges Dataset\n" unless defined($_) && /\A([A-Za-z0-9_.:~-]+(?:\/[A-Za-z0-9_.:~-]+)*)\z/;
+        $1;
+    } @names;
+    my ($disks,$fingerprint,$rows)=_selected_guest_disks(encode_json(\@names),$stop,$stop ? 'modify' : 'create');
+    die "Gastzuordnung waehrend Auswahl geaendert\n" if grep {$_->{guest} ne $guest || $_->{vmid} ne $vmid} @$rows;
+    return ($disks,$fingerprint,$rows);
+}
+sub _autosnap_properties {
+    return ('com.sun:auto-snapshot',map {'com.sun:auto-snapshot:'.$_} qw(frequent hourly daily weekly monthly yearly));
+}
+sub _guest_autosnap_plan {
+    my ($guest,$vmid,$excluded)=@_;
+    die "Ungueltige AutoSnap-Auswahl\n" unless defined($excluded) && "$excluded" =~ /\A[01]\z/;
+    my ($disks,$fingerprint)=_whole_guest_disks($guest,$vmid,0);
+    my @targets;
+    for my $ds (@$disks) {
+        my $state=_run_capture('/usr/sbin/zfs','get','-H','-o','property,value,source',
+            join(',',_autosnap_properties()),$ds);
+        push @targets,{dataset=>$ds,previous=>$state};
+    }
+    return {dataset=>$disks->[0],snapshot=>'AUTOSNAP',guest=>$guest,vmid=>$vmid,
+        excluded=>0+$excluded,targets=>\@targets,non_atomic=>1,
+        token=>sha256_hex(join('|','GUEST-AUTOSNAP',$guest,$vmid,$excluded,$fingerprint,
+            map {$_->{dataset}.':'.$_->{previous}} @targets))};
+}
+sub _set_guest_autosnap {
+    my ($dataset,$excluded)=@_;
+    # Capture validated operands before exec, including under the PVE perl -T API.
+    die "Ungueltiges Dataset\n" unless $dataset =~ /\A([A-Za-z0-9_.:~-]+(?:\/[A-Za-z0-9_.:~-]+)*)\z/;
+    my $safe=$1;
+    my $value=$excluded ? 'false' : 'true';
+    local %ENV=(PATH=>'/usr/sbin:/usr/bin:/sbin:/bin',LANG=>'C');
+    _run_capture('/usr/sbin/zfs','set',map({$_.'='.$value} _autosnap_properties()),$safe);
+}
+sub _guest_delete_all_plan {
+    my ($guest,$vmid)=@_;
+    my ($disks,$fingerprint)=_whole_guest_disks($guest,$vmid,1);
+    my @targets;
+    for my $ds (@$disks) {
+        _assert_no_bookmarks($ds);
+        my $snaps=_list_guest_snaps($ds);
+        for my $snap (@$snaps) {
+            _check_clone_dependencies($ds,[$snap->{name}]);
+            _check_snapshot_holds($ds,[$snap->{name}]);
+            my $dry=_run_capture('/usr/sbin/zfs','destroy','-n','-v',$ds.'@'.$snap->{name});
+            push @targets,{dataset=>$ds,snapshot=>$snap->{name},created=>$snap->{created},txg=>$snap->{txg},dry_run=>$dry};
+        }
+    }
+    die "Keine Snapshots gefunden\n" unless @targets;
+    return {dataset=>$disks->[0],snapshot=>'ALL',guest=>$guest,vmid=>$vmid,
+        targets=>\@targets,delete_count=>scalar(@targets),non_atomic=>1,
+        token=>sha256_hex(join('|','GUEST-DELETE-ALL',$guest,$vmid,$fingerprint,@$disks,
+            map {join(':',@{$_}{qw(dataset snapshot created txg)})} @targets))};
+}
+sub _guest_wide_apply {
+    my ($action,$p)=@_;
+    die "Bestaetigung fehlt\n" unless ($p->{confirm}//'') eq $action.':'.$p->{guest}.':'.$p->{vmid};
+    die "Zweite Warnung nicht bestaetigt\n" unless ($p->{critical_ack}//0) == 1;
+    my $lock=_guest_lock();
+    my $plan=$action eq 'GUEST-DELETE-ALL' ? _guest_delete_all_plan($p->{guest},$p->{vmid})
+        : _guest_autosnap_plan($p->{guest},$p->{vmid},$p->{excluded});
+    _verify_preview($plan,$action,$p->{token});
+    my @done;
+    for my $t (@{$plan->{targets}}) {
+        my $target=$t->{dataset}.($action eq 'GUEST-DELETE-ALL' ? '@'.$t->{snapshot} : '');
+        eval {
+            if ($action eq 'GUEST-DELETE-ALL') {_run_zfs_write('destroy',$target);}
+            else {_set_guest_autosnap($t->{dataset},$p->{excluded});}
+            push @done,$target;
+            1;
+        } or die "Teilweise Ausfuehrung; abgeschlossen: ".join(',',@done)."; fehlgeschlagen/unklar: $target; Rest nicht gestartet: $@";
+    }
+    return {finished=>\@done,non_atomic=>1};
+}
+for my $spec (['guest-delete-all','GUEST-DELETE-ALL'],['guest-autosnap','GUEST-AUTOSNAP']) {
+    my ($path,$action)=@$spec;
+    for my $preview (0,1) {
+        my $properties={node=>get_standard_option('pve-node'),guest=>{type=>'string',enum=>['vm','lxc']},
+            vmid=>{type=>'integer',minimum=>10,maximum=>999999999}};
+        $properties->{excluded}={type=>'integer',minimum=>0,maximum=>1} if $action eq 'GUEST-AUTOSNAP';
+        if (!$preview) {
+            $properties->{token}={type=>'string',maxLength=>80};
+            $properties->{confirm}={type=>'string',maxLength=>80};
+            $properties->{critical_ack}={type=>'integer',minimum=>0,maximum=>1};
+        }
+        __PACKAGE__->register_method({
+            name=>$path.($preview ? '-preview' : ''),path=>$path.($preview ? '-preview' : ''),
+            method=>$preview ? 'GET' : 'POST',protected=>1,proxyto=>'node',
+            permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+            parameters=>{additionalProperties=>0,properties=>$properties},
+            returns=>{type=>'object',additionalProperties=>1},
+            code=>sub {my ($p)=@_;_require_zfsmgr_admin($p->{node});
+                return _guest_wide_apply($action,$p) unless $preview;
+                my $plan=$action eq 'GUEST-DELETE-ALL' ? _guest_delete_all_plan($p->{guest},$p->{vmid})
+                    : _guest_autosnap_plan($p->{guest},$p->{vmid},$p->{excluded});
+                return _sign_preview($plan,$action);
+            },
+        });
+    }
+}
+
+# END ZFSM GUEST SNAPSHOT CONTROLS
 
 # v1.0.0-34: pool capacity alerts and signed emergency preview.
 # No unconfirmed writes. Every cleanup recomputes all safety exclusions.

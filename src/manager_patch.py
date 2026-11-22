@@ -21,6 +21,15 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
         }());
         var zfsLocale = zfsLanguage.indexOf('de') === 0 ? 'de-DE' : 'en-US';
         var zfsTDe = {
+            'Exclude AutoSnap': 'AutoSnap ausschließen',
+            'Enable AutoSnap': 'AutoSnap einschalten',
+            'Delete all snapshots': 'Alle Snapshots löschen',
+            'AutoSnap excluded': 'AutoSnap ausgeschlossen',
+            'All snapshots of this guest will be permanently deleted.': 'Alle Snapshots dieses Gastes werden endgültig gelöscht.',
+            'This changes AutoSnap on all currently configured ZFS disks, including all six intervals. Manual snapshots remain available. Existing snapshots are retained. Reapply after adding or moving disks.': 'Dies ändert AutoSnap auf allen aktuell zugeordneten ZFS-Datenträgern einschließlich aller sechs Intervalle. Manuelle Snapshots bleiben möglich. Bestehende Snapshots bleiben erhalten. Nach Hinzufügen oder Verschieben von Datenträgern erneut anwenden.',
+            'Enabling explicitly enables all AutoSnap intervals on these disks.': 'Einschalten aktiviert alle AutoSnap-Intervalle auf diesen Datenträgern ausdrücklich.',
+            'I have reviewed every affected disk and confirm this action.': 'Ich habe alle betroffenen Datenträger geprüft und bestätige diese Aktion.',
+
             'Close': 'Schließen',
             'Not started': 'Nicht gestartet',
             'Outcome unknown – inspect node': 'Ergebnis unbekannt – Knoten prüfen',
@@ -856,7 +865,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             }
                         },
                         store:Ext.create('Ext.data.TreeStore', {
-                            fields:['label','dataset','snapshot','kind','complete','guestId','snapCount','batchMarked'],
+                            fields:['label','dataset','snapshot','kind','complete','guestId','guestType','snapCount','batchMarked','autosnapExcluded','canDeleteAll'],
                             root:{expanded:true,children:[]}
                         }),
                         columns:[
@@ -882,7 +891,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             {text:zfsL('Disks'),dataIndex:'complete',width:125,renderer:safeZFSValue},
                             {text:zfsL('Snapshots'),dataIndex:'snapCount',width:90,
                                 renderer:function(v,meta,rec){return rec.get('kind')==='guest'?safeZFSValue(String(v||0)):'—';}},
-                            {xtype:'widgetcolumn',text:zfsL('Action'),width:365,widget:{
+                            {xtype:'widgetcolumn',text:zfsL('Action'),width:470,widget:{
                                 xtype:'container',layout:{type:'hbox',align:'middle'},
                                 items:[
                                     {xtype:'button',itemId:'guest-create',text:zfsL('Create'),iconCls:'fa fa-plus',ui:'default-toolbar',margin:'0 4 0 0',
@@ -894,6 +903,12 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                                 panel.zfsGroupAction('create',{guest:node,direct:true});
                                             }
                                         }},
+                                    {xtype:'button',itemId:'guest-autosnap',text:zfsL('Exclude AutoSnap'),ui:'default-toolbar',margin:'0 4 0 0',
+                                        handler:function(b){var holder=b.up('container'),rec=holder.getWidgetRecord();
+                                            b.up('#zfsmanager-readonly').zfsmGuestWide('autosnap',rec);}},
+                                    {xtype:'button',itemId:'guest-delete-all',text:zfsL('Delete all snapshots'),iconCls:'fa fa-trash',ui:'default-toolbar',margin:'0 4 0 0',
+                                        handler:function(b){var holder=b.up('container'),rec=holder.getWidgetRecord();
+                                            b.up('#zfsmanager-readonly').zfsmGuestWide('delete-all',rec);}},
                                     {xtype:'button',itemId:'guest-delete',text:zfsL('Delete'),iconCls:'fa fa-trash',ui:'default-toolbar',margin:'0 4 0 0',
                                         handler:function(b){
                                             var holder=b.up('container');
@@ -925,6 +940,11 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                     var access=panel && panel.zfsReadOnly && panel.zfsReadOnly.guestAccess || {};
                                     var a=access[ds] || {};
                                     var admin=panel && panel.zfsReadOnly && panel.zfsReadOnly.isAdmin;
+                                    widget.down('#guest-autosnap').setHidden(kind!=='guest');
+                                    widget.down('#guest-autosnap').setDisabled(!admin);
+                                    widget.down('#guest-autosnap').setText(zfsL(rec.get('autosnapExcluded')?'Enable AutoSnap':'Exclude AutoSnap'));
+                                    widget.down('#guest-delete-all').setHidden(kind!=='guest');
+                                    widget.down('#guest-delete-all').setDisabled(!admin || !rec.get('canDeleteAll') || !rec.get('snapCount'));
                                     widget.down('#guest-create').setHidden(kind!=='guest');
                                     widget.down('#guest-create').setDisabled(!admin);
                                     widget.down('#guest-delete').setHidden(kind!=='snapshot' && kind!=='group-snapshot');
@@ -1335,6 +1355,40 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             document.head.appendChild(batchStyle);
                         }
                         view.zfsmBatchGuest={};view.zfsmBatchDataset={};
+                        view.zfsmGuestWide=function(action,rec){
+                            if(!rec || rec.get('kind')!=='guest' || !view.zfsReadOnly.isAdmin || view.zfsReadOnly.saving)return;
+                            var deleting=action==='delete-all',title=zfsL(deleting?'Delete all snapshots':rec.get('autosnapExcluded')?'Enable AutoSnap':'Exclude AutoSnap');
+                            var params={guest:rec.get('guestType'),vmid:rec.get('guestId')};
+                            if(!deleting)params.excluded=rec.get('autosnapExcluded')?0:1;
+                            var base='/nodes/'+encodeURIComponent(nodename)+'/zfsmanager-ro/guest-'+action;
+                            Proxmox.Utils.API2Request({url:base+'-preview',method:'GET',params:params,success:function(r){
+                                var plan=r&&r.result&&r.result.data;
+                                if(!plan || !plan.token || !plan.targets || !plan.targets.length){zfsError('ZFS Manager',zfsL('Preview incomplete.'));return;}
+                                var detail=plan.targets.map(function(t){return t.dataset+(deleting?'@'+t.snapshot:'\n'+t.previous);}).join('\n');
+                                var win=Ext.create('Ext.window.Window',{title:title+' – '+zfsL('Preview'),modal:true,width:680,bodyPadding:12,
+                                    layout:{type:'vbox',align:'stretch'},items:[
+                                        {xtype:'component',html:'<b>'+safe(rec.get('label'))+'</b><p>'+zfsL(deleting?
+                                            'All snapshots of this guest will be permanently deleted.':
+                                            'This changes AutoSnap on all currently configured ZFS disks, including all six intervals. Manual snapshots remain available. Existing snapshots are retained. Reapply after adding or moving disks.')+'</p>'+
+                                            (!deleting && !params.excluded?'<p>'+zfsL('Enabling explicitly enables all AutoSnap intervals on these disks.')+'</p>':'')+
+                                            zfsL('Multiple disks are processed sequentially, not atomically.')},
+                                        {xtype:'textarea',readOnly:true,value:detail,height:220,margin:'10 0'},
+                                        {xtype:'checkbox',itemId:'ack',boxLabel:zfsL('I have reviewed every affected disk and confirm this action.')}],
+                                    buttons:[{text:zfsL('Cancel'),handler:function(){win.close();}},
+                                        {text:zfsL('Execute'),handler:function(){
+                                            if(!win.down('#ack').getValue() || view.zfsReadOnly.saving)return;
+                                            Ext.Msg.confirm(title,zfsL(deleting?'All snapshots of this guest will be permanently deleted.':'I confirm this action.'),function(choice){
+                                                if(choice!=='yes' || view.zfsReadOnly.saving)return;
+                                                var post=Ext.apply({},params);post.token=plan.token;post.critical_ack=1;
+                                                post.confirm=(deleting?'GUEST-DELETE-ALL':'GUEST-AUTOSNAP')+':'+params.guest+':'+params.vmid;
+                                                view.zfsReadOnly.saving=true;win.close();
+                                                Proxmox.Utils.API2Request({url:base,method:'POST',params:post,
+                                                    success:function(){view.zfsReadOnly.saving=false;view.zfsRefreshReadOnly();},
+                                                    failure:function(e){view.zfsReadOnly.saving=false;view.zfsRefreshReadOnly();zfsError('ZFS Manager',safe(e&&e.htmlStatus||zfsL('Unknown error')));}});
+                                            });
+                                        }}]});win.show();
+                            },failure:function(e){zfsError('ZFS Manager',safe(e&&e.htmlStatus||zfsL('Preview failed')));}});
+                        };
                         view.zfsmRunBatch=function(kind){
                             var items=Object.keys(kind==='guest'?view.zfsmBatchGuest:view.zfsmBatchDataset).map(function(k){
                                 return (kind==='guest'?view.zfsmBatchGuest:view.zfsmBatchDataset)[k];
@@ -1845,8 +1899,11 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 var searchable=[g.kind,g.id,g.name].concat(disks.map(function(d){return d.dataset;}),Object.keys(names)).join(' ').toLowerCase();
                                 if(query && searchable.indexOf(query)<0)return;
                                 roots.push({kind:'guest',dataset:null,snapshot:null,
-                                    label:(g.kind==='vm'?'VM ':'LXC ')+g.id+(g.name?' – '+g.name:''),guestId:String(g.id),guestType:String(g.kind),
+                                    label:(g.kind==='vm'?'VM ':'LXC ')+g.id+(g.name?' – '+g.name:'')+
+                                        (disks.every(function(d){return !!d.autosnap_excluded;})?' – '+zfsL('AutoSnap excluded'):''),guestId:String(g.id),guestType:String(g.kind),
                                     complete:disks.length+' '+zfsL(disks.length===1?'disk':'disks'),snapCount:groups.length,
+                                    autosnapExcluded:disks.every(function(d){return !!d.autosnap_excluded;}),
+                                    canDeleteAll:disks.every(function(d){return !!d.can_delete;}),
                                     expanded:state.expandedGuests[k]===true,
                                     children:groups});
                             });

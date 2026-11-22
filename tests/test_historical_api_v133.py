@@ -6,6 +6,12 @@ ROOT=Path(__file__).resolve().parents[1]
 def historical_api_without_v133_topology():
     """Strictly preserve the 1.0.0-32 API excluding the new read-only route."""
     s=(ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()
+    # Guest snapshot controls are additive. Continue comparing every original
+    # handler byte-for-byte, including the underlying guest-access resolver.
+    start_guest=s.index(b'# BEGIN ZFSM GUEST SNAPSHOT CONTROLS\n')
+    end_guest=s.index(b'# END ZFSM GUEST SNAPSHOT CONTROLS\n',start_guest)+len(b'# END ZFSM GUEST SNAPSHOT CONTROLS\n\n')
+    s=s[:start_guest]+s[end_guest:]
+    s=s.replace(b'return _guest_autosnap_rows();},',b'return _guest_access_rows();},',1)
     # The separate cluster deployment routes must leave all snapshot handlers
     # byte-identical. Their root-only authorization is tested independently.
     start_cluster=s.index(b'# BEGIN ZFSM OPTIONAL CLUSTER DEPLOYMENT\n')

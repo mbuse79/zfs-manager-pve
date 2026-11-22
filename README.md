@@ -26,6 +26,8 @@ on port 8006. Independent community software, not a Proxmox product.
 
 </details>
 
+Development after 1.1: [per-guest AutoSnap exclusion and delete-all snapshots](docs/GUEST-SNAPSHOT-CONTROLS.md). Not included in the existing 1.1 downloads.
+
 ## Version 1.1
 
 Compact native UI with separate CAP/FRAG, collapsible details, two snapshot tabs,
