@@ -176,7 +176,17 @@ class Installer:
         if block.count('zfsmanager-readonly')<1:
             return None
         clean=gui[:start]+gui[stop:]
-        if 'PVE-ZFS-MANAGER' in clean or 'zfsmanager-readonly' in clean:
+        # The separate replication panel uses this exact, read-only lookup to
+        # place its own menu after ours. Preserve it byte-for-byte; ignore it
+        # only for the check for additional manager fragments outside our block.
+        neighbor_lookup = "me.items.findIndex(function (item) {return item.itemId === 'zfsmanager-readonly';})"
+        outside = clean
+        if clean.count(neighbor_lookup) == 1:
+            clean_start,clean_stop=patch_nav.source_scope(clean)
+            lookup_start=clean.index(neighbor_lookup)
+            if clean_start <= lookup_start and lookup_start+len(neighbor_lookup) <= clean_stop:
+                outside=clean.replace(neighbor_lookup,'',1)
+        if 'PVE-ZFS-MANAGER' in outside or 'zfsmanager-readonly' in outside:
             return None
         try:
             patch_nav.modify(clean)
