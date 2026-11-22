@@ -105,6 +105,25 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
     if(state==='excluded'&&rgba[0]<=rgba[1])throw Error('Excluded guest is not red');
     autoSnapColors[state]=color;
    }
+   const actionAlignment=[];
+   for(const panelWidth of [1180,1600]){
+    p.setWidth(panelWidth);p.updateLayout();
+    const column=tree.columns.find(c=>c.xtype==='widgetcolumn');
+    let reference;
+    for(const rec of tree.getRootNode().childNodes){
+     const widget=column.getWidget(rec),cell=tree.getView().getNode(rec).querySelector('.x-grid-cell:last-child');
+     const boxes=['guest-create','guest-autosnap','guest-delete-all'].map(id=>{
+      const button=widget.down('#'+id),el=button.getEl().dom,box=el.getBoundingClientRect();
+      const text=el.querySelector('.x-btn-inner');
+      if(text&&text.scrollWidth>text.clientWidth+1)throw Error('Guest action text clipped: '+id);
+      return {left:box.left,width:box.width,right:box.right};
+     });
+     if(reference&&boxes.some((b,i)=>Math.abs(b.left-reference[i].left)>.5||Math.abs(b.width-reference[i].width)>.5))throw Error('Guest actions do not align across AutoSnap states');
+     if(boxes[2].right>cell.getBoundingClientRect().right+1)throw Error('Guest action exceeds its column');
+     reference=boxes;
+    }
+    actionAlignment.push({panelWidth,aligned:true,labelsFit:true});
+   }
    const first=tree.getRootNode().firstChild;first.expand();
    const group=first.firstChild;group.set('batchMarked',true);
    const check=tree.columns[0];check.fireEvent('checkchange',check,tree.getStore().indexOf(group),true);
@@ -130,7 +149,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    if(new Set(sectionIds).size!==sectionIds.length)throw Error('Duplicate section IDs');
    if(p.down('#zfs-ro-retention').getEl().dom.querySelectorAll('tbody tr')[1].children[2].textContent.trim()!=='7')throw Error('Observed total missing');
    tree.getRootNode().firstChild.collapse();
-   return {autoSnapColors,lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
+   return {actionAlignment,autoSnapColors,lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
   });
   assert.equal(proof.fixtureError,null);assert.equal(errors.length,0,errors.join('\n'));
   if(clusterMode){

@@ -903,7 +903,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             {xtype:'widgetcolumn',text:zfsL('Action'),width:470,widget:{
                                 xtype:'container',layout:{type:'hbox',align:'middle'},
                                 items:[
-                                    {xtype:'button',itemId:'guest-create',text:zfsL('Create'),iconCls:'fa fa-plus',ui:'default-toolbar',margin:'0 4 0 0',
+                                    {xtype:'button',itemId:'guest-create',width:90,text:zfsL('Create'),iconCls:'fa fa-plus',ui:'default-toolbar',margin:'0 4 0 0',
                                         handler:function(b){
                                             var holder=b.up('container');
                                             var node=holder && holder.getWidgetRecord && holder.getWidgetRecord();
@@ -912,10 +912,10 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                                 panel.zfsGroupAction('create',{guest:node,direct:true});
                                             }
                                         }},
-                                    {xtype:'button',itemId:'guest-autosnap',text:zfsL('Exclude AutoSnap'),ui:'default-toolbar',margin:'0 4 0 0',
+                                    {xtype:'button',itemId:'guest-autosnap',width:165,text:zfsL('Exclude AutoSnap'),ui:'default-toolbar',margin:'0 4 0 0',
                                         handler:function(b){var holder=b.up('container'),rec=holder.getWidgetRecord();
                                             b.up('#zfsmanager-readonly').zfsmGuestWide('autosnap',rec);}},
-                                    {xtype:'button',itemId:'guest-delete-all',text:zfsL('Delete all snapshots'),iconCls:'fa fa-trash',ui:'default-toolbar',margin:'0 4 0 0',
+                                    {xtype:'button',itemId:'guest-delete-all',width:170,text:zfsL('Delete all snapshots'),iconCls:'fa fa-trash',ui:'default-toolbar',margin:'0 4 0 0',
                                         handler:function(b){var holder=b.up('container'),rec=holder.getWidgetRecord();
                                             b.up('#zfsmanager-readonly').zfsmGuestWide('delete-all',rec);}},
                                     {xtype:'button',itemId:'guest-delete',text:zfsL('Delete'),iconCls:'fa fa-trash',ui:'default-toolbar',margin:'0 4 0 0',
