@@ -68,3 +68,19 @@ Multi-disk operations are sequential and non-atomic. Failures stop later writes 
 report completed and failed/uncertain targets, without automatic rollback. Existing
 limits of 32 ZFS disks per guest and 500 snapshots per dataset fail closed rather than
 silently truncating results. Keep independent backups.
+
+## Upgrade alongside the replication panel / Upgrade mit Replikationspanel
+
+A registered RC9 installation can be migrated when the independent replication
+panel uses the exact read-only `me.items.findIndex` lookup of our menu item to
+position itself. The lookup must occur once inside `PVE.node.Config`. Only the
+bounded ZFS Manager block is replaced; the replication panel and unrelated API
+registrations remain byte-for-byte unchanged. Other stray references, duplicate
+manager fragments, missing registration and damaged markers still stop preflight.
+
+Eine registrierte RC9-Installation lässt sich auch mit dem separaten
+Replikationspanel aktualisieren, wenn dessen exakter lesender Menüverweis einmal
+innerhalb von `PVE.node.Config` steht. Nur der begrenzte ZFS-Manager-Block wird
+ersetzt. Replikationspanel und fremde API-Einträge bleiben unverändert. Andere
+zusätzliche Verweise, doppelte Manager-Blöcke, fehlende Registrierung und beschädigte
+Marker führen weiterhin zum Abbruch der Vorprüfung.
