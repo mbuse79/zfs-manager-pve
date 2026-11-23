@@ -118,6 +118,7 @@ def test_cli_english_json_boundary_and_confirmation_tokens():
  (None,['unzip','zfs-auto-snapshot'],True),(None,['unzip','zfs-auto-snapshot'],False),
 ])
 def test_driver_upgrade_and_fresh_install_exact_archives(tmp_path,monkeypatch,existing,missing,check_only):
+    from contextlib import contextmanager
     import zfsm_host_audit, zfsm_cluster_cache
     monkeypatch.setattr(zfsm_cluster_cache, 'register', lambda source: {})
     monkeypatch.setattr(driver,'HERE',tmp_path)
@@ -127,9 +128,20 @@ def test_driver_upgrade_and_fresh_install_exact_archives(tmp_path,monkeypatch,ex
     state={'pve-zfs-manager':existing,**{n:None if n in missing else '1' for n in ['unzip','zfs-auto-snapshot']}}
     audit={'autosnap':{'duplicate_labels':[],'schedules':[],'binary':not missing},'other_cleanup_units':[],'other_cleanup_cron':[]}
     calls=[]
+    lock_state={'held':False}
+    @contextmanager
+    def isolated_package_lock():
+        # The real root-owned lock is tested separately; this fully mocked host
+        # fixture verifies that package writes happen inside its critical section.
+        assert not lock_state['held']
+        lock_state['held']=True
+        try:yield
+        finally:lock_state['held']=False
+    monkeypatch.setattr(driver,'package_lock',isolated_package_lock)
     def run(argv,**kw):
         calls.append(argv)
         if argv[:2]==['dpkg','-i']:
+            assert lock_state['held']
             state['pve-zfs-manager']=driver.VERSION
             for n in missing:state[n]='1'
         return subprocess.CompletedProcess(argv,0,'','')

@@ -21,6 +21,32 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
         }());
         var zfsLocale = zfsLanguage.indexOf('de') === 0 ? 'de-DE' : 'en-US';
         var zfsTDe = {
+            'Loading ...': 'Wird geladen ...',
+            'Reconnecting to the API; the update job continues.': 'API-Verbindung wird wiederhergestellt; der Updateauftrag läuft weiter.',
+            'Checking for updates': 'Updates werden gesucht',
+            'ZFSM updates': 'ZFSM-Updates',
+            'Installed version': 'Installierte Version',
+            'Latest stable version': 'Neueste stabile Version',
+            'Last check': 'Letzte Prüfung',
+            'Never checked': 'Noch nicht geprüft',
+            'Check now': 'Jetzt prüfen',
+            'Install update': 'Update installieren',
+            'Confirm installation': 'Installation bestätigen',
+            'Update available': 'Update verfügbar',
+            'No newer stable update available': 'Kein neueres stabiles Update verfügbar',
+            'Checked daily. Updates are installed only after confirmation on this node.': 'Tägliche Prüfung. Updates werden nur nach Bestätigung auf diesem Knoten installiert.',
+            'I approve this update on this node.': 'Ich bestätige dieses Update auf diesem Knoten.',
+            'Downloading and verifying update': 'Update wird heruntergeladen und geprüft',
+            'Checking update package': 'Updatepaket wird vorgeprüft',
+            'Installing update': 'Update wird installiert',
+            'Update precheck passed': 'Update-Vorprüfung erfolgreich',
+            'The preview is valid for five minutes. Existing settings are retained.': 'Die Vorschau gilt fünf Minuten. Bestehende Einstellungen bleiben erhalten.',
+            'Closing this window does not stop an update job.': 'Das Schließen dieses Fensters stoppt keinen Updateauftrag.',
+            'Update failed': 'Update fehlgeschlagen',
+            'Update installed. Reload the browser with Ctrl+F5.': 'Update installiert. Browser mit Strg+F5 neu laden.',
+            'Inspect the task log before retrying.': 'Vor einem erneuten Versuch das Aufgabenprotokoll prüfen.',
+            'Update check unavailable': 'Updateprüfung nicht verfügbar',
+
             'Exclude AutoSnap': 'AutoSnap ausschließen',
             'Enable AutoSnap': 'AutoSnap einschalten',
             'Delete all snapshots': 'Alle Snapshots löschen',
@@ -653,6 +679,73 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                 failure:function(e){if(!win.destroyed){report({status:'failed',error:e&&e.htmlStatus||zfsL('Unknown error')});}}
             });
         };
+        var zfsmUpdateWindow=function(owner){
+            var root=typeof Proxmox!=='undefined' && Proxmox.UserName==='root@pam';
+            var base='/nodes/'+encodeURIComponent(nodename)+'/zfsmanager-ro/';
+            var plan=null,task=null,busy=false,operation=null,polls=0,errors=0;
+            var win=Ext.create('Ext.window.Window',{title:zfsL('ZFSM updates'),modal:true,width:650,
+                bodyPadding:14,layout:{type:'vbox',align:'stretch'},items:[
+                    {xtype:'component',itemId:'update-info',html:zfsL('Loading ...')},
+                    {xtype:'textarea',itemId:'update-log',readOnly:true,height:170,margin:'12 0'},
+                    {xtype:'checkbox',itemId:'update-ack',disabled:true,
+                        boxLabel:zfsL('I approve this update on this node.')}],
+                buttons:[{text:zfsL('Task log'),itemId:'update-task',disabled:true,handler:function(){
+                        if(task)Ext.create('Proxmox.window.TaskViewer',{upid:task,nodename:nodename}).show();}},
+                    {text:zfsL('Check now'),itemId:'update-check',disabled:!root,handler:function(){start('check',{});}},
+                    {text:zfsL('Install update'),itemId:'update-install',disabled:true,handler:function(){
+                        if(plan){if(!win.down('#update-ack').getValue())return;start('install',{plan:plan,confirm:1});}
+                        else start('prepare',{});
+                    }},{text:zfsL('Close'),handler:function(){win.close();}}]});
+            var info=function(text){if(!win.destroyed)win.down('#update-info').update(text);};
+            var showStatus=function(data){
+                if(win.destroyed)return;
+                var enc=safeZFSValue;
+                info('<b>'+zfsL('Installed version')+':</b> '+enc(data.installed_version)+'<br>'+
+                    '<b>'+zfsL('Latest stable version')+':</b> '+enc(data.latest_version||zfsL('Not available'))+'<br>'+
+                    '<b>'+zfsL('Last check')+':</b> '+(data.checked_at?safeZFSDate(data.checked_at):zfsL('Never checked'))+'<br><br>'+
+                    enc(data.error||zfsL(data.available?'Update available':'No newer stable update available'))+'<br><small>'+
+                    zfsL('Checked daily. Updates are installed only after confirmation on this node.')+'</small>');
+                win.down('#update-install').setDisabled(!root||!data.available||busy);
+            };
+            var refresh=function(){Proxmox.Utils.API2Request({url:base+'update-status',method:'GET',
+                success:function(r){showStatus(r.result.data);},failure:function(e){info(safeZFSValue(e.htmlStatus||zfsL('Unknown error')));}});};
+            var finish=function(){busy=false;if(win.destroyed)return;win.down('#update-check').setDisabled(!root);};
+            var poll=function(id){
+                if(win.destroyed)return;
+                Proxmox.Utils.API2Request({url:base+'update-job',method:'GET',params:{job:id},success:function(r){
+                    if(win.destroyed)return;errors=0;var data=r.result.data;
+                    if(data.log)win.down('#update-log').setValue(data.log);
+                    if(data.status==='running'){
+                        info(safeZFSValue(zfsL(data.phase==='check'?'Checking for updates':data.phase==='download'?'Downloading and verifying update':data.phase==='precheck'?'Checking update package':'Installing update')));
+                        if(++polls<500)Ext.defer(function(){poll(id);},2000);else {finish();info(zfsL('Inspect the task log before retrying.'));}return;
+                    }
+                    finish();
+                    if(data.status==='prepared'&&data.ready){
+                        plan=id;info('<b>'+zfsL('Update precheck passed')+'</b><br>'+safeZFSValue(data.installed_version)+' → '+safeZFSValue(data.version)+
+                            '<br>'+zfsL('The preview is valid for five minutes. Existing settings are retained.')+
+                            '<br>'+zfsL('Closing this window does not stop an update job.'));
+                        win.down('#update-ack').setDisabled(false);win.down('#update-ack').setValue(false);
+                        win.down('#update-install').setText(zfsL('Confirm installation'));win.down('#update-install').setDisabled(true);
+                    }else if(data.status==='failed'){
+                        plan=null;win.down('#update-ack').setValue(false);win.down('#update-ack').setDisabled(true);win.down('#update-install').setText(zfsL('Install update'));win.down('#update-install').setDisabled(true);info('<b>'+zfsL('Update failed')+'</b><br>'+safeZFSValue(data.error||''));
+                    }else{
+                        plan=null;win.down('#update-ack').setValue(false);win.down('#update-ack').setDisabled(true);win.down('#update-install').setText(zfsL('Install update'));refresh();if(owner&&owner.zfsRefreshReadOnly)owner.zfsRefreshReadOnly();
+                        if(data.status==='installed')Ext.Msg.alert(zfsL('ZFSM updates'),zfsL('Update installed. Reload the browser with Ctrl+F5.'));
+                    }
+                },failure:function(e){if(win.destroyed)return;if(++errors<30){info(zfsL('Reconnecting to the API; the update job continues.'));Ext.defer(function(){poll(id);},2000);}
+                    else {finish();info(safeZFSValue(e.htmlStatus||zfsL('Unknown error'))+'<br>'+zfsL('Inspect the task log before retrying.'));}}});
+            };
+            var start=function(op,params){
+                if(busy||!root)return;busy=true;operation=op;polls=0;errors=0;
+                win.down('#update-check').setDisabled(true);win.down('#update-install').setDisabled(true);
+                win.down('#update-ack').setDisabled(true);info(zfsL('Running'));
+                Proxmox.Utils.API2Request({url:base+'update-'+op,method:'POST',params:params,
+                    success:function(r){if(win.destroyed)return;task=r.result.data.upid;win.down('#update-task').setDisabled(false);poll(r.result.data.job);},
+                    failure:function(e){finish();info(safeZFSValue(e.htmlStatus||zfsL('Unknown error')));}});
+            };
+            win.down('#update-ack').on('change',function(field,value){if(!busy)win.down('#update-install').setDisabled(!plan||!value||!root);});
+            win.show();refresh();
+        };
         if (caps.nodes['Sys.Audit']) {
             me.items.push({
                 xtype: 'panel',
@@ -671,6 +764,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                     },
                 },{text:zfsL('Cluster installation'),itemId:'zfsm-cluster-open',iconCls:'fa fa-server',
                     hidden:typeof Proxmox==='undefined'||Proxmox.UserName!=='root@pam',handler:zfsmClusterWindow},
+                {text:zfsL('ZFSM updates'),itemId:'zfsm-update-open',iconCls:'fa fa-download',handler:function(btn){zfsmUpdateWindow(btn.up('#zfsmanager-readonly'));}},
                 '->',{text:zfsL('Details'),iconCls:'fa fa-info-circle',handler:function(btn){
                     var owner=btn.up('#zfsmanager-readonly'),details=owner&&owner.down('#zfsm-technical-details');
                     if(details){if(details.collapsed){details.expand();}else{details.collapse();}}
@@ -983,6 +1077,9 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             },
                         },
                     },
+                    {xtype:'component',html:'<small><span style="color:#3db982">●</span> '+zfsL('AutoSnap included')+
+                        ' &nbsp; <span style="color:#dc5050">●</span> '+zfsL('AutoSnap excluded')+
+                        ' &nbsp; <span style="color:#d2a037">●</span> '+zfsL('AutoSnap partly excluded')+'</small>'},
                     {xtype:'toolbar',items:[{xtype:'button',text:zfsL('Batch delete'),iconCls:'fa fa-scissors',
                       handler:function(b){b.up('#zfsmanager-readonly').zfsmRunBatch('dataset');}}]},
                     {
@@ -996,6 +1093,10 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             toggleOnDblClick: false,
                             // Dataset snapshot selections share the same highlighting as guest groups.
                             getRowClass: function(rec) {
+                                if(rec && !rec.get('snapshot') && rec.get('autosnapKnown')){
+                                    return rec.get('autosnapExcluded')?'zfsm-autosnap-excluded':
+                                        rec.get('autosnapPartial')?'zfsm-autosnap-partial':'zfsm-autosnap-included';
+                                }
                                 return rec && rec.get('snapshot') && rec.get('batchMarked')
                                     ? 'zfsm-marked-snapshot' : '';
                             },
@@ -1045,14 +1146,14 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             { text: zfsL("Count"), dataIndex: 'count', width: 78, renderer: function(v){ return safeZFSValue(v === undefined || v === null ? '' : String(v)); } },
                             { text: zfsL("Used"), dataIndex: 'used', width: 105, renderer: zfsBytes, tooltip:zfsL('Reclaimable space cannot be determined exactly before deletion.') },
                             {
-                                xtype: 'widgetcolumn', text: zfsL("Actions"), width: 340,
+                                xtype: 'widgetcolumn', text: zfsL("Actions"), width: 360,
                                 sortable: false, menuDisabled: true,
                                 widget: {
                                     xtype: 'container', layout: { type: 'hbox', align: 'middle' },
                                     items: [
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-create', text: zfsL("Create"),
-                                            iconCls: 'fa fa-plus', ui: 'default-toolbar',
+                                            xtype: 'button', itemId: 'zfs-row-create', width: 90, text: zfsL("Create"),
+                                            iconCls: 'fa fa-plus', ui: 'default-toolbar', margin:'0 4 0 0',
                                             handler: function (btn) {
                                                 var widget = btn.up('container');
                                                 var tree = widget && widget.zfsTree;
@@ -1063,7 +1164,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             },
                                         },
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-delete', text: zfsL("Delete"),
+                                            xtype: 'button', itemId: 'zfs-row-delete', width: 95, text: zfsL("Delete"),
                                             iconCls: 'fa fa-trash', ui: 'default-toolbar', margin: '0 4 0 0',
                                             handler: function (btn) {
                                                 var widget = btn.up('container');
@@ -1075,7 +1176,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             },
                                         },
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-delete-exact', text: zfsL('Only this'),
+                                            xtype: 'button', itemId: 'zfs-row-delete-exact', width: 95, text: zfsL('Only this'),
                                             iconCls: 'fa fa-scissors', ui: 'default-toolbar', margin: '0 4 0 0',
                                             handler: function (btn) {
                                                 var widget = btn.up('container');
@@ -1087,7 +1188,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             },
                                         },
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-protected',
+                                            xtype: 'button', itemId: 'zfs-row-protected', width: 120,
                                             text: zfsL('Protected preview'), iconCls: 'fa fa-lock',
                                             ui: 'default-toolbar', margin: '0 4 0 0',
                                             handler: function (btn) {
@@ -1118,7 +1219,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                             },
                                         },
                                         {
-                                            xtype: 'button', itemId: 'zfs-row-rollback', text: zfsL('Rollback'),
+                                            xtype: 'button', itemId: 'zfs-row-rollback', width: 125, text: zfsL('Rollback'),
                                             iconCls: 'fa fa-undo', ui: 'default-toolbar',
                                             handler: function (btn) {
                                                 var widget = btn.up('container');
@@ -1496,6 +1597,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         };
                         var state = view.zfsReadOnly;
                         state.guestAccess = {};
+                        state.datasetAutoSnap = {};
                         state.isAdmin = false;
                         state.expandedDatasets = {};
                         state.expandedPoolMembers = {};
@@ -1608,7 +1710,9 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 var used = sorted.reduce(function (total, snap) {
                                     return total + (Number(snap.used) || 0);
                                 }, 0);
+                                var auto=state.datasetAutoSnap[dataset];
                                 children.push({
+                                    autosnapKnown:!!auto,autosnapExcluded:!!(auto&&auto.autosnap_excluded),autosnapPartial:!!(auto&&auto.autosnap_partial),
                                     dataset: dataset, datasetType: datasetTypes[dataset] || '', snapshot: null, label: dataset, latestName: latest ? String(latest.snapshot) : zfsL("No snapshots"),
                                     creation: latest ? latest.creation : 0,
                                     count: sorted.length, used: used, leaf: false,
@@ -2393,6 +2497,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 ['zfsmanager-ro/retention', 'retention'],
                                 ['zfsmanager-ro/host-inventory', 'hostInventory'],
                                 ['zfsmanager-ro/guest-access', 'guestAccess'],
+                                ['zfsmanager-ro/dataset-autosnap-status', 'datasetAutoSnap'],
+                                ['zfsmanager-ro/update-status', 'updateStatus'],
                                 ['zfsmanager-ro/admin-status', 'adminStatus'],
                             ];
                             var pending = routes.length;
@@ -2405,6 +2511,12 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                     success: function (response) {
                                         if (view.destroyed) { return; }
                                         var data = response && response.result && response.result.data;
+                                        if(key==='updateStatus'){
+                                            var updateButton=view.down('#zfsm-update-open');
+                                            if(updateButton){updateButton.setText(zfsL(data&&data.available?'Update available':'ZFSM updates'));
+                                                updateButton.setTooltip(data&&data.error?zfsL('Update check unavailable'):zfsL('Checked daily. Updates are installed only after confirmation on this node.'));}
+                                            finish();return;
+                                        }
                                         if (key === 'adminStatus') {
                                             if (!data || typeof data.admin !== 'number') { error('Invalid admin status'); return; }
                                             state.isAdmin = data.admin === 1;
@@ -2431,6 +2543,10 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                         if (key === 'poolTopology') {
                                             state.poolTopology=data;
                                             view.zfsRenderPoolTopology();finish();return;
+                                        }
+                                        if(key==='datasetAutoSnap'){
+                                            var properties={};data.forEach(function(d){properties[String(d.dataset)]=d;});
+                                            state.datasetAutoSnap=properties;view.zfsRenderTree();finish();return;
                                         }
                                         if (key === 'guestAccess') {
                                             var mapped = {};
@@ -2487,6 +2603,11 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                     },
                                 });
                                 function error(message) {
+                                    if(key==='datasetAutoSnap'){state.datasetAutoSnap={};view.zfsRenderTree();}
+                                    if(key==='updateStatus'){
+                                        var updateButton=view.down('#zfsm-update-open');
+                                        if(updateButton)updateButton.setTooltip(zfsL('Update check unavailable')+': '+String(message));
+                                    }
                                     if(key==='hostInventory'){
                                         var audit=view.down('#zfsm-host-inventory');
                                         if(audit && !audit.destroyed) audit.update(safe(zfsL('Needs review'))+': '+safe(message));

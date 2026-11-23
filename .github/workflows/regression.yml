@@ -64,3 +64,5 @@ jobs:
           tests/test_pool_only_v134_rc4.py::test_real_pool_alarm_unchanged_with_no_target
           tests/test_autosnap_mandatory_v134_rc5.py tests/test_unzip_bootstrap_rc7.py
           tests/test_cluster_install.py::test_cluster_root_owned_store_and_single_controller_lock tests/test_cluster_cache.py
+          tests/test_updates.py::test_secure_archive_reader_with_root_owned_fixture
+          tests/test_update_install_lock.py::test_package_lock_serializes_and_releases_root_owned_fixture

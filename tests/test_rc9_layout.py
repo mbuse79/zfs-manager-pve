@@ -52,6 +52,11 @@ def test_protected_runtime_files_identical_to_rc8():
     for name,digest in expected.items():
         raw=(ROOT/'src'/name).read_bytes()
         if name=='PVE/API2/ZFSSnapshotViewer.pm':
+            for label in (b'LOCAL STABLE UPDATES', b'DATASET AUTOSNAP STATUS'):
+                first=raw.index(b'# BEGIN ZFSM '+label+b'\n')
+                end_marker=b'# END ZFSM '+label+b'\n\n'
+                last=raw.index(end_marker,first)+len(end_marker)
+                raw=raw[:first]+raw[last:]
             # New guest controls are additive; retain the exact RC8 comparison
             # for every pre-existing handler after removing this isolated block.
             start_guest=raw.index(b'# BEGIN ZFSM GUEST SNAPSHOT CONTROLS\n')

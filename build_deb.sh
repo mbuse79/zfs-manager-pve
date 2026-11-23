@@ -46,6 +46,7 @@ cp "$DOCS/POOLALARME-34-RC4-DE.md" "$DOCS/AUTOSNAP-34-RC5-DE.md" "$BUILD/usr/sha
 cp "$DOCS/HOSTPRUEFUNG-34-RC6-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/CODE-PROVENANCE-REVIEW.md" "$DOCS/MAINTAINER.md" "$DOCS/INSTALL.de.md" "$DOCS/PACKAGE-STATUS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/RC9-TESTANLEITUNG-DE.md" "$DOCS/RC9-AENDERUNGEN-DE.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
+cp "$HERE/docs/UPDATES.md" "$HERE/docs/GUEST-SNAPSHOT-CONTROLS.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$HERE/docs/CLUSTER-INSTALL.md" "$HERE/docs/INSTALL-1.1.md" "$BUILD/usr/share/doc/pve-zfs-manager/"
 cp "$DOCS/LICENSE" "$BUILD/usr/share/doc/pve-zfs-manager/LICENSE"
 cp "$HERE/debian/copyright" "$BUILD/usr/share/doc/pve-zfs-manager/copyright"
@@ -87,7 +88,7 @@ case "$1" in
     python3 /usr/lib/pve-zfs-manager/universal.py install
     systemctl daemon-reload
     systemctl enable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer
-    systemctl enable --now pve-zfs-manager-emergency.timer
+    systemctl enable --now pve-zfs-manager-emergency.timer pve-zfs-manager-update-check.timer
     ;;
 esac
 exit 0
@@ -97,8 +98,8 @@ cat > "$BUILD/DEBIAN/prerm" <<'EOF'
 set -e
 case "$1" in
   remove)
-    systemctl disable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer pve-zfs-manager-emergency.timer || true
-    systemctl stop pve-zfs-manager-reconcile.service || true
+    systemctl disable --now pve-zfs-manager-reconcile.path pve-zfs-manager-reconcile.timer pve-zfs-manager-emergency.timer pve-zfs-manager-update-check.timer || true
+    systemctl stop pve-zfs-manager-reconcile.service pve-zfs-manager-update-check.service || true
     python3 /usr/lib/pve-zfs-manager/universal.py uninstall
     ;;
   upgrade|deconfigure) : ;;
