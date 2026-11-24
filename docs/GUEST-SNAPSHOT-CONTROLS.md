@@ -108,3 +108,27 @@ Der Tab ZFS-Datasets verwendet dieselben dezenten Farben und feste Aktionsbreite
 Grundlage sind die wirksamen ZFS-AutoSnap-Eigenschaften einschließlich Vererbung und
 Intervall-Ausschlüssen. Bei fehlender Eigenschaftsinventur bleibt die Zeile neutral;
 Snapshot-Alter oder fehlende Snapshots werden nicht als Ausschluss interpretiert.
+
+## Focused dataset list / Aufgeräumte Dataset-Liste
+
+By default, mapped VM/LXC disks and known technical replication namespaces are
+hidden: dataset path components `zrm`, `zrepl` and `zrm-set-lxc|qemu|vm-<id>`,
+including their descendants. Pool roots, boot/system datasets and unknown user
+datasets stay visible; similar ordinary names such as `zrm-notes` are not hidden.
+Enable **Show all datasets (including VM/LXC and replication)** to see the full
+inventory. Text search does not override this switch. The footer reports the number
+of hidden rows. This is a display filter, not an ownership or permission decision.
+Hidden snapshot selections retain their marks but cannot trigger batch deletion
+until their rows are shown again. Colors, expansion state and backend protections
+remain in effect; no datasets or snapshots are changed by switching the view.
+
+Standardmäßig werden zugeordnete VM-/LXC-Datenträger und bekannte technische
+Replikationsbereiche samt Unterdatasets ausgeblendet: Pfadbestandteile `zrm`,
+`zrepl` und `zrm-set-lxc|qemu|vm-<ID>`. Pool-Wurzeln, Boot-/Systemdatasets und
+unbekannte eigene Nutzdatasets bleiben sichtbar. Ähnliche eigene Namen wie
+`zrm-notes` werden nicht ausgeblendet. **Alle Datasets anzeigen (einschließlich
+VM/LXC und Replikation)** zeigt die vollständige Inventur. Die Textsuche umgeht
+diesen Schalter nicht; die Statuszeile nennt die Anzahl ausgeblendeter Zeilen.
+Die Auswahl ausgeblendeter Snapshots bleibt erhalten, eine Sammellöschung verlangt
+aber ihr vorheriges Wiedereinblenden. Der Filter ändert keine Daten und erteilt
+keine Schreibrechte.
