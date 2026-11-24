@@ -36,7 +36,11 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    });
    const pools=[{name:'rpool',health:'ONLINE',size:944*1024**3,alloc:628*1024**3,free:316*1024**3,frag:66},{name:'rpool_2',health:'ONLINE',size:1900*1024**3,alloc:755*1024**3,free:1145*1024**3,frag:12}];
    const ret=['frequent','hourly','daily','weekly','monthly','yearly'].map((label,i)=>({label,keep:[9,24,7,3,3,2][i],file:'/etc/'+(i===0?'cron.d/zfs-auto-snapshot':i===5?'cron.d/pve-zfs-manager-yearly':'cron.'+label+'/zfs-auto-snapshot')}));
-   const hostDatasets=[{name:'rpool',type:'filesystem'},...['included','excluded','partial'].map(state=>({name:'rpool/host-'+state,type:'filesystem'}))];
+   const managedDatasets=['repltest/zrm','repltest/zrm-set-lxc-800000915','repltest/zrm-set-lxc-800000915/rootfs','repltest/zrm-set-qemu-800000910/scsi0','rpool/zrepl/receiver'];
+   const ownDatasets=['repltest','rpool/zrm-notes','rpool/projects/replication-notes','rpool/ROOT/pve-1'];
+   const hostDatasets=[{name:'rpool',type:'filesystem'},...['included','excluded','partial'].map(state=>({name:'rpool/host-'+state,type:'filesystem'})),
+     ...managedDatasets.concat(ownDatasets).map(name=>({name,type:'filesystem'}))];
+   snapshots.push({dataset:managedDatasets[2],snapshot:'zrm-replication-fixture',used:0,creation:now});
    for(const name of ['manual-a','manual-b'])snapshots.push({dataset:'rpool/host-excluded',snapshot:name,used:1024,creation:now});
    const updateJobs={};let currentUpdate='1.1',checkedAt=now,updateAvailable=true;
    const fixtures={'disks/list':[{devpath:'/dev/nvme0n1',model:'Test NVMe',size:1024**4,health:'PASSED',wearout:99}],
@@ -153,6 +157,28 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    }
    const tabs=p.down('#zfs-snapshot-tabs'),datasets=p.down('#zfs-ro-snapshots');
    tabs.setActiveTab(1);p.updateLayout();
+   const datasetNames=()=>datasets.getRootNode().childNodes.map(r=>r.get('dataset'));
+   const managed=['repltest/zrm','repltest/zrm-set-lxc-800000915','repltest/zrm-set-lxc-800000915/rootfs','repltest/zrm-set-qemu-800000910/scsi0','rpool/zrepl/receiver'];
+   if(managed.some(name=>datasetNames().includes(name)))throw Error('Replication datasets visible by default');
+   for(const name of ['repltest','rpool/zrm-notes','rpool/projects/replication-notes','rpool/ROOT/pve-1']){
+    if(!datasetNames().includes(name))throw Error('Important user/system dataset was hidden: '+name);
+   }
+   const all=p.down('#zfs-show-all-datasets'),filter=p.down('#zfs-ro-snapshot-filter');
+   filter.setValue('zrm-set');if(datasetNames().some(name=>managed.includes(name)))throw Error('Search bypassed Show all');filter.setValue('');
+   all.setValue(true);
+   if(managed.some(name=>!datasetNames().includes(name)))throw Error('Show all did not reveal replication datasets');
+   const replica=datasets.getRootNode().childNodes.find(r=>r.get('dataset')===managed[2]);replica.expand();
+   const selected=replica.firstChild;selected.set('batchMarked',true);
+   datasets.columns[0].fireEvent('checkchange',datasets.columns[0],datasets.getStore().indexOf(selected),true);
+   all.setValue(false);
+   const beforeDelete=calls.length,oldMessage=Ext.Msg.show;let blockedMessage=false;
+   Ext.Msg.show=function(){blockedMessage=true;return this;};p.zfsmRunBatch('dataset');Ext.Msg.show=oldMessage;
+   if(calls.length!==beforeDelete||!blockedMessage)throw Error('Hidden dataset selection was actionable');
+   all.setValue(true);
+   const restored=datasets.getRootNode().childNodes.find(r=>r.get('dataset')===managed[2]);
+   if(!restored.isExpanded()||!restored.firstChild.get('batchMarked'))throw Error('Show all lost expansion or selection');
+   p.zfsmBatchDataset={};all.setValue(false);
+   const datasetFiltering={replicationHiddenByDefault:true,userDataAndRootsVisible:true,showAllRevealsFullTree:true,searchDoesNotBypass:true,hiddenSelectionCannotDelete:true,expansionAndSelectionPreserved:true};
    const datasetColors={};
    for(const state of ['included','excluded','partial']){
     const rec=datasets.getRootNode().childNodes.find(d=>d.get('dataset')==='rpool/host-'+state);
@@ -199,7 +225,7 @@ const fs=require('fs'),path=require('path'),assert=require('assert'),{chromium}=
    if(new Set(sectionIds).size!==sectionIds.length)throw Error('Duplicate section IDs');
    if(p.down('#zfs-ro-retention').getEl().dom.querySelectorAll('tbody tr')[1].children[2].textContent.trim()!=='7')throw Error('Observed total missing');
    tree.getRootNode().firstChild.collapse();
-   return {datasetColors,actionAlignment,autoSnapColors,lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
+   return {datasetFiltering,datasetColors,actionAlignment,autoSnapColors,lang:document.cookie,ext:Ext.getVersion().toString(),tabs:2,guests:tree.getRootNode().childNodes.length,technicalCollapsed:technical.collapsed,filterPreservesExpansion:true,refreshPreservesSections:true,refreshPreservesSelection:true,checkboxDoesNotExpand:true,retentionPreviewRequired:true,detailsButtonWorks:true,apiWrites:calls.filter(c=>c.method!=='GET').length,fixtureError:window.fixtureError||null};
   });
   assert.equal(proof.fixtureError,null);assert.equal(errors.length,0,errors.join('\n'));
   await page.evaluate(()=>{plugin.down('#zfs-snapshot-tabs').setActiveTab(1);const tree=plugin.down('#zfs-ro-snapshots');tree.getRootNode().childNodes.find(d=>d.get('dataset')==='rpool/host-excluded').expand();plugin.updateLayout();});

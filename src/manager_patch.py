@@ -21,6 +21,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
         }());
         var zfsLocale = zfsLanguage.indexOf('de') === 0 ? 'de-DE' : 'en-US';
         var zfsTDe = {
+            ' additional datasets hidden; enable Show all to display them.': ' weitere Datasets ausgeblendet; zum Einblenden Alle Datasets anzeigen aktivieren.',
+            'Some selected snapshots are hidden. Show them before deleting.': 'Einige ausgewählte Snapshots sind ausgeblendet. Vor dem Löschen wieder einblenden.',
             'Loading ...': 'Wird geladen ...',
             'Reconnecting to the API; the update job continues.': 'API-Verbindung wird wiederhergestellt; der Updateauftrag läuft weiter.',
             'Checking for updates': 'Updates werden gesucht',
@@ -372,7 +374,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
             'Action': 'Aktion',
             'Delete': 'Löschen',
             'Loading guest data ...': 'Gastdaten werden geladen ...',
-            'Show all datasets (including VM/LXC)': 'Alle Datasets anzeigen (einschließlich VM/LXC)',
+            'Show all datasets (including VM/LXC and replication)': 'Alle Datasets anzeigen (einschließlich VM/LXC und Replikation)',
             'Selected disks for this VM/LXC. Actions affect selected disks only.': 'Ausgewählte Laufwerke dieser VM/LXC. Aktionen betreffen nur markierte Laufwerke.',
             'I confirm this action.': 'Ich bestätige diese Aktion.',
             'Execute': 'Ausführen',
@@ -464,6 +466,13 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                 canonical = 'No known data errors';
             }
             return safeZFSValue(zfsL(canonical));
+        };
+        // Display classification only; never infer ownership or write permission.
+        // Keep pool roots and unknown user datasets visible by default.
+        var zfsmAuxiliaryDataset = function(name) {
+            return String(name).split('/').slice(1).some(function(part) {
+                return part==='zrm' || part==='zrepl' || /^zrm-set-(?:lxc|qemu|vm)-[0-9]+(?:-[A-Za-z0-9_.-]+)?$/.test(part);
+            });
         };
         var zfsmRetentionLabel = function(label) {
             var labels = {frequent:'15 minutes',hourly:'Hourly',daily:'Daily',
@@ -1064,7 +1073,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         ] },
                         { xtype:'panel', title:zfsL('ZFS-Datasets'), border:false, bodyPadding:8, layout:'anchor', items:[
                     { xtype: 'component', cls:'zfsm-section-head', html:zfsL('<h3>ZFS Datasets and Snapshots</h3>') },
-                    { xtype:'checkbox', itemId:'zfs-show-all-datasets', boxLabel:zfsL('Show all datasets (including VM/LXC)'), checked:false,
+                    { xtype:'checkbox', itemId:'zfs-show-all-datasets', boxLabel:zfsL('Show all datasets (including VM/LXC and replication)'), checked:false,
                       listeners:{change:function(field){var owner=field.up('#zfsmanager-readonly');if(owner&&owner.zfsRenderTree){owner.zfsRenderTree();}}} },
                     {
                         xtype: 'textfield', itemId: 'zfs-ro-snapshot-filter',
@@ -1520,6 +1529,16 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                                 return (kind==='guest'?view.zfsmBatchGuest:view.zfsmBatchDataset)[k];
                             });
                             if(!items.length){zfsError('ZFS Manager',zfsL('Select snapshots by checkbox before deleting.'));return;}
+                            if(kind==='dataset'){
+                                var visible={},tree=view.down('#zfs-ro-snapshots');
+                                if(tree)tree.getRootNode().cascadeBy(function(rec){
+                                    if(rec.get('snapshot'))visible[String(rec.get('dataset'))+'@'+String(rec.get('snapshot'))]=true;
+                                });
+                                if(items.some(function(item){return !visible[String(item.dataset)+'@'+String(item.snapshot)];})){
+                                    zfsError('ZFS Manager',zfsL('Some selected snapshots are hidden. Show them before deleting.'));return;
+                                }
+                            }
+
                             var first=items[0],guest=kind==='guest',snapshots=items.map(function(i){return String(i.snapshot);});
                             if(guest && items.some(function(i){return i.guestId!==first.guestId || i.guestType!==first.guestType;})){
                                 zfsError('ZFS Manager',zfsL('Select snapshots from one VM/LXC only.'));return;
@@ -1696,8 +1715,11 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             var children = [];
                             var showAllField=view.down('#zfs-show-all-datasets');
                             var showAll=!!(showAllField && showAllField.getValue());
+                            var hiddenCount=0;
                             Object.keys(mapping).sort().forEach(function (dataset) {
-                                if (!showAll && state.guestAccess && state.guestAccess[dataset]) { return; }
+                                if (!showAll && ((state.guestAccess && state.guestAccess[dataset]) || zfsmAuxiliaryDataset(dataset))) {
+                                    hiddenCount++;return;
+                                }
                                 var sorted = mapping[dataset].slice().sort(function (a, b) {
                                     return Number(b.creation || 0) - Number(a.creation || 0);
                                 });
@@ -1734,7 +1756,8 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                             if (info) {
                                 info.update(state.snapshots.length + zfsL(" snapshots across ") +
                                     Object.keys(mapping).length + zfsL(" datasets. ") +
-                                    children.length + zfsL(" dataset rows displayed."));
+                                    children.length + zfsL(" dataset rows displayed.") +
+                                    (hiddenCount ? ' ' + hiddenCount + zfsL(' additional datasets hidden; enable Show all to display them.') : ''));
                             }
                         };
                         // A disk rollback uses the existing guarded group endpoint with a
