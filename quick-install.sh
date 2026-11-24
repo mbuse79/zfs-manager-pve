@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# BuMaVory ZFS Manager 1.1. AGPL-3.0-only for project contributions.
-# Version-pinned complete bundle; source and licenses accompany release v1.1.
+# BuMaVory ZFS Manager 1.1.1. AGPL-3.0-only for project contributions.
+# Version-pinned complete bundle; source and licenses accompany release v1.1.1.
 set -Eeuo pipefail
 exec python3 - "$@" <<'PYQUICK'
 import argparse
@@ -13,11 +13,11 @@ import sys
 import tempfile
 import urllib.request
 
-BASE = 'https://github.com/mbuse79/zfs-manager-pve/releases/download/v1.1/'
-ZIP_URL = BASE + 'BuMaVory-ZFS-Manager-1.1.zip'
-ZIP_SHA = 'fcdde5fba9bbcf29ca2a5463a586de65689a014f1f9e47bd81040720957873ed'
-BOOT_URL = BASE + 'bootstrap-1.1.sh'
-BOOT_SHA = '45c447c682b0ed325e5a9c0aae84c13b1af6b1422b54ce28b8df956bd0e62403'
+BASE = 'https://github.com/mbuse79/zfs-manager-pve/releases/download/v1.1.1/'
+ZIP_URL = BASE + 'BuMaVory-ZFS-Manager-1.1.1.zip'
+ZIP_SHA = '0de9456bb9b357700a658e9eff4e689597faf0ce3f1ac85c1a7d9ebd58446819'
+BOOT_URL = BASE + 'bootstrap-1.1.1.sh'
+BOOT_SHA = '9f65bbec8a89fdb7d30e88e1af2e1c395a5684325f13cba5a1cb1542d8102e6a'
 
 
 def download(url, path, digest, limit):
@@ -41,7 +41,7 @@ def download(url, path, digest, limit):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='BuMaVory ZFS Manager 1.1 — complete verified ZIP / vollständige geprüfte ZIP')
+    parser = argparse.ArgumentParser(description='BuMaVory ZFS Manager 1.1.1 — complete verified ZIP / vollständige geprüfte ZIP')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--check-only', action='store_true')
     group.add_argument('--download-only', action='store_true')
@@ -53,7 +53,7 @@ def main(argv=None):
     if not re.match(r'^pve-manager/9\.\d+\.\d+/', p.stdout):
         raise ValueError('Nur PVE 9.x / PVE 9.x required')
     if args.download_only:
-        fd, name = tempfile.mkstemp(prefix='BuMaVory-ZFS-Manager-1.1-', suffix='.zip')
+        fd, name = tempfile.mkstemp(prefix='BuMaVory-ZFS-Manager-1.1.1-', suffix='.zip')
         os.close(fd)
         path = Path(name)
         try:
@@ -63,8 +63,8 @@ def main(argv=None):
             raise
         print(str(path))
         return 0
-    with tempfile.TemporaryDirectory(prefix='bmv-zfsm-1.1-') as td:
-        path = Path(td)/'bootstrap-1.1.sh'
+    with tempfile.TemporaryDirectory(prefix='bmv-zfsm-1.1.1-') as td:
+        path = Path(td)/'bootstrap-1.1.1.sh'
         download(BOOT_URL, path, BOOT_SHA, 1024*1024)
         cmd = ['bash', str(path), ZIP_URL, ZIP_SHA, '--lang', args.lang]
         if args.check_only:
