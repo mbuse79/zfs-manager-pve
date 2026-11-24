@@ -8,7 +8,7 @@ import previous_patch
 import importlib.util
 
 ROOT=Path(__file__).resolve().parents[1]
-VER="1.1"
+VER="1.1.1"
 
 def test_versions_and_cli_are_consistent():
     import zfsm_cli

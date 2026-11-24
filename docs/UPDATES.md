@@ -1,6 +1,6 @@
 # ZFSM updates / ZFSM-Updates
 
-Development after 1.1; existing 1.1 release downloads do not include this feature.
+Available in release 1.1.1; existing 1.1 downloads remain unchanged.
 
 ## Deutsch
 

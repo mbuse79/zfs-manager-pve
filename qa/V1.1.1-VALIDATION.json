@@ -1,0 +1,11 @@
+{
+  "version": "1.1.1",
+  "normal_passed": 337,
+  "normal_skipped": 18,
+  "normal_deselected": 5,
+  "fakeroot_passed": 27,
+  "runtime_files_identical_to_test6_after_version_normalization": 44,
+  "real_final_pve_installation": false,
+  "real_complete_web_update": false,
+  "browser": "DE/EN ExtJS 7 light/dark fixtures"
+}
