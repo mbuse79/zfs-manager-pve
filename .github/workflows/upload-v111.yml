@@ -1,0 +1,28 @@
+name: Upload authorized 1.1.1 release assets
+on:
+  push:
+    branches: [release-assets/v1.1.1]
+permissions:
+  contents: write
+concurrency: upload-v111-assets
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify exact release files
+        working-directory: .release-upload
+        run: |
+          echo 'c80f36fcfbd450544157216e9bc22c8bead96f3bab9a4d1ea43ab813196ddd01  SHA256SUMS' | sha256sum -c -
+          sha256sum -c SHA256SUMS
+      - name: Upload to existing draft only
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          test "$(gh release view v1.1.1 --json isDraft --jq '.isDraft')" = true
+          test "$(gh release view v1.1.1 --json targetCommitish --jq '.targetCommitish')" = 79c58914562d9a2aade54e6007ad587d3dde0e8b
+          gh release upload v1.1.1 .release-upload/*
