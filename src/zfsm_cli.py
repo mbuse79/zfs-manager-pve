@@ -19,7 +19,8 @@ DE={
  'backup':'Sicherung der aktuellen Integrationsdateien erstellen',
  'backups':'Verfügbare Sicherungen anzeigen', 'restore':'Sicherungen anzeigen; sichere Wiederherstellung nur für dieselbe PVE-Version',
  'logs':'Letzte Reparaturprotokolle anzeigen', 'services':'Überwachungsdienste anzeigen',
- 'update-check':'Installiertes Plugin-Paket anzeigen (keine Updatequelle eingerichtet)',
+ 'update-check':'Stabile ZFSM-Updates suchen (keine automatische Installation)',
+ 'update':'Update-Status, Pruefung und bestaetigte Installation',
  'capacity':'Pool-Kapazität, Snapshot-Verbrauch und Aufbewahrungsübersicht (nur lesend)',
  'emergency':'Warnstufen, Notfallvorschau und geschuetzte Snapshot-Bereinigung',
  'inventory':'Bestehende AutoSnap- und ZFS-Dienste sicher erkennen (nur lesend)',
@@ -39,7 +40,8 @@ EN={
  'backup':'Back up the current integration files', 'backups':'List available backups',
  'restore':'List backups; restoration only with matching PVE version',
  'logs':'Show recent repair logs', 'services':'Show watcher service states',
- 'update-check':'Show installed package (no update source configured)',
+ 'update-check':'Check stable ZFSM releases (never auto-install)',
+ 'update':'Update status, checks and confirmed installation',
  'capacity':'Read-only pool capacity, snapshot usage and retention audit',
  'emergency':'Capacity alerts, emergency preview and guarded cleanup',
  'inventory':'Read-only audit of existing AutoSnap and ZFS services',
@@ -51,7 +53,7 @@ EN={
  'restore_note':'Automatic restore of old Proxmox files is blocked. Verify the backup and PVE version.',
  'error':'ERROR',
 }
-HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','capacity','emergency','inventory','autosnap','cluster')
+HELP_COMMANDS=('help','status','version','check','repair','backup','backups','restore','logs','services','update-check','update','capacity','emergency','inventory','autosnap','cluster')
 
 def language(requested=None):
     raw=(requested or os.environ.get('LC_ALL') or os.environ.get('LC_MESSAGES') or os.environ.get('LANG') or 'en').lower()
@@ -75,6 +77,9 @@ def main(argv=None):
         del argv[at:at+2]
     selected='de' if language(requested) is DE else 'en'
     from cli_locale import display_language
+    if argv and argv[0] in ('update','update-check'):
+        from zfsm_updates import main as update_main
+        return update_main((['check']+argv[1:]) if argv[0]=='update-check' else argv[1:], lang=selected)
     if argv and argv[0]=='cluster':
         from zfsm_cluster import main as cluster_main
         try:
@@ -146,13 +151,11 @@ def main(argv=None):
     if args.command=='version':
         print(f'{t["heading"]}: {VERSION}')
         return run(['pveversion'])
-    if args.command=='update-check':
-        return run(['dpkg-query','-W','pve-zfs-manager'])
     if args.command in ('logs','services'):
         if args.command=='logs':
             return run(['journalctl','-u','pve-zfs-manager-reconcile.service','-n','35','--no-pager'])
-        units=('pve-zfs-manager-reconcile.path','pve-zfs-manager-reconcile.timer')
-        labels=('Dateiwächter','Automatischer Timer') if t is DE else ('File watcher','Automatic timer')
+        units=('pve-zfs-manager-reconcile.path','pve-zfs-manager-reconcile.timer','pve-zfs-manager-update-check.timer')
+        labels=('Dateiwächter','Automatischer Timer','Update-Pruefung') if t is DE else ('File watcher','Automatic timer','Update check')
         good=True
         for label,unit in zip(labels,units):
             active=subprocess.run(['systemctl','is-active',unit],capture_output=True,text=True,check=False).stdout.strip()

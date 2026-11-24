@@ -26,7 +26,7 @@ auf Port 8006 verwalten. Unabhängiges Community-Projekt.
 
 </details>
 
-Entwicklungsstand nach 1.1: [AutoSnap-Ausschluss je Gast und alle Gast-Snapshots löschen](docs/GUEST-SNAPSHOT-CONTROLS.md). Noch nicht in den 1.1-Downloads enthalten.
+Entwicklungsstand nach 1.1: [AutoSnap-Ausschluss je Gast und alle Gast-Snapshots löschen](docs/GUEST-SNAPSHOT-CONTROLS.md). Außerdem: [tägliche Updateprüfung mit bestätigter Installation](docs/UPDATES.md). Noch nicht in den 1.1-Downloads enthalten.
 
 ## Version 1.1
 

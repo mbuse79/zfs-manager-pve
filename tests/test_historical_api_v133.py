@@ -6,6 +6,11 @@ ROOT=Path(__file__).resolve().parents[1]
 def historical_api_without_v133_topology():
     """Strictly preserve the 1.0.0-32 API excluding the new read-only route."""
     s=(ROOT/'src/PVE/API2/ZFSSnapshotViewer.pm').read_bytes()
+    for label in (b'LOCAL STABLE UPDATES', b'DATASET AUTOSNAP STATUS'):
+        first=s.index(b'# BEGIN ZFSM '+label+b'\n')
+        end_marker=b'# END ZFSM '+label+b'\n\n'
+        last=s.index(end_marker,first)+len(end_marker)
+        s=s[:first]+s[last:]
     # Guest snapshot controls are additive. Continue comparing every original
     # handler byte-for-byte, including the underlying guest-access resolver.
     start_guest=s.index(b'# BEGIN ZFSM GUEST SNAPSHOT CONTROLS\n')

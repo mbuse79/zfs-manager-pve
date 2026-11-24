@@ -1,0 +1,18 @@
+[Unit]
+Description=Check stable ZFS Manager releases (never install automatically)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+TimeoutStartSec=2min
+ExecStart=/usr/sbin/zfsm update check --json
+User=root
+Group=root
+UMask=0077
+StateDirectory=pve-zfs-manager/updates
+StateDirectoryMode=0700
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict

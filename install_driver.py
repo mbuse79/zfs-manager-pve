@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """RC8 local installer. Invoked only after the outer manifest was verified."""
 import argparse
+from contextlib import contextmanager
+import fcntl
+import stat
 import json
 import os
 from pathlib import Path
@@ -57,6 +60,22 @@ def competing(root=Path('/'), which=shutil.which):
             if re.search(r'(?<![\w-])'+re.escape(name)+r'(?![\w-])',lines) or name in p.name:
                 found.add(name)
     return sorted(found)
+
+@contextmanager
+def package_lock(path=Path('/run/lock/pve-zfs-manager-install.lock')):
+    """Serialize ZIP installer writes without bypassing dpkg's own locks."""
+    fd=os.open(path,os.O_CREAT|os.O_RDWR|os.O_NOFOLLOW,0o600)
+    try:
+        meta=os.fstat(fd)
+        if not stat.S_ISREG(meta.st_mode) or meta.st_uid!=0 or stat.S_IMODE(meta.st_mode)!=0o600:
+            raise RuntimeError('Unsafe package installation lock / Unsichere Installationssperre')
+        try:
+            fcntl.flock(fd,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise RuntimeError('Another ZFSM installation is running / Eine ZFSM-Installation laeuft bereits') from exc
+        yield
+    finally:
+        os.close(fd)
 
 def main(argv=None):
     parser=argparse.ArgumentParser()
@@ -122,16 +141,17 @@ def main(argv=None):
         say('Prüfmodus erfolgreich; keine Änderungen.' if args.check_only else 'Vorprüfung erfolgreich.',
             'Check completed; no changes.' if args.check_only else 'Preflight completed.')
         if args.check_only: return 0
-        # Repeat every volatile guard immediately before applying the fixed plan.
-        if output(['pveversion'])!=version or installed('pve-zfs-manager')!=current or competing()!=alternative:
-            raise RuntimeError('Host state changed; rerun / Hostzustand verändert; erneut prüfen')
-        run([sys.executable,str(source/'universal.py'),'precheck'])
-        if discover()!=audit: raise RuntimeError('Inventory changed / Inventur verändert')
-        for name in missing:
-            if installed(name): raise RuntimeError('Dependency state changed: '+name)
-        simulate()
-        # dpkg installs only verified local files; it never resolves additional packages.
-        run(['dpkg','-i',*archives,str(deb)])
+        with package_lock():
+            # Repeat every volatile guard immediately before applying the fixed plan.
+            if output(['pveversion'])!=version or installed('pve-zfs-manager')!=current or competing()!=alternative:
+                raise RuntimeError('Host state changed; rerun / Hostzustand verändert; erneut prüfen')
+            run([sys.executable,str(source/'universal.py'),'precheck'])
+            if discover()!=audit: raise RuntimeError('Inventory changed / Inventur verändert')
+            for name in missing:
+                if installed(name): raise RuntimeError('Dependency state changed: '+name)
+            simulate()
+            # dpkg installs only verified local files; it never resolves additional packages.
+            run(['dpkg','-i',*archives,str(deb)])
         for cmd in (['zfsm','version','--lang',args.lang],['zfsm','check','--lang',args.lang],['zfsm','services','--lang',args.lang]): run(cmd)
         from zfsm_cluster_cache import register
         register(HERE)

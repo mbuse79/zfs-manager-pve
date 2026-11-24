@@ -98,3 +98,13 @@ sehr leicht rot bei vollständigem Ausschluss und dezent gelb bei Teilausschluss
 Eine kleine Legende erklärt die Farben. Die Färbung zeigt die AutoSnap-Auswahl,
 nicht den Erfolg eines Zeitplanlaufs. Die Markierung ausgewählter Snapshot-Gruppen
 bleibt getrennt erkennbar. Die Darstellung ändert keine Einstellungen.
+
+The ZFS-Datasets tab uses the same subtle colors and fixed action widths. Dataset
+colors come from the effective ZFS AutoSnap properties, including inheritance and
+per-interval exclusions. Missing property inventory stays neutral; snapshot age or
+an empty snapshot list is never treated as an exclusion setting.
+
+Der Tab ZFS-Datasets verwendet dieselben dezenten Farben und feste Aktionsbreiten.
+Grundlage sind die wirksamen ZFS-AutoSnap-Eigenschaften einschließlich Vererbung und
+Intervall-Ausschlüssen. Bei fehlender Eigenschaftsinventur bleibt die Zeile neutral;
+Snapshot-Alter oder fehlende Snapshots werden nicht als Ausschluss interpretiert.

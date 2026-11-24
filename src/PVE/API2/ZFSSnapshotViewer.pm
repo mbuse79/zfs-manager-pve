@@ -1388,6 +1388,129 @@ for my $scope (qw(guest host)) {
     });
 }
 
+# BEGIN ZFSM LOCAL STABLE UPDATES
+our $UPDATE_TOOL='/usr/lib/pve-zfs-manager/zfsm_updates.py';
+our $UPDATE_RUNNER='/usr/bin/systemd-run';
+sub _update_root {
+    my ($node)=@_;
+    my $user=_admin_identity($node);
+    die "Updates nur fuer root\@pam / Updates require root\@pam\n" unless $user eq 'root@pam';
+    return $user;
+}
+sub _update_json {
+    my (@args)=@_;
+    local %ENV=%ENV;
+    $ENV{PATH}='/usr/sbin:/usr/bin:/sbin:/bin';
+    delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+    my $raw=_run_capture('/usr/bin/python3',$UPDATE_TOOL,@args,'--json');
+    my $result=decode_json($raw);
+    die "Invalid update response\n" unless ref($result) eq 'HASH';
+    return $result;
+}
+sub _update_task {
+    my ($p,$action)=@_;
+    my $user=_update_root($p->{node});
+    my ($node)=($p->{node}//'') =~ /\A([A-Za-z0-9][A-Za-z0-9-]{0,62})\z/;
+    my ($op)=($action//'') =~ /\A(check|prepare|install)\z/;
+    die "Invalid update operation\n" unless defined($node) && defined($op);
+    my @args;
+    if ($op eq 'install') {
+        my ($plan)=($p->{plan}//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Update confirmation missing\n" unless defined($plan) && $p->{confirm};
+        @args=('--plan',$plan,'--confirmed');
+    }
+    my ($job)=substr(sha256_hex(join('|',$user,$$,time,rand(),_preview_secret())),0,32) =~ /\A([a-f0-9]{32})\z/;
+    my $rpcenv=PVE::RPCEnvironment::get();
+    my $upid=$rpcenv->fork_worker('zfsmupdate',$node,$user,sub {
+        local %ENV=%ENV;
+        $ENV{PATH}='/usr/sbin:/usr/bin:/sbin:/bin';
+        delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+        # The independent unit survives a pvedaemon reload/restart during
+        # package configuration. PVE observes it; the durable JSON report is
+        # authoritative if the web worker or browser connection disappears.
+        system($UPDATE_RUNNER,'--unit','pve-zfsm-update-'.$job,'--collect','--wait','--pipe',
+               '--property=UMask=0077','/usr/bin/python3',$UPDATE_TOOL,$op,'--job',$job,@args,'--json') == 0
+            or die "Update task failed; inspect task log\n";
+    });
+    return {job=>$job,upid=>$upid};
+}
+__PACKAGE__->register_method({
+    name=>'update_status',path=>'update-status',method=>'GET',protected=>1,proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Audit']]},
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {return _update_json('status');},
+});
+__PACKAGE__->register_method({
+    name=>'update_job',path=>'update-job',method=>'GET',protected=>1,proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node'),job=>{type=>'string',maxLength=>32}}},
+    returns=>{type=>'object',additionalProperties=>1},
+    code=>sub {my($p)=@_;_update_root($p->{node});
+        my($job)=($p->{job}//'') =~ /\A([a-f0-9]{32})\z/;
+        die "Invalid update job\n" unless defined($job);
+        return _update_json('job','--job',$job);
+    },
+});
+for my $op (qw(check prepare install)) {
+    my $properties={node=>get_standard_option('pve-node')};
+    if ($op eq 'install') {
+        $properties->{plan}={type=>'string',maxLength=>32};
+        $properties->{confirm}={type=>'boolean'};
+    }
+    __PACKAGE__->register_method({
+        name=>'update_'.$op,path=>'update-'.$op,method=>'POST',protected=>1,proxyto=>'node',
+        permissions=>{check=>['perm','/nodes/{node}',['Sys.Modify']]},
+        parameters=>{additionalProperties=>0,properties=>$properties},
+        returns=>{type=>'object',additionalProperties=>1},
+        code=>sub {my($p)=@_;return _update_task($p,$op);},
+    });
+}
+# END ZFSM LOCAL STABLE UPDATES
+
+# BEGIN ZFSM DATASET AUTOSNAP STATUS
+sub _parse_dataset_autosnap {
+    my ($line)=@_;
+    chomp($line);
+    my ($dataset,@values)=split /\t/,$line,-1;
+    die "Invalid AutoSnap inventory\n" unless defined($dataset)
+        && $dataset =~ /\A[A-Za-z0-9_.:~-]+(?:\/[A-Za-z0-9_.:~-]+)*\z/ && @values==7;
+    @values=map {lc($_)} @values;
+    my $base=shift @values;
+    my $excluded=($base eq 'false' || !(grep {$_ ne 'false'} @values)) ? 1:0;
+    my $partial=!$excluded && (grep {$_ eq 'false'} @values) ? 1:0;
+    return {dataset=>$dataset,autosnap_excluded=>$excluded,autosnap_partial=>$partial};
+}
+sub _dataset_autosnap_status {
+    local %ENV=%ENV;
+    $ENV{PATH}='/usr/sbin:/usr/bin:/sbin:/bin';
+    delete @ENV{qw(IFS CDPATH ENV BASH_ENV PERL5LIB PERL5OPT PYTHONPATH PYTHONHOME)};
+    my ($fh,@rows);
+    my $ok=eval {
+        local $SIG{ALRM}=sub {die "AutoSnap inventory timeout\n"};
+        alarm(20);
+        open($fh,'-|','/usr/sbin/zfs','list','-H','-t','filesystem,volume','-o',
+            join(',','name',_autosnap_properties())) or die "AutoSnap inventory unavailable\n";
+        while (my $line=<$fh>) {
+            die "AutoSnap inventory too large\n" if @rows>=10000 || length($line)>4096;
+            push @rows,_parse_dataset_autosnap($line);
+        }
+        close($fh) or die "AutoSnap inventory failed\n";
+        alarm(0);1;
+    };
+    my $error=$@;alarm(0);
+    if (!$ok) {close($fh) if defined($fh) && defined(fileno($fh));die $error;}
+    return \@rows;
+}
+__PACKAGE__->register_method({
+    name=>'dataset_autosnap_status',path=>'dataset-autosnap-status',method=>'GET',protected=>1,proxyto=>'node',
+    permissions=>{check=>['perm','/nodes/{node}',['Sys.Audit']]},
+    parameters=>{additionalProperties=>0,properties=>{node=>get_standard_option('pve-node')}},
+    returns=>{type=>'array',items=>{type=>'object',additionalProperties=>1}},
+    code=>sub {return _dataset_autosnap_status();},
+});
+# END ZFSM DATASET AUTOSNAP STATUS
+
 # BEGIN ZFSM GUEST SNAPSHOT CONTROLS
 sub _guest_autosnap_rows {
     my $rows=_guest_access_rows();
