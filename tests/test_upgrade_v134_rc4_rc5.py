@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]
 
 
 def test_rc4_to_rc5_is_installer_only_upgrade():
-    assert VERSION=='1.1-cluster-installer'
+    assert VERSION=='1.1.1-cluster-installer'
     with tempfile.TemporaryDirectory() as td:
         i=Installer(root=td,source=ROOT/'src',test_version='pve-manager/9.2.26/mock',dry_system=True)
         for path,content in ((i.gui,SRC_GUI),(i.nodes,SRC_NODES)):

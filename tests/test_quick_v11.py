@@ -14,7 +14,7 @@ def test_pinned_quick_entry(case,monkeypatch):
     ns={'__name__':'test'};exec(compile(code,'quick-install.sh','exec'),ns)
     class Response(io.BytesIO):
         url='https://fixture.example.invalid/bootstrap' if case!='http-redirect' else 'http://fixture.example.invalid/bootstrap'
-    payload=(ROOT/'bootstrap-1.1.sh').read_bytes() if case!='tampered' else b'tampered'
+    payload=(ROOT/ns['BOOT_URL'].rsplit('/',1)[1]).read_bytes() if case!='tampered' else b'tampered'
     monkeypatch.setattr(ns['os'],'geteuid',lambda:0)
     monkeypatch.setattr(ns['urllib'].request,'urlopen',lambda *a,**k:Response(payload))
     calls=[]

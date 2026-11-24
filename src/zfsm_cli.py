@@ -10,7 +10,7 @@ import sys
 
 import universal
 
-VERSION='1.1'
+VERSION='1.1.1'
 DE={
  'heading':'ZFS Manager für Proxmox VE', 'usage':'Verwendung', 'commands':'Befehle',
  'help':'Hilfe anzeigen', 'status':'Integration, Version und Dienste anzeigen',

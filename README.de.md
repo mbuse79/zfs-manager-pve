@@ -1,9 +1,9 @@
-# BuMaVory ZFS Manager für Proxmox VE — 1.1
+# BuMaVory ZFS Manager für Proxmox VE — 1.1.1
 
 Pools, VM-/LXC-Snapshots und Aufbewahrung in der vorhandenen Proxmox-Oberfläche
 auf Port 8006 verwalten. Unabhängiges Community-Projekt.
 
-[English](README.md) · **[Version 1.1 herunterladen](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1)** · **[Installieren / aktualisieren](docs/INSTALL-1.1.md)** · [Clusteranleitung](docs/CLUSTER-INSTALL.md)
+[English](README.md) · **[Version 1.1.1 herunterladen](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1.1)** · **[Installieren / aktualisieren](docs/INSTALL-1.1.1.md)** · [Clusteranleitung](docs/CLUSTER-INSTALL.md)
 
 [![Regression CI](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml/badge.svg)](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml)
 
@@ -26,7 +26,7 @@ auf Port 8006 verwalten. Unabhängiges Community-Projekt.
 
 </details>
 
-Entwicklungsstand nach 1.1: [AutoSnap-Ausschluss je Gast und alle Gast-Snapshots löschen](docs/GUEST-SNAPSHOT-CONTROLS.md). Außerdem: [tägliche Updateprüfung mit bestätigter Installation](docs/UPDATES.md). Noch nicht in den 1.1-Downloads enthalten.
+Neu in 1.1.1: [AutoSnap-Ausschluss je Gast und alle Gast-Snapshots löschen](docs/GUEST-SNAPSHOT-CONTROLS.md). Außerdem: [tägliche Updateprüfung mit bestätigter Installation](docs/UPDATES.md). Die Dataset-Standardansicht blendet Replikationsbereiche aus; Alle anzeigen zeigt den vollständigen Bestand.
 
 ## Version 1.1
 
@@ -52,7 +52,7 @@ Rettung, Abbruch während dpkg und parallele reale Steuerknoten bleiben ungeprü
 
 Die **vollständige Release-ZIP** mit geprüftem `bootstrap-1.1.sh` verwenden oder
 entpacken und zunächst `bash install-local.sh --check-only --lang de` ausführen.
-[Anleitung und Prüfsummenprüfung](docs/INSTALL-1.1.md).
+[Anleitung und Prüfsummenprüfung](docs/INSTALL-1.1.1.md).
 Eine reine DEB-Installation registriert keine Cluster-Verteilungskopie. Für die
 Clusterfunktion deshalb die vollständige ZIP verwenden. Neuere Paketversionen
 werden nicht absichtlich herabgestuft. Bei Quellarchiven gilt die versionierte

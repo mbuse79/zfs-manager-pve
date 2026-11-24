@@ -17,5 +17,5 @@ class Release118(unittest.TestCase):
   self.assertIn('PVELangCookie',src)
   self.assertIn("text === 'Keine Angabe'",src)
  def test_cli_version(self):
-  self.assertEqual(zfsm_cli.VERSION,'1.1')
+  self.assertEqual(zfsm_cli.VERSION,'1.1.1')
 if __name__=='__main__':unittest.main()

@@ -1,3 +1,12 @@
+## 1.1.1 (24.11.2026)
+
+- AutoSnap je VM/LXC ausschließen oder einschalten; alle Gast-Snapshots nach Vorschau und Bestätigung löschen.
+- Dezente grüne/rote/gelbe AutoSnap-Markierung und ausgerichtete Aktionsschaltflächen in beiden Snapshot-Ansichten.
+- Dataset-Standardansicht ohne bekannte Replikationsbereiche; vollständige Anzeige über Alle Datasets anzeigen.
+- Tägliche Prüfung stabiler GitHub-Releases; Installation über ZFSM-Updates erst nach Vorprüfung und Bestätigung.
+- Sichere Migration bekannter RC9-GUI-Abweichungen unter Erhalt der Replikationserweiterung.
+- Bestehende Schutzprüfungen und Zeitpläne bleiben erhalten. Kein automatisches Installieren von Updates.
+
 ## 1.1 (15.11.2026)
 
 - Veröffentlichung des vom Betreiber bestätigten RC10-Fix2-Funktionsstands als 1.1.

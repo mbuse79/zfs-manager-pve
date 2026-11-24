@@ -1,9 +1,9 @@
-# BuMaVory ZFS Manager for Proxmox VE — 1.1
+# BuMaVory ZFS Manager for Proxmox VE — 1.1.1
 
 Manage pools, VM/LXC snapshots and retention in the existing Proxmox node interface
 on port 8006. Independent community software, not a Proxmox product.
 
-[Deutsch](README.de.md) · **[Download 1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1)** · **[Install / upgrade](docs/INSTALL-1.1.md)** · [Cluster guide](docs/CLUSTER-INSTALL.md)
+[Deutsch](README.de.md) · **[Download 1.1.1](https://github.com/mbuse79/zfs-manager-pve/releases/tag/v1.1.1)** · **[Install / upgrade](docs/INSTALL-1.1.1.md)** · [Cluster guide](docs/CLUSTER-INSTALL.md)
 
 [![Regression CI](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml/badge.svg)](https://github.com/mbuse79/zfs-manager-pve/actions/workflows/regression.yml)
 
@@ -26,7 +26,7 @@ on port 8006. Independent community software, not a Proxmox product.
 
 </details>
 
-Development after 1.1: [per-guest AutoSnap exclusion and delete-all snapshots](docs/GUEST-SNAPSHOT-CONTROLS.md). Also: [daily stable update checks and confirmed installation](docs/UPDATES.md). Not included in the existing 1.1 downloads.
+Available in 1.1.1: [per-guest AutoSnap exclusion and delete-all snapshots](docs/GUEST-SNAPSHOT-CONTROLS.md). Also: [daily stable update checks and confirmed installation](docs/UPDATES.md). The dataset default view hides replication internals; Show all restores the complete inventory.
 
 ## Version 1.1
 
@@ -50,7 +50,7 @@ real coordinators remain unverified.
 
 Use the **complete release ZIP** and verified `bootstrap-1.1.sh`, or extract the ZIP
 and run `bash install-local.sh --check-only --lang en` before installation.
-[Full instructions and checksum verification](docs/INSTALL-1.1.md).
+[Full instructions and checksum verification](docs/INSTALL-1.1.1.md).
 A bare DEB does not register the cluster distribution bundle. Use the full ZIP for
 cluster deployment. Newer manager versions are never intentionally downgraded.
 For archived sources, follow the versioned guide; the quick installer on `main`

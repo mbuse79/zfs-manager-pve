@@ -1,7 +1,6 @@
 # Guest snapshot controls / Gastweise Snapshot-Aktionen
 
-Development change after release 1.1; not included in the existing 1.1 downloads.
-Entwicklungsstand nach Release 1.1; nicht in den vorhandenen 1.1-Downloads enthalten.
+Available in release 1.1.1 / Verfügbar ab Version 1.1.1.
 
 ## Deutsch
 

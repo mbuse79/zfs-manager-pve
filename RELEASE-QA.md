@@ -1,3 +1,19 @@
+# Version 1.1.1 validation — 24 November 2026
+
+Stable release of the test6 functionality with release version identification.
+Regression and browser fixtures cover guest policies, deletion previews, dataset
+visibility and update staging/confirmation. 337 normal tests and 27 fakeroot tests passed (four overlapping cases).
+Eighteen normal skips and five deselections cover ownership-specific fixtures;
+required cases ran separately under fakeroot. DE/EN ExtJS 7 browser checks passed
+in light and dark themes. Runtime sources match test6 after version normalization.
+See qa/V1.1.1-VALIDATION.json. Real PVE 9.1.1 RC9 migration was operator-confirmed for
+test2; subsequent screenshots demonstrate the UI. The final stable binary and
+complete independent systemd web-update job have not been freshly tested on a
+real PVE host. No host was accessed or changed by the release build.
+
+---
+Historical validation follows.
+
 # Version 1.1 validation — 15 November 2026
 
 Published at the maintainer's explicit request as **1.1**. The previously tested
