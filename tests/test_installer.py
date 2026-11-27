@@ -56,6 +56,18 @@ class InstallerTest(unittest.TestCase):
             path.parent.mkdir(parents=True,exist_ok=True)
             path.write_text(data)
     def tearDown(self):self.tmp.cleanup()
+    def test_pve93_structural_upgrade_fixture(self):
+        # Existing synthetic anchors, not a captured real 9.3 GUI.
+        i=self.inst
+        i.install()
+        i.test_version='pve-manager/9.3.1/fixture'
+        i.gui.write_text(SRC_GUI)
+        i.repair()
+        i.status()
+        self.assertEqual(i.classify(),('rc9','present'))
+        i.uninstall()
+        self.assertEqual(i.gui.read_text(),SRC_GUI)
+
     def test_clean_install_repair_uninstall(self):
         i=self.inst
         self.assertEqual(i.check()[1:],('clean','clean'))

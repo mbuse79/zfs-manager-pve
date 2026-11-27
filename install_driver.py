@@ -19,6 +19,20 @@ HERE = Path(__file__).resolve().parent
 def run(argv, **kw):
     return subprocess.run(argv, check=True, text=True, **kw)
 
+def post_install_checks(lang):
+    # Never interpret exit 2 from a failed integration check as a capacity warning.
+    run(['zfsm', 'version', '--lang', lang])
+    run(['zfsm', 'check', '--integration-only', '--lang', lang])
+    try:
+        run(['zfsm', 'check', '--lang', lang])
+    except subprocess.CalledProcessError as exc:
+        if exc.returncode != 2:
+            raise
+        print('WARNUNG: Installation integriert; kritischer Poolalarm bleibt aktiv. / '
+              'WARNING: Installation integrated; critical pool alert remains active.', flush=True)
+    run(['zfsm', 'services', '--lang', lang])
+
+
 def output(argv):
     return run(argv, capture_output=True).stdout.strip()
 
@@ -152,7 +166,7 @@ def main(argv=None):
             simulate()
             # dpkg installs only verified local files; it never resolves additional packages.
             run(['dpkg','-i',*archives,str(deb)])
-        for cmd in (['zfsm','version','--lang',args.lang],['zfsm','check','--lang',args.lang],['zfsm','services','--lang',args.lang]): run(cmd)
+        post_install_checks(args.lang)
         from zfsm_cluster_cache import register
         register(HERE)
         say('Version 1.1.1 installiert. Bestehende Sicherheits- und Bereinigungseinstellungen bleiben erhalten.',
