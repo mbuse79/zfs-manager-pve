@@ -739,7 +739,7 @@ BLOCK = START + r'''        // This panel is added only to PVE.node.Config. No m
                         plan=null;win.down('#update-ack').setValue(false);win.down('#update-ack').setDisabled(true);win.down('#update-install').setText(zfsL('Install update'));win.down('#update-install').setDisabled(true);info('<b>'+zfsL('Update failed')+'</b><br>'+safeZFSValue(data.error||''));
                     }else{
                         plan=null;win.down('#update-ack').setValue(false);win.down('#update-ack').setDisabled(true);win.down('#update-install').setText(zfsL('Install update'));refresh();if(owner&&owner.zfsRefreshReadOnly)owner.zfsRefreshReadOnly();
-                        if(data.status==='installed')Ext.Msg.alert(zfsL('ZFSM updates'),zfsL('Update installed. Reload the browser with Ctrl+F5.'));
+                        if(data.status==='installed')Ext.Msg.show({title:zfsL('ZFSM updates'),message:zfsL('Update installed. Reload the browser with Ctrl+F5.'),buttons:Ext.Msg.OK,icon:Ext.Msg.INFO});
                     }
                 },failure:function(e){if(win.destroyed)return;if(++errors<30){info(zfsL('Reconnecting to the API; the update job continues.'));Ext.defer(function(){poll(id);},2000);}
                     else {finish();info(safeZFSValue(e.htmlStatus||zfsL('Unknown error'))+'<br>'+zfsL('Inspect the task log before retrying.'));}}});

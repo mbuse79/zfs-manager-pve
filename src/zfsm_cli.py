@@ -98,6 +98,7 @@ def main(argv=None):
     parser=argparse.ArgumentParser(add_help=False)
     parser.add_argument('command',nargs='?',default='help')
     parser.add_argument('--force',action='store_true')
+    parser.add_argument('--integration-only',action='store_true',help='Check integration only; installer use, capacity alerts remain separate')
     parser.add_argument('--json',action='store_true',help='JSON for zfsm capacity/inventory')
     parser.add_argument('--lang',choices=('de','en'))
     parser.add_argument('-h','--help',action='store_true',dest='show_help')
@@ -116,7 +117,7 @@ def main(argv=None):
         return 0
     if args.command not in HELP_COMMANDS or args.command=='emergency':
         parser.print_usage(sys.stderr); return 2
-    if (args.force and args.command!='repair') or (args.json and args.command not in ('capacity','inventory')):
+    if (args.integration_only and args.command!='check') or (args.force and args.command!='repair') or (args.json and args.command not in ('capacity','inventory')):
         parser.print_usage(sys.stderr);return 2
     if args.command=='inventory':
         from zfsm_host_audit import discover, main as audit_main
@@ -188,7 +189,7 @@ def main(argv=None):
             print(t['cancel']);return 1
     os.environ['ZFSM_CLI_LANG']=selected
     rc=run(['/usr/sbin/pve-zfs-manager', 'status' if args.command=='status' else 'check' if args.command=='check' else 'repair-force' if args.force else 'repair'])
-    if args.command in ('status','check'):
+    if args.command in ('status','check') and not args.integration_only:
         try:
             from zfsm_emergency import pools as emergency_pools
             for pool in emergency_pools():
